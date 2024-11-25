@@ -8,6 +8,7 @@ use App\Models\Rider;
 use App\Models\Store;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RiderOrderController extends Controller
@@ -21,11 +22,14 @@ class RiderOrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $riderId = $request->user()->id;
+        $rider = $request->user();
+        if (!$rider) {
+            return response()->json(['message' => 'Not a rider.'], 403);
+        }
 
         $data = Order::query()
             ->with(['items', 'user'])
-            ->where('rider_id', $riderId)
+            ->where('rider_id', $rider->id)
             ->where('status', OrderStatus::ASSIGNED)
             ->orderBy('created_at', 'asc')
             ->get();
@@ -42,11 +46,12 @@ class RiderOrderController extends Controller
      */
     public function show(Request $request, Order $order): JsonResponse
     {
-        if (!$request->tokenCan('role:rider')) {
-            return response()->json(['message' => 'Not a rider'], 403);
+        $rider = $request->user();
+        if (!$rider) {
+            return response()->json(['message' => 'Not a rider.'], 403);
         }
 
-        if ($request->user()->id !== $order->rider_id) {
+        if ($rider->id !== $order->rider_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -64,7 +69,12 @@ class RiderOrderController extends Controller
      */
     public function store(Request $request, Order $order): JsonResponse
     {
-        if ($request->user()->id !== $order->rider_id) {
+        $rider = $request->user();
+        if (!$rider) {
+            return response()->json(['message' => 'Not a rider.'], 403);
+        }
+
+        if ($rider->id !== $order->rider_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -42,7 +42,7 @@ return [
         ],
 
         'riders' => [
-            'driver' => 'session',
+            'driver' => 'sanctum',
             'provider' => 'riders',
         ],
     ],
@@ -72,7 +72,7 @@ return [
 
         'riders' => [
             'driver' => 'eloquent',
-            'table' => App\Models\Rider::class,
+            'model' => App\Models\Rider::class,
         ],
     ],
 

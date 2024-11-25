@@ -62,7 +62,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/vendor-orders/{order}/cancel', [VendorOrderController::class, 'cancel']);
 });
 
-Route::middleware(['auth:sanctum'])->group(function () {
+Route::middleware(['auth:riders'])->group(function () {
     Route::get('/rider-orders', [RiderOrderController::class, 'index']);
     Route::get('/rider-orders/{order}', [RiderOrderController::class, 'show']);
     Route::post('/rider-orders/{order}', [RiderOrderController::class, 'store']);
