@@ -16,6 +16,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProductCatalogController;
@@ -24,6 +25,13 @@ use App\Http\Controllers\RiderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RiderOrderController;
 use App\Http\Controllers\VendorOrderController;
+use Illuminate\Http\Request;
+
+Route::get('/me', function (Request $request) {
+    return response()->json([
+        'user' => $request->user(),
+    ]);
+})->middleware('auth:sanctum');
 
 Route::apiResource('users', UserController::class);
 
@@ -43,6 +51,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductController::class);
 });
 
+Route::middleware(['guest'])->group(function () {
+    Route::post('/customers', [CustomerController::class, 'store']);
+});
 
 Route::get('/catalog/{location}', [ProductCatalogController::class, 'index']);
 

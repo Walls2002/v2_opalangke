@@ -36,7 +36,7 @@ class AuthController extends Controller
         $rider = Rider::where('email', $request->email)->first();
 
         if ($rider && Hash::check($request->password, $rider->password)) {
-            $token = $rider->createToken('auth_token', ['role-rider'])->plainTextToken;
+            $token = $rider->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'access_token' => $token,

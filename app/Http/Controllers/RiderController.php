@@ -4,13 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Rider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class RiderController extends Controller
 {
-    public function index()
+    // public function index(Request $request)
+    // {
+    //     $riders = Rider::with('vendor')->get();
+    //     return response()->json($riders);
+    // }
+
+    public function index(Request $request)
     {
-        $riders = Rider::with('vendor')->get();
-        return response()->json($riders);
+        $riders = Rider::query()
+            ->with('vendor')
+            ->where('vendor_id', $request->user()->id)
+            ->get();
+        return response()->json(['riders' => $riders]);
     }
 
     public function store(Request $request)
