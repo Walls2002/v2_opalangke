@@ -34,7 +34,6 @@
                     </div>
                 </main>
             </div>
-            @include('layout.footer')
         </div>
         @include('layout.scripts')
 
@@ -79,5 +78,19 @@
             }
 
         </script>
+
+        
+
+    <script>
+        $(document).ready(function() {
+            // Check the value of "status" in local storage
+            var token = localStorage.getItem('token');
+
+            if (token) {
+                // Redirect to index.php if there is no value
+                window.location.href = '/home';
+            }
+        });
+    </script>
     </body>
 </html>

@@ -5,3 +5,15 @@
         </div>
     </div>
 </footer>
+
+<script>
+    $(document).ready(function() {
+        // Check the value of "status" in local storage
+        var token = localStorage.getItem('token');
+
+        if (token === null) {
+            // Redirect to index.php if there is no value
+            window.location.href = '/';
+        }
+    });
+</script>

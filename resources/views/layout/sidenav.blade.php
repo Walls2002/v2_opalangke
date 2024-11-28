@@ -52,6 +52,14 @@
         if (user && user.role) {
             $('.sidenav-footer-role').text(user.role);
         }
+
+        if (user.role != 'admin') {
+            $('.role-admin').addClass('d-none');
+        }
+
+        if (user.role != 'vendor') {
+            $('.role-vendor').addClass('d-none');
+        }
     });
 
 </script>

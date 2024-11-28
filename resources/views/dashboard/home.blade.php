@@ -20,10 +20,10 @@
                             </div>
                         </div>
                         <!-- Date range picker example-->
-                        <div class="input-group input-group-joined border-0 shadow" style="width: 16.5rem">
+                        {{-- <div class="input-group input-group-joined border-0 shadow" style="width: 16.5rem">
                             <span class="input-group-text"><i data-feather="calendar"></i></span>
                             <input class="form-control ps-0 pointer" id="litepickerRangePlugin" placeholder="Select date range..." />
-                        </div>
+                        </div> --}}
                     </div>
                     <!-- Illustration dashboard card example-->
                     <div class="card card-waves mb-4 mt-5">

@@ -25,10 +25,6 @@
                     </div>
                 </h6>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="change-password.php">
-                    <div class="dropdown-item-icon"><i data-feather="lock"></i></div>
-                    Change Password
-                </a>
                 <a class="dropdown-item" href="#!" id="logoutButton">
                     <div class="dropdown-item-icon"><i data-feather="log-out"></i></div>
                     Logout
@@ -45,4 +41,14 @@
     if (user2 && user2.name) {
         $('.dropdown-user-details-name').text(user2.name);
     }
+</script>
+
+<script>
+    document.getElementById('logoutButton').addEventListener('click', function () {
+        // Clear all local storage
+        localStorage.clear();
+
+        // Redirect to home page
+        window.location.href = '/';
+    });
 </script>
