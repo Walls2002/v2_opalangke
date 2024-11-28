@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('store_id')->constrained('stores');
-            $table->foreignId('rider_id')->nullable()->constrained('riders');
+            $table->foreignId('rider_id')->nullable();
             $table->string('total_price');
             $table->string('address')->nullable();
             $table->string('note')->nullable();

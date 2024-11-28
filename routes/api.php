@@ -55,7 +55,7 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/customers', [CustomerController::class, 'store']);
 });
 
-Route::get('/catalog/{location}', [ProductCatalogController::class, 'index']);
+Route::get('/catalog', [ProductCatalogController::class, 'index']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/cart', [CartController::class, 'index']);

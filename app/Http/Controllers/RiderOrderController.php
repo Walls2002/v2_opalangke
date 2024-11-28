@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
+use App\Http\Resources\RiderOrderResource;
 use App\Models\Order;
 use App\Models\Rider;
 use App\Models\Store;
@@ -34,7 +35,7 @@ class RiderOrderController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return response()->json(['message' => 'Rider assigned orders fetched.', 'orders' => $data], 200);
+        return response()->json(['message' => 'Rider assigned orders fetched.', 'orders' => RiderOrderResource::collection($data)], 200);
     }
 
     /**
@@ -57,7 +58,7 @@ class RiderOrderController extends Controller
 
         $order->load(['items', 'user', 'store']);
 
-        return response()->json(['message' => 'Assigned order fetched.', 'order' => $order], 200);
+        return response()->json(['message' => 'Assigned order fetched.', 'order' => new RiderOrderResource($order)], 200);
     }
 
     /**

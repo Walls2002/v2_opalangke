@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
+use App\Http\Resources\StoreOrderResource;
 use App\Models\Order;
 use App\Models\Rider;
 use App\Models\Store;
@@ -54,7 +55,7 @@ class VendorOrderController extends Controller
 
         $data = $query->get();
 
-        return response()->json(['message' => 'Vendor orders fetched.', 'orders' => $data], 200);
+        return response()->json(['message' => 'Vendor orders fetched.', 'orders' => StoreOrderResource::collection($data)], 200);
     }
 
     /**
@@ -72,7 +73,7 @@ class VendorOrderController extends Controller
 
         $order->load(['items', 'user', 'rider']);
 
-        return response()->json(['message' => 'Order fetched.', 'order' => $order], 200);
+        return response()->json(['message' => 'Order fetched.', 'order' => new StoreOrderResource($order)], 200);
     }
 
     /**
