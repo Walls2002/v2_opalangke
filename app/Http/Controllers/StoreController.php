@@ -13,10 +13,17 @@ class StoreController extends Controller
     /**
      * Display a listing of the stores.
      */
-    public function index()
+    public function index(Request $request, Store $store)
     {
-        $stores = Store::with(['vendor', 'location'])->get();
-        return response()->json($stores);
+        $store = Store::query()
+            ->with(['vendor', 'location'])
+            ->where('vendor_id', $request->user()->id)
+            ->first();
+
+        if (!$store) {
+            return response()->json(['message' => 'Logged user does not have a store.'], 404);
+        }
+        return response()->json($store);
     }
 
     /**
@@ -100,18 +107,18 @@ class StoreController extends Controller
     /**
      * Display the logged user's store.
      */
-    public function show(Request $request, Store $store)
-    {
-        $store = Store::query()
-            ->with(['vendor', 'location'])
-            ->where('vendor_id', $request->user()->id)
-            ->first();
+    // public function show(Request $request, Store $store)
+    // {
+    //     $store = Store::query()
+    //         ->with(['vendor', 'location'])
+    //         ->where('vendor_id', $request->user()->id)
+    //         ->first();
 
-        if (!$store) {
-            return response()->json(['message' => 'Logged user does not have a store.'], 404);
-        }
-        return response()->json($store);
-    }
+    //     if (!$store) {
+    //         return response()->json(['message' => 'Logged user does not have a store.'], 404);
+    //     }
+    //     return response()->json($store);
+    // }
 
     /**
      * Update the specified store in storage.
