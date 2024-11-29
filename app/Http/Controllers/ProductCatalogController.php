@@ -8,17 +8,22 @@ use Illuminate\Http\Request;
 
 class ProductCatalogController extends Controller
 {
-    public function index(Request $request, string $location)
+    public function index(Request $request)
     {
-        $location = Location::find($location);
+        $query = Product::query()
+            ->with(['store.location']);
 
-        if (!$location) {
-            return response()->json(['message' => 'location not found.'], 404);
+        if ($request->location_id) {
+            $location = Location::find($request->location_id);
+
+            if (!$location) {
+                return response()->json(['message' => 'location not found.'], 404);
+            }
+
+            $query->whereRelation('store', 'location_id', '=', $location->id);
         }
 
-        $products = Product::query()
-            ->whereRelation('store', 'location_id', '=', $location->id)
-            ->get();
+        $products = $query->get();
 
         return response()->json($products);
     }

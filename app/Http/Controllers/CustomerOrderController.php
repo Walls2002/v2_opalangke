@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\OrderStatus;
+use App\Http\Resources\CustomerOrderResource;
 use App\Models\Order;
 use App\Models\Rider;
 use Illuminate\Http\JsonResponse;
@@ -20,7 +21,7 @@ class CustomerOrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Order::query()
-            ->with(['items', 'user', 'rider'])
+            ->with(['items', 'user', 'rider', 'store'])
             ->where('user_id', $request->user()->id);
 
         $selectedStatus = [];
@@ -49,7 +50,7 @@ class CustomerOrderController extends Controller
 
         $data = $query->get();
 
-        return response()->json(['message' => 'Customer orders fetched.', 'orders' => $data], 200);
+        return response()->json(['message' => 'Customer orders fetched.', 'orders' => CustomerOrderResource::collection($data)], 200);
     }
 
     /**
@@ -67,6 +68,6 @@ class CustomerOrderController extends Controller
 
         $order->load(['items', 'user', 'store']);
 
-        return response()->json(['message' => 'Order fetched.', 'order' => $order], 200);
+        return response()->json(['message' => 'Order fetched.', 'order' => new CustomerOrderResource($order)], 200);
     }
 }

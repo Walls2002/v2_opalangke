@@ -61,6 +61,39 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product created successfully', 'product' => $product], 201);
     }
 
+    public function update(Request $request, Product $product)
+    {
+        $user = $request->user();
+        $product->load('store');
+        $store = $product->store;
+
+        if ($store->vendor_id != $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:1',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $product->name = $request->name;
+        $product->price = $request->price;
+        $product->quantity = $request->quantity;
+
+        if ($request->hasFile('image')) {
+            $fileName = $request->file('image')->store('products', 'public');
+            $product->image = $fileName;
+        }
+
+        if (!$product->save()) {
+            return response()->json(['message' => 'Encountered an error updating the product.'], 400);
+        }
+
+        return response()->json(['message' => 'Product updated successfully', 'product' => $product], 201);
+    }
+
     public function destroy(Product $product)
     {
         if ($product->image) {
