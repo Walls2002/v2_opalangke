@@ -18,6 +18,29 @@
                     <div class="nav-link-icon"><i data-feather="map"></i></div>
                     Location
                 </a>
+
+                <a class="nav-link role-customer" href="/">
+                    <div class="nav-link-icon"><i data-feather="shopping-bag"></i></div>
+                    Product Catalog
+                </a>
+                <a class="nav-link role-customer" href="/cart">
+                    <div class="nav-link-icon"><i data-feather="shopping-cart"></i></div>
+                    Cart
+                </a>
+                <!-- Sidenav Accordion (Flows)-->
+                <a class="nav-link collapsed role-customer" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlows" aria-expanded="false" aria-controls="collapseFlows">
+                    <div class="nav-link-icon"><i data-feather="check-square"></i></div>
+                    Orders
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapseFlows" data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav">
+                        <a class="nav-link" href="/order-pending">Pending</a>
+                        <a class="nav-link" href="/order-confirmed">Confirmed</a>
+                        <a class="nav-link" href="/order-delivered">Delivered</a>
+                        <a class="nav-link" href="/order-cancelled">Cancelled</a>
+                    </nav>
+                </div>
             </div>
         </div>
         <!-- Sidenav Footer-->
@@ -59,6 +82,10 @@
 
         if (user.role != 'vendor') {
             $('.role-vendor').addClass('d-none');
+        }
+
+        if (user.role != 'customer') {
+            $('.role-customer').addClass('d-none');
         }
     });
 

@@ -118,7 +118,7 @@
                                             <!-- Product actions -->
                                             <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                                 <div class="text-center">
-                                                    <button class="btn btn-outline-primary mt-auto add-to-cart role-customer">Add to cart</button>
+                                                    <button class="btn btn-outline-primary mt-auto add-to-cart role-customer" data-product-id="${product.id}">Add to cart</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -142,17 +142,46 @@
                 document.addEventListener('click', function (event) {
                     if (event.target.classList.contains('add-to-cart')) {
                         event.preventDefault();
+
                         const token = localStorage.getItem('token');
 
                         if (!token) {
                             alert('You need to login first to add items to your cart.');
                             window.location.href = '/login';
                         } else {
-                            console.log('Product added to cart');
+                            // Extract the product ID (Assume it's stored as a data attribute)
+                            const productId = event.target.getAttribute('data-product-id');
+
+                            if (!productId) {
+                                console.error('Product ID not found on button.');
+                                return;
+                            }
+
+                            // Make a POST request to add the product to the cart
+                            fetch(`/api/cart/${productId}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                            })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! status: ${response.status}`);
+                                    }
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    alert('Product successfully added to the cart!');
+                                    console.log('Response from server:', data);
+                                })
+                                .catch(error => {
+                                    console.error('Error adding product to cart:', error);
+                                    alert('Failed to add product to cart. Please try again.');
+                                });
                         }
                     }
                 });
-
 
                 // Initial load of all products
                 fetchProducts();

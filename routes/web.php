@@ -38,3 +38,23 @@ Route::get('/users', function () {
 Route::get('/locations', function () {
     return view('dashboard/locations');
 });
+
+Route::get('/cart', function () {
+    return view('dashboard/cart');
+});
+
+Route::get('/order-pending', function () {
+    return view('dashboard/order-pending');
+});
+
+Route::get('/order-confirmed', function () {
+    return view('dashboard/order-confirmed');
+});
+
+Route::get('/order-delivered', function () {
+    return view('dashboard/order-delivered');
+});
+
+Route::get('/order-cancelled', function () {
+    return view('dashboard/order-cancelled');
+});
