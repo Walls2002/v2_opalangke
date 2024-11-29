@@ -13,7 +13,7 @@
 
         if (token === null) {
             // Redirect to index.php if there is no value
-            window.location.href = '/';
+            window.location.href = '/login';
         }
     });
 </script>
