@@ -31,10 +31,12 @@ class CartController extends Controller
                 'price' => $item->product->price,
                 'remaining_qty' => $item->product->quantity,
                 'selected_qty' => $item->quantity,
+                'total_cost' => $item->product->price * $item->quantity
             ];
 
             $cart[$item->store->id]['id'] = $item->store->id;
             $cart[$item->store->id]['name'] = $item->store->store_name;
+            $cart[$item->store->id]['total_price'] = ($cart[$item->store->id]['total_price'] ?? 0) + $product['total_cost'];
             $cart[$item->store->id]['products'][] = $product;
         }
 
@@ -84,13 +86,19 @@ class CartController extends Controller
      */
     public function update(Request $request, Product $product): JsonResponse
     {
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized.'], 401);
+        }
+
         $cartItem = Cart::query()
-            ->where('user_id', $request->user()->id)
+            ->where('user_id', $user->id)
             ->where('product_id', $product->id)
             ->first();
 
         if (!$cartItem) {
-            return response()->json(['message' => 'No product found.'], 400);
+            return response()->json(['message' => ' Product not found in cart.'], 400);
         }
 
         if ($request->boolean('clear') || $cartItem->quantity <= 1) {
