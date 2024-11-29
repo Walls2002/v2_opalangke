@@ -38,7 +38,7 @@
                         <a class="nav-link" href="/order-pending">Pending</a>
                         <a class="nav-link" href="/order-confirmed">Confirmed</a>
                         <a class="nav-link" href="/order-delivered">Delivered</a>
-                        <a class="nav-link" href="/order-cancelled">Cancelled</a>
+                        <a class="nav-link" href="/order-canceled">Canceled</a>
                     </nav>
                 </div>
             </div>

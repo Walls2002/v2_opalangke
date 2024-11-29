@@ -55,6 +55,6 @@ Route::get('/order-delivered', function () {
     return view('dashboard/order-delivered');
 });
 
-Route::get('/order-cancelled', function () {
-    return view('dashboard/order-cancelled');
+Route::get('/order-canceled', function () {
+    return view('dashboard/order-canceled');
 });

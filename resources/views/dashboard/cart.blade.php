@@ -98,7 +98,7 @@
                                         cartContent += `
                                             <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row text-dark mb-3">
                                                 <div class="me-4 mb-3 mb-sm-0">
-                                                    <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.price).toFixed(2)}</p>
+                                                    <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.total_cost).toFixed(2)}</p>
                                                     <small>Quantity: ${product.selected_qty}</small>
                                                 </div>
                                                 <!-- Product quantity controls -->
@@ -112,6 +112,7 @@
                                     });
 
                                     cartContent += `
+                                                <p class="fw-bold">Total Price: ₱${store.total_price}</p>
                                                 <button class="btn btn-primary btn-sm btn-checkout" data-store-id="${store.id}">Checkout</button>
                                                 </div>
                                             </div>
