@@ -13,17 +13,14 @@ class StoreController extends Controller
     /**
      * Display a listing of the stores.
      */
-    public function index(Request $request, Store $store)
+    public function index(Request $request)
     {
         $store = Store::query()
             ->with(['vendor', 'location'])
             ->where('vendor_id', $request->user()->id)
-            ->first();
+            ->get();
 
-        if (!$store) {
-            return response()->json(['message' => 'Logged user does not have a store.'], 404);
-        }
-        return response()->json($store);
+        return response()->json(['stores' => $store]);
     }
 
     /**
