@@ -47,10 +47,22 @@
                 </select>
             </div>
             <div class="container px-4 px-lg-5 mt-5">
-                <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center" id="productContainer">
-                    
-                </div>
+                <table id="productTable" class="table table-bordered table-striped table-hover border">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Product Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Store</th>
+                            <th class="role-customer">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
+            
         </section>
         <!-- Footer-->
         <footer class="py-5 bg-primary">
@@ -82,56 +94,59 @@
 
                 // Fetch and display products based on the selected location
                 function fetchProducts(locationId) {
-                    const apiEndpoint = locationId ? `/api/catalog?location_id=${locationId}` : '/api/catalog';
+    const apiEndpoint = locationId ? `/api/catalog?location_id=${locationId}` : '/api/catalog';
 
-                    $.ajax({
-                        url: apiEndpoint,
-                        method: 'GET',
-                        dataType: 'json',
-                        success: function (products) {
-                            // Clear existing products
-                            productContainer.empty();
+    $.ajax({
+        url: apiEndpoint,
+        method: 'GET',
+        dataType: 'json',
+        success: function (products) {
+            // Destroy existing DataTable instance if exists
+            if ($.fn.DataTable.isDataTable('#productTable')) {
+                $('#productTable').DataTable().clear().destroy();
+            }
 
-                            // Create product cards
-                            products.forEach(product => {
-                                const productCard = `
-                                    <div class="col mb-5">
-                                        <div class="card h-100">
-                                            <!-- Product image -->
-                                            <img class="card-img-top border" 
-                                                src="${product.image ? 'storage/' + product.image : 'no-image.jpg'}" 
-                                                alt="${product.name}" />
-                                            <!-- Product details -->
-                                            <div class="card-body p-4">
-                                                <div class="text-center">
-                                                    <h5 class="fw-bolder text-primary">${product.name}</h5>
-                                                    <!-- Product qty -->
-                                                    <small>Stocks: ${product.quantity}</small>
-                                                    <!-- Product price -->
-                                                    <h4 class="pt-3">₱${parseFloat(product.price).toFixed(2)}</h4>
-                                                    <small class="text-primary">Store: ${product.store.store_name}</small><br>
-                                                    <small>${product.store.street}, ${product.store.location.barangay}, 
-                                                    ${product.store.location.city}, ${product.store.location.province} | 
-                                                    ${product.store.contact_number}</small>
-                                                </div>
-                                            </div>
-                                            <!-- Product actions -->
-                                            <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                                                <div class="text-center">
-                                                    <button class="btn btn-outline-primary mt-auto add-to-cart role-customer" data-product-id="${product.id}">Add to cart</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                                productContainer.append(productCard);
-                            });
-                        },
-                        error: function (error) {
-                            console.error('Error fetching products:', error);
-                        }
-                    });
-                }
+            // Populate table body
+            const tableBody = $('#productTable tbody');
+            tableBody.empty();
+
+            products.forEach(product => {
+                const productRow = `
+                    <tr>
+                        <td><img src="${product.image ? 'storage/' + product.image : 'no-image.jpg'}" alt="${product.name}" style="width: 50px; height: 50px;"></td>
+                        <td>${product.name}</td>
+                        <td>₱${parseFloat(product.price).toFixed(2)}</td>
+                        <td>${product.quantity}</td>
+                        <td>
+                            <img src="${product.store.image ? 'storage/' + product.store.image : 'no-image.jpg'}" alt="${product.store.store_name}" style="width: 50px; height: 50px;"><br>
+                            ${product.store.store_name}<br>
+                            <small>${product.store.street}, ${product.store.location.barangay}, 
+                            ${product.store.location.city}, ${product.store.location.province} | 
+                            ${product.store.contact_number}</small>
+                        </td>
+                        <td>
+                            <button class="btn btn-outline-primary add-to-cart role-customer" data-product-id="${product.id}">Add to cart</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.append(productRow);
+            });
+
+            // Initialize DataTable
+            $('#productTable').DataTable({
+                paging: true,
+                searching: true,
+                info: true,
+                autoWidth: false,
+                responsive: true,
+            });
+        },
+        error: function (error) {
+            console.error('Error fetching products:', error);
+        }
+    });
+}
+
 
                 // Fetch products when a location is selected
                 locationDropdown.change(function () {

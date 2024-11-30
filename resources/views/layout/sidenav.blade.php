@@ -19,6 +19,19 @@
                     Location
                 </a>
 
+                {{-- vendor --}}
+                <a class="nav-link role-vendor" href="/store">
+                    <div class="nav-link-icon"><i data-feather="shopping-bag"></i></div>
+                    Store
+                </a>
+
+                <a class="nav-link role-vendor" href="/rider">
+                    <div class="nav-link-icon"><i data-feather="user"></i></div>
+                    Rider
+                </a>
+
+
+                {{-- customer --}}
                 <a class="nav-link role-customer" href="/">
                     <div class="nav-link-icon"><i data-feather="shopping-bag"></i></div>
                     Product Catalog

@@ -58,3 +58,15 @@ Route::get('/order-delivered', function () {
 Route::get('/order-canceled', function () {
     return view('dashboard/order-canceled');
 });
+
+Route::get('/store', function () {
+    return view('dashboard/store');
+});
+
+Route::get('/rider', function () {
+    return view('dashboard/rider');
+});
+
+Route::get('/products', function () {
+    return view('dashboard/products');
+});
