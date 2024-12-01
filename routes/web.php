@@ -70,3 +70,19 @@ Route::get('/rider', function () {
 Route::get('/products', function () {
     return view('dashboard/products');
 });
+
+Route::get('/vendor-order-pending', function () {
+    return view('dashboard/vendor-order-pending');
+});
+
+Route::get('/vendor-order-confirmed', function () {
+    return view('dashboard/vendor-order-confirmed');
+});
+
+Route::get('/vendor-order-delivered', function () {
+    return view('dashboard/vendor-order-delivered');
+});
+
+Route::get('/vendor-order-canceled', function () {
+    return view('dashboard/vendor-order-canceled');
+});

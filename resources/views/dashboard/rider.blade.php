@@ -64,23 +64,23 @@
                         <form id="createUserForm">
                         <div class="mb-3">
                             <label for="createUserName" class="form-label">Name<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="createUserName" placeholder="Enter full name" required />
+                            <input type="text" class="form-control" id="createName" placeholder="Enter full name" required />
                         </div>
                         <div class="mb-3">
                             <label for="createUserEmail" class="form-label">Email<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="createUserEmail" placeholder="Enter email address" required />
+                            <input type="email" class="form-control" id="createEmail" placeholder="Enter email address" required />
                         </div>
                         <div class="mb-3">
                             <label for="createUserContact" class="form-label">Contact Number<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="createUserContact" placeholder="Enter contact number" required />
+                            <input type="text" class="form-control" id="createContact" placeholder="Enter contact number" required />
                         </div>
                         <div class="mb-3">
                             <label for="createUserPlateNumber" class="form-label">Plate Number<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="createUserPlateNumber" placeholder="Enter plate number" required />
+                            <input type="text" class="form-control" id="createPlateNumber" placeholder="Enter plate number" required />
                         </div>
                         <div class="mb-3">
                             <label for="createUserLicenseNumber" class="form-label">License Number<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="createUserLicenseNumber" placeholder="Enter license number" required />
+                            <input type="text" class="form-control" id="createLicenseNumber" placeholder="Enter license number" required />
                         </div>
                     
                         <div class="modal-footer">

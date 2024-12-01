@@ -47,20 +47,24 @@
                 </select>
             </div>
             <div class="container px-4 px-lg-5 mt-5">
-                <table id="productTable" class="table table-bordered table-striped table-hover border">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Product Name</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>Store</th>
-                            <th class="role-customer">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
+                <div class="card">
+                    <div class="card-body">
+                        <table id="productTable" class="table table-bordered table-striped table-hover border">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Product Name</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Store</th>
+                                    <th class="role-customer"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             
         </section>

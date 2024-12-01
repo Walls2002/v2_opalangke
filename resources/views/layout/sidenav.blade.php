@@ -30,6 +30,21 @@
                     Rider
                 </a>
 
+                <!-- Sidenav Accordion (Flows)-->
+                <a class="nav-link collapsed role-vendor" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlows2" aria-expanded="false" aria-controls="collapseFlows2">
+                    <div class="nav-link-icon"><i data-feather="check-square"></i></div>
+                    Orders
+                    <div class="sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                </a>
+                <div class="collapse" id="collapseFlows2" data-bs-parent="#accordionSidenav">
+                    <nav class="sidenav-menu-nested nav">
+                        <a class="nav-link" href="/vendor-order-pending">Pending</a>
+                        <a class="nav-link" href="/vendor-order-confirmed">Confirmed</a>
+                        <a class="nav-link" href="/vendor-order-delivered">Delivered</a>
+                        <a class="nav-link" href="/vendor-order-canceled">Canceled</a>
+                    </nav>
+                </div>
+
 
                 {{-- customer --}}
                 <a class="nav-link role-customer" href="/">

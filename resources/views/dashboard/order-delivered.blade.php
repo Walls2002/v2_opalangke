@@ -38,7 +38,7 @@
                 // Function to fetch cart data
                 function fetchCart() {
                     $.ajax({
-                        url: '/api/customer-orders?show_delivered=1&show_assigned=1',
+                        url: '/api/customer-orders?show_delivered=1',
                         type: 'GET',
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
@@ -46,13 +46,21 @@
                         success: function(response) {
                             let cartContent = '';
 
+                            if (response.orders.length === 0) {
+                                cartContent = `
+                                    <div class="text-center mt-5">
+                                        <h4>No orders available.</h4>
+                                    </div>
+                                `;
+                            } else{
                             // Loop through each order in the response
                             response.orders.forEach(order => {
                                 // Add store information
                                 cartContent += `
                                     <div class="card mb-4">
                                         <div class="card-body p-5">
-                                            <h5 class="pb-2 text-primary">Store: ${order.store.store_name}</h5>
+                                            <h5 class="pb-2 text-primary">Store: ${order.store.store_name} - ${order.store.contact_number}</h5>
+                                            <p class="pt-3">Assigned Rider: ${order?.rider?.name || 'No rider assigned'} ${order?.rider?.contact_number || ''}</p>
                                             <div class="p-3" style="border: 1px solid rgb(184, 184, 184)">
                                 `;
                                 
@@ -77,7 +85,7 @@
                                 </div>
                                 `;
                             });
-
+                        }
                             // Inject cart content into the container
                             $('#cart-container').html(cartContent);
                         },

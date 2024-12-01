@@ -81,9 +81,14 @@
                                 Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
                             },
                         success: function(response) {
-                            if (response.message === "Cart fetched") {
                                 let cartContent = '';
-
+                                if (response.cart.length === 0) {
+                                    cartContent = `
+                                        <div class="text-center mt-5">
+                                            <h4>No items available on cart.</h4>
+                                        </div>
+                                    `;
+                                } else{
                                 // Loop through each store in the cart
                                 response.cart.forEach(store => {
                                     cartContent += `
@@ -119,10 +124,11 @@
                                         </div>
                                     `;
                                 });
+                            }
+                                
 
                                 // Inject cart content into the container
                                 $('#cart-container').html(cartContent);
-                            }
                         },
                         error: function() {
                             alert('Failed to fetch cart data');
