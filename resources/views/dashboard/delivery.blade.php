@@ -107,7 +107,7 @@
         
                                     cartContent += `
                                             <p class="fw-bold">Total Price: ₱${order.total_price}</p>
-                                            <button class="btn btn-primary btn-sm btn-confirm" data-order-id="${order.id}">Marked Delivered</button>
+                                            <button class="btn btn-primary btn-sm btn-confirm" data-order-id="${order.id}">Mark as Delivered</button>
                                             </div>
                                         </div>
                                     </div>
