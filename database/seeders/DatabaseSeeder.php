@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             "name" => "John Doe",
             "email" => "johndoe@example.com",
             "password" => "password",
-            "contact" => "09674567332",
+            "contact" => "09087654321",
             "plate_number" => "",
             "role" => "admin"
         ]);
@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
                     "name" => "{$storeName} Admin",
                     "email" => "{$location->city}.store.{$vendorNumber}.admin@example.com",
                     "password" => "password",
-                    "contact" => "09674567332",
+                    "contact" => "09087654321",
                     "plate_number" => "",
                     "role" => "vendor"
                 ]);
@@ -100,7 +100,7 @@ class DatabaseSeeder extends Seeder
                     "email" => "{$location->city}.store.{$vendorNumber}.rider@example.com",
                     "password" => "password",
                     "license_number" => random_int(1000, 9999) . ' ' . random_int(1000, 9999),
-                    "contact_number" => "09674567332",
+                    "contact_number" => "09087654321",
                     "plate_number" => "",
                 ]);
 
@@ -121,7 +121,7 @@ class DatabaseSeeder extends Seeder
             "name" => "Customer Doe",
             "email" => "customerdoe@example.com",
             "password" => "password",
-            "contact" => "09674567332",
+            "contact" => "09087654321",
             "plate_number" => "",
             "role" => "customer"
         ]);
