@@ -41,25 +41,18 @@ class DatabaseSeeder extends Seeder
 
         $locationsArray = [
             [
-                'province' => 'Metro Manila',
-                'city' => 'Manila',
-                'city_code' => '000',
-                'barangay' => 'Barangay 143',
-                'barangay_code' => '143',
+                'province' => 'BATAAN',
+                'city' => 'MARIVELES',
+                'city_code' => '030807',
+                'barangay' => 'SAN ISIDRO',
+                'barangay_code' => '030807',
             ],
             [
-                'province' => 'Rizal',
-                'city' => 'Antipolo',
-                'city_code' => '001',
-                'barangay' => 'Barangay 431',
-                'barangay_code' => '431',
-            ],
-            [
-                'province' => 'Cavite',
-                'city' => 'Imus',
-                'city_code' => '002',
-                'barangay' => 'Barangay 314',
-                'barangay_code' => '314',
+                'province' => 'BATAAN',
+                'city' => 'MARIVELES',
+                'city_code' => '030807',
+                'barangay' => 'ALAS-ASIN',
+                'barangay_code' => '030807',
             ],
         ];
 
