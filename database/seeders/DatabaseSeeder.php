@@ -49,10 +49,10 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'province' => 'BATAAN',
-                'city' => 'MARIVELES',
-                'city_code' => '030807',
-                'barangay' => 'ALAS-ASIN',
-                'barangay_code' => '030807',
+                'city' => 'ABUCAY',
+                'city_code' => '030801',
+                'barangay' => 'BANGKAL',
+                'barangay_code' => '030801',
             ],
         ];
 
@@ -84,7 +84,7 @@ class DatabaseSeeder extends Seeder
                     'store_name' => $storeName,
                     'image' => null,
                     'street' => fake()->streetName(),
-                    'contact_number' => 87000,
+                    'contact_number' => "09087654321",
                 ]);
 
                 $rider = Rider::create([
