@@ -69,6 +69,12 @@
                         <a class="nav-link" href="/order-canceled">Canceled</a>
                     </nav>
                 </div>
+
+                {{-- rider --}}
+                <a class="nav-link role-rider" href="/delivery">
+                    <div class="nav-link-icon"><i data-feather="user"></i></div>
+                    Delivery
+                </a>
             </div>
         </div>
         <!-- Sidenav Footer-->
@@ -94,6 +100,7 @@
         });
 
         const user = JSON.parse(localStorage.getItem('user'));
+        const user_type = JSON.parse(localStorage.getItem('user_type'));
 
         // Display user name if available
         if (user && user.name) {
@@ -114,6 +121,10 @@
 
         if (user.role != 'customer') {
             $('.role-customer').addClass('d-none');
+        }
+
+        if (user_type != 'rider') {
+            $('.role-rider').addClass('d-none');
         }
     });
 

@@ -30,6 +30,24 @@
             </div>
         </div>
 
+        <!-- Proof of Delivery Modal -->
+        <div class="modal fade" id="deliveryImageModal" tabindex="-1" aria-labelledby="deliveryImageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deliveryImageModalLabel">Proof of Delivery</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <img src="" alt="Proof of Delivery" class="img-fluid" style="max-height: 400px; object-fit: contain;">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     
         @include('layout.scripts')
 
@@ -80,7 +98,8 @@
                                 // Close the store section
                                 cartContent += `
                                         <p class="fw-bold">Total Price: ₱${order.total_price}</p>
-                                        </div>
+                                        </div><br>
+                                            <button class="btn btn-primary btn-sm view-proof-btn" data-delivery-image="${order.delivery_image}">View Proof of Delivery</button>
                                     </div>
                                 </div>
                                 `;
@@ -88,6 +107,18 @@
                         }
                             // Inject cart content into the container
                             $('#cart-container').html(cartContent);
+
+                            $('.view-proof-btn').on('click', function () {
+                                const deliveryImage = $(this).data('delivery-image');
+                                if (deliveryImage) {
+                                    // Set the image in the modal
+                                    $('#deliveryImageModal img').attr('src', `storage/${deliveryImage}`);
+                                    // Show the modal
+                                    $('#deliveryImageModal').modal('show');
+                                } else {
+                                    alert('No proof of delivery available.');
+                                }
+                            });
                         },
                         error: function() {
                             alert('Failed to fetch cart data');

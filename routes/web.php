@@ -86,3 +86,7 @@ Route::get('/vendor-order-delivered', function () {
 Route::get('/vendor-order-canceled', function () {
     return view('dashboard/vendor-order-canceled');
 });
+
+Route::get('/delivery', function () {
+    return view('dashboard/delivery');
+});

@@ -57,6 +57,7 @@
                     // Store token and user details
                     localStorage.setItem('token', response.data.access_token);
                     localStorage.setItem('user', JSON.stringify(response.data.user));
+                    localStorage.setItem('user_type', JSON.stringify(response.data.user_type));
 
                     window.location.href = '/home';
 
