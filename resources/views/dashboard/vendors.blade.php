@@ -11,11 +11,11 @@
                     <!-- Custom page header alternative example-->
                     <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row mb-4">
                         <div class="me-4 mb-3 mb-sm-0">
-                            <h1 class="mb-0">Users</h1>
+                            <h1 class="mb-0">Vendors</h1>
                         </div>
                         <!-- Date range picker example-->
                         <div class="">
-                            <button class="btn btn-primary shadow" data-bs-toggle="modal" data-bs-target="#createUserModal">Create New User</button>
+                            <button class="btn btn-primary shadow" data-bs-toggle="modal" data-bs-target="#createUserModal">Create New Vendor</button>
                         </div>
                     </div>
                     <!-- Illustration dashboard card example-->
@@ -29,8 +29,6 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Contact</th>
-                                            <th>Plate Number</th>
-                                            <th>Role</th>
                                             <th>Actions</th>
                                         
                                         </tr>
@@ -74,19 +72,6 @@
                             <label for="createUserContact" class="form-label">Contact<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="createUserContact" placeholder="Enter contact number" required />
                         </div>
-                        <div class="mb-3">
-                            <label for="createUserPlateNumber" class="form-label">Plate Number</label>
-                            <input type="text" class="form-control" id="createUserPlateNumber" placeholder="Enter plate number if rider (optional)" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="createUserRole" class="form-label">Role<span class="text-danger">*</span></label>
-                            <select class="form-select" id="createUserRole">
-                                <option value="admin">Admin</option>
-                                <option value="customer">Customer</option>
-                                <option value="vendor">Vendor</option>
-                                <option value="rider">Rider</option>
-                            </select>
-                        </div>
                     
                         <div class="modal-footer">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
@@ -120,19 +105,6 @@
                             <label for="editContact" class="form-label">Contact<span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="editContact" name="contact">
                         </div>
-                        <div class="mb-3">
-                            <label for="editPlateNumber" class="form-label">Plate Number</label>
-                            <input type="text" class="form-control" id="editPlateNumber" name="plate_number" placeholder="Enter plate number if rider (optional)">
-                        </div>
-                        <div class="mb-3">
-                            <label for="editUserRole" class="form-label">Role<span class="text-danger">*</span></label>
-                            <select class="form-control" id="editUserRole">
-                                <option value="admin">Admin</option>
-                                <option value="customer">Customer</option>
-                                <option value="vendor">Vendor</option>
-                                <option value="rider">Rider</option>
-                            </select>
-                        </div>
                     
                         <div class="modal-footer">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
@@ -164,8 +136,6 @@
                         { data: 'name' },
                         { data: 'email' },
                         { data: 'contact' },
-                        { data: 'plate_number' },
-                        { data: 'role' },
                         {
                             data: null,
                             render: function (data, type, row) {
@@ -199,8 +169,6 @@
                     document.getElementById('editName').value = user.name;
                     document.getElementById('editEmail').value = user.email;
                     document.getElementById('editContact').value = user.contact || '';
-                    document.getElementById('editPlateNumber').value = user.plate_number || '';
-                    document.getElementById('editUserRole').value = user.role;
 
                     // Attach user ID to the form for submission
                     document.getElementById('editUserForm').dataset.userId = userId;
@@ -246,11 +214,9 @@
                 const name = document.getElementById("createUserName").value.trim();
                 const email = document.getElementById("createUserEmail").value.trim();
                 const contact = document.getElementById("createUserContact").value.trim();
-                const plate_number = document.getElementById("createUserPlateNumber").value.trim();
-                const role = document.getElementById("createUserRole").value;
 
                 // Basic validation
-                if (!name || !email || !contact || !role) {
+                if (!name || !email || !contact) {
                     alert("Please fill in all required fields.");
                     return;
                 }
@@ -261,13 +227,13 @@
                         name: name,
                         email: email,
                         contact: contact,
-                        plate_number: plate_number || null, // Optional field
-                        role: role,
+                        plate_number: null,
+                        role: "vendor",
                         password: 'password'
                     }, );
 
                     // Show success message
-                    alert("User created successfully!");
+                    alert("Vendor created successfully!");
 
                     // Close modal
                     const modal = bootstrap.Modal.getInstance(document.getElementById("createUserModal"));
@@ -300,11 +266,9 @@
             const name = document.getElementById('editName').value.trim();
             const email = document.getElementById('editEmail').value.trim();
             const contact = document.getElementById('editContact').value.trim();
-            const plate_number = document.getElementById('editPlateNumber').value.trim();
-            const role = document.getElementById('editUserRole').value;
 
             // Basic validation
-            if (!name || !email || !contact || !role) {
+            if (!name || !email || !contact) {
                 alert("Please fill in all required fields.");
                 return;
             }
@@ -315,8 +279,8 @@
                     name: name,
                     email: email,
                     contact: contact,
-                    plate_number: plate_number || null, // Optional field
-                    role: role
+                    plate_number: null,
+                    role: "vendor",
                 }, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
@@ -324,7 +288,7 @@
                 });
 
                 // Show success message
-                alert("User updated successfully!");
+                alert("Vendor updated successfully!");
 
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));

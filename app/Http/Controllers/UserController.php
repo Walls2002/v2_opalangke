@@ -11,7 +11,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        return response()->json(User::all(), 200);
+        $vendors = User::where('role', 'vendor')->get();
+        return response()->json($vendors, 200);
     }
 
     public function store(Request $request)

@@ -31,8 +31,8 @@ Route::get('/home', function () {
     return view('dashboard/home');
 });
 
-Route::get('/users', function () {
-    return view('dashboard/users');
+Route::get('/vendors', function () {
+    return view('dashboard/vendors');
 });
 
 Route::get('/locations', function () {

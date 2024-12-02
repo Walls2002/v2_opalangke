@@ -10,9 +10,9 @@
 
             <div class="sidenav-menu-heading">Pages</div>
                 <!-- admin -->
-                <a class="nav-link role-admin" href="/users">
+                <a class="nav-link role-admin" href="/vendors">
                     <div class="nav-link-icon"><i data-feather="users"></i></div>
-                    Users
+                    Vendors
                 </a>
                 <a class="nav-link role-admin" href="/locations">
                     <div class="nav-link-icon"><i data-feather="map"></i></div>
