@@ -38,88 +38,177 @@
                             </div>
                         </div>
                     </div>
-
-                    {{-- <div class="row">
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <!-- Dashboard info widget 1-->
-                            <div class="card border-start-lg border-start-primary h-100">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-grow-1">
-                                            <div class="small fw-bold text-primary mb-1">Earnings (monthly)</div>
-                                            <div class="h5">$4,390</div>
-                                            <div class="text-xs fw-bold text-success d-inline-flex align-items-center">
-                                                <i class="me-1" data-feather="trending-up"></i>
-                                                12%
-                                            </div>
-                                        </div>
-                                        <div class="ms-2"><i class="fas fa-dollar-sign fa-2x text-gray-200"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <!-- Dashboard info widget 2-->
-                            <div class="card border-start-lg border-start-secondary h-100">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-grow-1">
-                                            <div class="small fw-bold text-secondary mb-1">Average sale price</div>
-                                            <div class="h5">$27.00</div>
-                                            <div class="text-xs fw-bold text-danger d-inline-flex align-items-center">
-                                                <i class="me-1" data-feather="trending-down"></i>
-                                                3%
-                                            </div>
-                                        </div>
-                                        <div class="ms-2"><i class="fas fa-tag fa-2x text-gray-200"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <!-- Dashboard info widget 3-->
-                            <div class="card border-start-lg border-start-success h-100">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-grow-1">
-                                            <div class="small fw-bold text-success mb-1">Clicks</div>
-                                            <div class="h5">11,291</div>
-                                            <div class="text-xs fw-bold text-success d-inline-flex align-items-center">
-                                                <i class="me-1" data-feather="trending-up"></i>
-                                                12%
-                                            </div>
-                                        </div>
-                                        <div class="ms-2"><i class="fas fa-mouse-pointer fa-2x text-gray-200"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <!-- Dashboard info widget 4-->
-                            <div class="card border-start-lg border-start-info h-100">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-center">
-                                        <div class="flex-grow-1">
-                                            <div class="small fw-bold text-info mb-1">Conversion rate</div>
-                                            <div class="h5">1.23%</div>
-                                            <div class="text-xs fw-bold text-danger d-inline-flex align-items-center">
-                                                <i class="me-1" data-feather="trending-down"></i>
-                                                1%
-                                            </div>
-                                        </div>
-                                        <div class="ms-2"><i class="fas fa-percentage fa-2x text-gray-200"></i></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> --}}
                 </div>
+                <!-- Section-->
+                    <section class="py-5 role-customer">
+                        <div class="mx-5">
+                            <label for="locationDropdown" class="form-label">Choose a Location:</label>
+                            <select id="locationDropdown" class="form-select">
+                                <option value="">Select Location</option>
+                            </select>
+                        </div>
+                        <div class="container px-4 px-lg-5 mt-5">
+                            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center" id="productContainer">
+                                
+                            </div>
+                        </div>
+                    </section>
             </main>
             @include('layout.footer')
         </div>
     </div>
     
     @include('layout.scripts')
+    <script>
+        $(document).ready(function () {
+            const locationDropdown = $('#locationDropdown');
+            const productContainer = $('#productContainer');
+            
+            // Fetch locations for the dropdown
+            $.ajax({
+                url: '/api/locations',
+                method: 'GET',
+                dataType: 'json',
+                success: function (locations) {
+                    // Populate the dropdown with locations
+                    locations.forEach(location => {
+                        const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
+                        locationDropdown.append(option);
+                    });
+                },
+                error: function (error) {
+                    console.error('Error fetching locations:', error);
+                }
+            });
+
+            // Fetch and display products based on the selected location
+            function fetchProducts(locationId) {
+                const apiEndpoint = locationId ? `/api/catalog?location_id=${locationId}` : '/api/catalog';
+
+                $.ajax({
+                    url: apiEndpoint,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (products) {
+                        // Clear existing products
+                        productContainer.empty();
+
+                        // Create product cards
+                        products.forEach(product => {
+                            const productCard = `
+                                <div class="col mb-5">
+                                    <div class="card h-100">
+                                        <!-- Product image -->
+                                        <img class="card-img-top border" 
+                                            src="${product.image ? 'storage/' + product.image : 'no-image.jpg'}" 
+                                            alt="${product.name}" />
+                                        <!-- Product details -->
+                                        <div class="card-body p-4">
+                                            <div class="text-center">
+                                                <h5 class="fw-bolder text-primary">${product.name}</h5>
+                                                <!-- Product qty -->
+                                                <small>Stocks: ${product.quantity}</small>
+                                                <!-- Product price -->
+                                                <h4 class="pt-3">₱${parseFloat(product.price).toFixed(2)}</h4>
+                                                <small class="text-primary">Store: ${product.store.store_name}</small><br>
+                                                <small>${product.store.street}, ${product.store.location.barangay}, 
+                                                ${product.store.location.city}, ${product.store.location.province} | 
+                                                ${product.store.contact_number}</small>
+                                            </div>
+                                        </div>
+                                        <!-- Product actions -->
+                                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                            <div class="text-center">
+                                                <button class="btn btn-outline-primary mt-auto add-to-cart role-customer" data-product-id="${product.id}">Add to cart</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            productContainer.append(productCard);
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error fetching products:', error);
+                    }
+                });
+            }
+
+            // Fetch products when a location is selected
+            locationDropdown.change(function () {
+                const locationId = $(this).val();
+                fetchProducts(locationId);
+            });
+
+            document.addEventListener('click', function (event) {
+                if (event.target.classList.contains('add-to-cart')) {
+                    event.preventDefault();
+
+                    const token = localStorage.getItem('token');
+
+                    if (!token) {
+                        alert('You need to login first to add items to your cart.');
+                        window.location.href = '/login';
+                    } else {
+                        // Extract the product ID (Assume it's stored as a data attribute)
+                        const productId = event.target.getAttribute('data-product-id');
+
+                        if (!productId) {
+                            console.error('Product ID not found on button.');
+                            return;
+                        }
+
+                        // Make a POST request to add the product to the cart
+                        fetch(`/api/cart/${productId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`HTTP error! status: ${response.status}`);
+                                }
+                                return response.json();
+                            })
+                            .then(data => {
+                                alert('Product successfully added to the cart!');
+                                console.log('Response from server:', data);
+                            })
+                            .catch(error => {
+                                console.error('Error adding product to cart:', error);
+                                alert('Failed to add product to cart. Please try again.');
+                            });
+                    }
+                }
+            });
+
+            // Initial load of all products
+            fetchProducts();
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            function checkUserRole() {
+                const user = JSON.parse(localStorage.getItem('user'));
+
+                if (user && user.role !== 'customer') {
+                    $('.role-customer').addClass('d-none');
+                }
+            }
+
+            // Initial role check for elements already present in the DOM
+            checkUserRole();
+
+            // Example: Re-run the check after dynamic content is loaded
+            $(document).ajaxComplete(function () {
+                checkUserRole();
+            });
+        });
+    </script>
+
     <script>
         function updateDateTime() {
             // Create a new Date object and set the timezone to Asia/Manila

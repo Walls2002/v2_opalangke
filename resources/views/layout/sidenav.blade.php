@@ -47,10 +47,6 @@
 
 
                 {{-- customer --}}
-                <a class="nav-link role-customer" href="/">
-                    <div class="nav-link-icon"><i data-feather="shopping-bag"></i></div>
-                    Product Catalog
-                </a>
                 <a class="nav-link role-customer" href="/cart">
                     <div class="nav-link-icon"><i data-feather="shopping-cart"></i></div>
                     Cart
