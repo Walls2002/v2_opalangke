@@ -31,6 +31,7 @@ class CartController extends Controller
                 'price' => $item->product->price,
                 'remaining_qty' => $item->product->quantity,
                 'selected_qty' => $item->quantity,
+                'measurement_type' => $item->measurement_type,
                 'total_cost' => $item->product->price * $item->quantity
             ];
 
@@ -54,13 +55,26 @@ class CartController extends Controller
      */
     public function store(Request $request, Product $product): JsonResponse
     {
+        $request->validate([
+            'quantity' => ['nullable', 'numeric', 'min:0.1', 'max:1000000'],
+            'measurement_type' => ['nullable', 'in:kg,piece'],
+        ]);;
+
         $cartItem = Cart::query()
             ->where('user_id', $request->user()->id)
             ->where('product_id', $product->id)
             ->first();
 
         if ($cartItem) {
-            $cartItem->increment('quantity', 1);
+            if (!$request->quantity) {
+                $cartItem->increment('quantity', 1);
+            } else {
+                $cartItem->quantity = $request->quantity;
+            }
+
+            if ($request->measurement_type) {
+                $cartItem->measurement_type = $request->measurement_type;
+            }
 
             if (!$cartItem->save()) {
                 return response()->json(['message' => 'Could not update cart quantity.'], 400);
@@ -70,7 +84,8 @@ class CartController extends Controller
                 'user_id' => $request->user()->id,
                 'store_id' => $product->store_id,
                 'product_id' => $product->id,
-                'quantity' => 1
+                'quantity' => 1,
+                'measurement_type' => $request->measurement_type,
             ]);
         }
 
@@ -107,6 +122,11 @@ class CartController extends Controller
         }
 
         $cartItem->decrement('quantity', 1);
+
+        if (!$cartItem->save()) {
+            return response()->json(['message' => 'Could not update cart quantity.'], 400);
+        };
+
         return response()->json(['message' => 'Item quantity decreased.'], 200);
     }
 

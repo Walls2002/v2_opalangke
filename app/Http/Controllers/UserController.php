@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rider;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -9,6 +10,24 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+    /**
+     * Get all the users and riders in one api call.
+     *
+     * @return void
+     */
+    public function indexAll()
+    {
+        $users = User::all();
+        $riders = Rider::all();
+
+        $usersArray = $users->toArray();
+        $ridersArray = $riders->toArray();
+
+        $allUsers = array_merge($usersArray, $ridersArray);
+
+        return response()->json($allUsers, 200);
+    }
+
     public function index()
     {
         $vendors = User::where('role', 'vendor')->get();

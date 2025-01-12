@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->string('name');
             $table->string('unit_price');
-            $table->integer('quantity');
+            $table->decimal('quantity');
+            $table->string('measurement_type')->comment('kg or piece');
             $table->timestamps();
         });
     }

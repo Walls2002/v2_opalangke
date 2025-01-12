@@ -16,6 +16,16 @@ class Store extends Model
         'image',
         'street',
         'contact_number',
+        'is_verified',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_verified' => 'boolean',
     ];
 
     /**
