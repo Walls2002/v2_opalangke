@@ -67,11 +67,11 @@ class DatabaseSeeder extends Seeder
         foreach ($locations as $location) {
 
             for ($vendorNumber = 1; $vendorNumber <= $vendorsPerLocation; $vendorNumber++) {
-                $storeName = "{$location->province} Vendor {$vendorNumber}";
+                $storeName = "$location->province Vendor $vendorNumber";
 
                 $vendorAdmin = User::create([
-                    "name" => "{$storeName} Admin",
-                    "email" => "{$location->city}.store.{$vendorNumber}.admin@example.com",
+                    "name" => "$storeName Admin",
+                    "email" => "$location->city.store.$vendorNumber.admin@example.com",
                     "password" => "password",
                     "contact" => "09087654321",
                     "plate_number" => "",
@@ -85,12 +85,13 @@ class DatabaseSeeder extends Seeder
                     'image' => null,
                     'street' => fake()->streetName(),
                     'contact_number' => "09087654321",
+                    'is_verified' => true,
                 ]);
 
                 $rider = Rider::create([
                     'vendor_id' => $vendorAdmin->id,
-                    "name" => "{$storeName} Rider",
-                    "email" => "{$location->city}.store.{$vendorNumber}.rider@example.com",
+                    "name" => "$storeName Rider",
+                    "email" => "$location->city.store.$vendorNumber.rider@example.com",
                     "password" => "password",
                     "license_number" => random_int(1000, 9999) . ' ' . random_int(1000, 9999),
                     "contact_number" => "09087654321",
@@ -100,7 +101,7 @@ class DatabaseSeeder extends Seeder
                 for ($productNumber = 1; $productNumber <= $productsPerVendor; $productNumber++) {
                     Product::create([
                         'store_id' => $store->id,
-                        'name' => "{$storeName} Product {$productNumber}",
+                        'name' => "$storeName Product $productNumber",
                         'price' => random_int(25, 400),
                         'quantity' => random_int(1, 3000),
                         'image' => null,
@@ -124,18 +125,21 @@ class DatabaseSeeder extends Seeder
             'store_id' => 1,
             'product_id' => 1,
             'quantity' => 1,
+            'measurement_type' => 'piece',
         ]);
         Cart::create([
             'user_id' => $customer->id,
             'store_id' => 1,
             'product_id' => 2,
-            'quantity' => 3,
+            'quantity' => 1.5,
+            'measurement_type' => 'kg',
         ]);
         Cart::create([
             'user_id' => $customer->id,
             'store_id' => 1,
             'product_id' => 3,
             'quantity' => 2,
+            'measurement_type' => 'piece',
         ]);
 
         Cart::create([
@@ -143,18 +147,21 @@ class DatabaseSeeder extends Seeder
             'store_id' => 2,
             'product_id' => 7,
             'quantity' => 10,
+            'measurement_type' => 'piece',
         ]);
         Cart::create([
             'user_id' => $customer->id,
             'store_id' => 2,
             'product_id' => 8,
             'quantity' => 1,
+            'measurement_type' => 'piece',
         ]);
         Cart::create([
             'user_id' => $customer->id,
             'store_id' => 2,
             'product_id' => 9,
             'quantity' => 1,
+            'measurement_type' => 'piece',
         ]);
 
         Cart::create([
@@ -162,18 +169,21 @@ class DatabaseSeeder extends Seeder
             'store_id' => 3,
             'product_id' => 12,
             'quantity' => 10,
+            'measurement_type' => 'piece',
         ]);
         Cart::create([
             'user_id' => $customer->id,
             'store_id' => 3,
             'product_id' => 14,
             'quantity' => 1,
+            'measurement_type' => 'piece',
         ]);
         Cart::create([
             'user_id' => $customer->id,
             'store_id' => 3,
             'product_id' => 15,
             'quantity' => 1,
+            'measurement_type' => 'piece',
         ]);
     }
 }
