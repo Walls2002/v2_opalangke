@@ -23,6 +23,7 @@ class User extends Authenticatable
         'contact',      // Add contact
         'plate_number', // Add plate_number
         'role',         // Add role
+        'email_verified_at',
     ];
 
     /**

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('contact')->nullable(); // Add contact column
             $table->string('plate_number')->nullable(); // Add plate number column
             $table->enum('role', ['admin', 'vendor', 'customer', 'rider'])->default('customer'); // Add role column
+            $table->dateTime('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

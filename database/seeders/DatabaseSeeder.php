@@ -36,7 +36,8 @@ class DatabaseSeeder extends Seeder
             "password" => "helloworld",
             "contact" => "09087654321",
             "plate_number" => "",
-            "role" => "admin"
+            "role" => "admin",
+            'email_verified_at' => now(),
         ]);
 
         $locationsArray = [
@@ -75,7 +76,8 @@ class DatabaseSeeder extends Seeder
                     "password" => "password",
                     "contact" => "09087654321",
                     "plate_number" => "",
-                    "role" => "vendor"
+                    "role" => "vendor",
+                    'email_verified_at' => now(),
                 ]);
 
                 $store = Store::create([
@@ -117,7 +119,8 @@ class DatabaseSeeder extends Seeder
             "password" => "password",
             "contact" => "09087654321",
             "plate_number" => "",
-            "role" => "customer"
+            "role" => "customer",
+            'email_verified_at' => now(),
         ]);
 
         Cart::create([

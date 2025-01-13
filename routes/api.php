@@ -35,7 +35,13 @@ Route::get('/me', function (Request $request) {
     ]);
 })->middleware('auth:sanctum');
 
-Route::get('users/all', [UserController::class, 'indexAll']);
+Route::post('users/vendor-register', [UserController::class, 'storeVendor']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('users/all', [UserController::class, 'indexAll']);
+    Route::post('users/vendor-verify/{user}', [UserController::class, 'verifyVendorUser']);
+});
+
 Route::apiResource('users', UserController::class);
 
 Route::post('login', [AuthController::class, 'login']);
