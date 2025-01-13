@@ -101,7 +101,7 @@ class CheckoutController extends Controller
             $orderItem->name = "{$item->product->name}";
             $orderItem->unit_price = $item->product->price;
             $orderItem->quantity = $item->quantity;
-
+            $orderItem->measurement_type = $item->measurement_type;
 
             if (!$orderItem->save()) {
                 throw new \Exception("Encountered an error creating the order item.");

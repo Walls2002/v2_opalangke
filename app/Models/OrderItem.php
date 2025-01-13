@@ -13,6 +13,7 @@ class OrderItem extends Model
         'order_id',
         'name',
         'unit_price',
+        'measurement_type',
         'quantity',
     ];
 

@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerOrderController;
@@ -23,6 +24,7 @@ use App\Http\Controllers\ProductCatalogController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\RiderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiderOrderController;
 use App\Http\Controllers\VendorOrderController;
 use Illuminate\Http\Request;
@@ -33,6 +35,7 @@ Route::get('/me', function (Request $request) {
     ]);
 })->middleware('auth:sanctum');
 
+Route::get('users/all', [UserController::class, 'indexAll']);
 Route::apiResource('users', UserController::class);
 
 Route::post('login', [AuthController::class, 'login']);
@@ -40,6 +43,8 @@ Route::post('login', [AuthController::class, 'login']);
 Route::apiResource('locations', LocationController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('stores/self-register', [StoreController::class, 'storeUnverified']);
+    Route::put('stores/{store}/verify', [StoreController::class, 'verifyStore']);
     Route::apiResource('stores', StoreController::class);
 });
 
@@ -56,6 +61,11 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::get('/catalog', [ProductCatalogController::class, 'index']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::put('/profile/update', [ProfileController::class, 'update']);
+    Route::put('/profile/change-password', [ChangePasswordController::class, 'update']);
+});
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/cart', [CartController::class, 'index']);

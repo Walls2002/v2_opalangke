@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->string('street');
             $table->string('contact_number');
+            $table->boolean('is_verified');
             $table->timestamps();
         });
     }

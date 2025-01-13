@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Store;
 use App\Models\Location;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class StoreController extends Controller
 {
@@ -31,6 +31,28 @@ class StoreController extends Controller
         $vendors = User::where('role', 'vendor')->get();
         $locations = Location::all();
         return response()->json(['vendors' => $vendors, 'locations' => $locations]);
+    }
+
+    public function storeUnverified(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'location_id' => 'required|exists:locations,id',
+            'store_name' => 'required|string|max:255',
+            'image' => 'nullable|image|max:2048',
+            'street' => 'required|string|max:255',
+            'contact_number' => 'required|string|max:20',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('stores', 'public');
+        }
+
+        $validated['vendor_id'] = $request->user()->id;
+        $validated['is_verified'] = false;
+
+        $store = Store::create($validated);
+
+        return response()->json($store, 201);
     }
 
     /**
@@ -84,6 +106,8 @@ class StoreController extends Controller
                 $validated['image'] = $request->file('image')->store('stores', 'public');
             }
 
+            $validated['is_verified'] = true;
+
             // Create the new store
             $store = Store::create($validated);
 
@@ -120,6 +144,21 @@ class StoreController extends Controller
     /**
      * Update the specified store in storage.
      */
+
+
+    /**
+     * Verify the specified store from storage.
+     */
+    public function verifyStore(Store $store)
+    {
+        $store->is_verified = true;
+
+        if (!$store->save()) {
+            return response()->json(['message' => 'Encountered error in store verification.'], 400);
+        }
+
+        return response()->json(['message' => 'Store verified successfully.']);
+    }
 
 
     /**
