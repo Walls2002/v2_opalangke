@@ -106,10 +106,8 @@
                                         <div class="card-body p-4">
                                             <div class="text-center">
                                                 <h5 class="fw-bolder text-primary">${product.name}</h5>
-                                                <!-- Product qty -->
                                                 <small>Stocks: ${product.quantity}</small>
-                                                <!-- Product price -->
-                                                <h4 class="pt-3">₱${parseFloat(product.price).toFixed(2)}</h4>
+                                                <h4 class="pt-3">₱<span class="product-price" id="product-price-${product.id}">${parseFloat(product.price).toFixed(2)}</span></h4>
                                                 <small class="text-primary">Store: ${product.store.store_name}</small><br>
                                                 <small>${product.store.street}, ${product.store.location.barangay}, 
                                                 ${product.store.location.city}, ${product.store.location.province} | 
@@ -119,13 +117,48 @@
                                         <!-- Product actions -->
                                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                             <div class="text-center">
+                                                <!-- Measurement Type Selection -->
+                                                <label for="measurement_type_${product.id}">Measurement Type</label>
+                                                <select id="measurement_type_${product.id}" class="form-select form-select-sm" data-product-id="${product.id}" data-price="${product.price}">
+                                                    <option value="" selected disabled>Select Measurement</option>
+                                                    <option value="kg">kg</option>
+                                                    <option value="piece">Piece</option>
+                                                </select><br>
+
+                                                <!-- Measurement Value - will show based on selection -->
+                                                <div id="kg_options_${product.id}" class="kg-options mb-3" style="display:none;">
+                                                    <label for="quantity_kg_${product.id}">Select Weight</label>
+                                                    <select class="form-select form-select-sm" id="quantity_kg_${product.id}" data-product-id="${product.id}">
+                                                        <option value="1">1 kg</option>
+                                                        <option value="0.5">1/2 kg</option>
+                                                        <option value="0.25">1/4 kg</option>
+                                                    </select>
+                                                </div>
+
+                                                <div id="piece_options_${product.id}" class="piece-options mb-3" style="display:none;">
+                                                    <label for="quantity_piece_${product.id}">Enter Quantity</label>
+                                                    <input type="number" class="form-control form-control-sm" id="quantity_piece_${product.id}" data-product-id="${product.id}" />
+                                                </div>
+
                                                 <button class="btn btn-outline-primary mt-auto add-to-cart role-customer" data-product-id="${product.id}">Add to cart</button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             `;
+
                             productContainer.append(productCard);
+
+                            // Show/Hide options based on the selected measurement type
+                            $(`#measurement_type_${product.id}`).change(function () {
+                                if ($(this).val() === 'kg') {
+                                    $(`#kg_options_${product.id}`).show();
+                                    $(`#piece_options_${product.id}`).hide();
+                                } else {
+                                    $(`#kg_options_${product.id}`).hide();
+                                    $(`#piece_options_${product.id}`).show();
+                                }
+                            });
                         });
                     },
                     error: function (error) {
@@ -140,6 +173,44 @@
                 fetchProducts(locationId);
             });
 
+            document.addEventListener('change', function (event) {
+                // Check if the target is a measurement type (select) or quantity (input/select)
+                const productId = event.target.getAttribute('data-product-id'); // Get product ID from the element that triggered the event
+
+                if (!productId) return; // If no product ID is found, exit
+
+                // Get the unit price from the data-price attribute of the measurement type select
+                const measurementTypeSelect = document.querySelector(`#measurement_type_${productId}`);
+                if (!measurementTypeSelect) return; // If measurement type select is not found, exit
+
+                const unitPrice = parseFloat(measurementTypeSelect.getAttribute('data-price')); // Retrieve the unit price
+
+                let quantity = 0;
+
+                // Handle different measurement types
+                if (event.target.id.startsWith('quantity_kg')) {
+                    // Get the selected kg value
+                    quantity = parseFloat(event.target.value);
+                } else if (event.target.id.startsWith('quantity_piece')) {
+                    // Get the entered piece quantity
+                    quantity = parseFloat(document.getElementById(`quantity_piece_${productId}`).value);
+                }
+
+                // If quantity is not valid, return early
+                if (isNaN(quantity) || quantity <= 0) {
+                    return;
+                }
+
+                // Calculate the new price based on the quantity and unit price
+                const totalPrice = unitPrice * quantity;
+
+                // Update the price display
+                const priceDisplay = document.getElementById(`product-price-${productId}`);
+                if (priceDisplay) {
+                    priceDisplay.textContent = totalPrice.toFixed(2); // Update the displayed price
+                }
+            });
+
             document.addEventListener('click', function (event) {
                 if (event.target.classList.contains('add-to-cart')) {
                     event.preventDefault();
@@ -150,11 +221,22 @@
                         alert('You need to login first to add items to your cart.');
                         window.location.href = '/login';
                     } else {
-                        // Extract the product ID (Assume it's stored as a data attribute)
                         const productId = event.target.getAttribute('data-product-id');
+                        const measurementType = $(`#measurement_type_${productId}`).val();
 
-                        if (!productId) {
-                            console.error('Product ID not found on button.');
+                        let quantity = 0;
+
+                        // If the user selected 'kg'
+                        if (measurementType === 'kg') {
+                            quantity = parseFloat($(`#quantity_kg_${productId}`).val());
+                        }
+                        // If the user selected 'piece'
+                        else if (measurementType === 'piece') {
+                            quantity = parseFloat($(`#quantity_piece_${productId}`).val());
+                        }
+
+                        if (!quantity || isNaN(quantity) || quantity <= 0) {
+                            alert('Please enter a valid quantity.');
                             return;
                         }
 
@@ -165,30 +247,34 @@
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${token}`
                             },
+                            body: JSON.stringify({
+                                measurement_type: measurementType,
+                                quantity: quantity
+                            })
                         })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error(`HTTP error! status: ${response.status}`);
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                alert('Product successfully added to the cart!');
-                                console.log('Response from server:', data);
-                            })
-                            .catch(error => {
-                                console.error('Error adding product to cart:', error);
-                                alert('Failed to add product to cart. Please try again.');
-                            });
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            alert('Product successfully added to the cart!');
+                            console.log('Response from server:', data);
+                        })
+                        .catch(error => {
+                            console.error('Error adding product to cart:', error);
+                            alert('Failed to add product to cart. Please try again.');
+                        });
                     }
                 }
             });
+
 
             // Initial load of all products
             fetchProducts();
         });
     </script>
-
     <script>
         $(document).ready(function () {
             function checkUserRole() {

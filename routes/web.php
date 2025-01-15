@@ -24,11 +24,18 @@ Route::get('/login', function () {
 Route::get('/register', function () {
     return view('register');
 });
+Route::get('/vendor-register', function () {
+    return view('vendor-register');
+});
 
 //dashboard
 
 Route::get('/home', function () {
     return view('dashboard/home');
+});
+
+Route::get('/update-profile', function () {
+    return view('dashboard/update-profile');
 });
 
 Route::get('/vendors', function () {

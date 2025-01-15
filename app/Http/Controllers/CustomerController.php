@@ -27,7 +27,8 @@ class CustomerController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'contact' => $request->contact,
-            'role' => 'customer'
+            'role' => 'customer',
+            'email_verified_at' => now(),
         ]);
 
         return response()->json($user, 201);

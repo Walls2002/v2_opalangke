@@ -11,7 +11,7 @@
                                 <!-- Basic registration form-->
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                                     <div class="card-header justify-content-center">
-                                        <h3 class="fw-light my-4">Create Customer Account</h3>
+                                        <h3 class="fw-light my-4">Create Vendor Account</h3>
                                     </div>
                                     <div class="card-body">
                                         <!-- Registration form-->
@@ -92,10 +92,11 @@
                     email: email,
                     password: password,
                     contact: contact,
+                    plate_number: ''
                 };
 
                 // Make AJAX request
-                fetch('/api/customers', {
+                fetch('/api/users/vendor-register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -110,7 +111,7 @@
                     })
                     .then((data) => {
                         // Success handling
-                        alert('Account created successfully!');
+                        alert('Account created successfully. Please wait for the admin to approve your account before you can login.');
                         console.log(data);
                         location.reload();
                     })

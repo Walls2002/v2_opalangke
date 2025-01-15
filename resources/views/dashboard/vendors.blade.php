@@ -29,6 +29,7 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Contact</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         
                                         </tr>
@@ -60,24 +61,24 @@
                 <!-- Form for creating a new user -->
                     <div class="modal-body">
                         <form id="createUserForm">
-                        <div class="mb-3">
-                            <label for="createUserName" class="form-label">Name<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="createUserName" placeholder="Enter full name" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="createUserEmail" class="form-label">Email<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="createUserEmail" placeholder="Enter email address" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="createUserContact" class="form-label">Contact<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="createUserContact" placeholder="Enter contact number" required />
-                        </div>
-                    
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
+                            <div class="mb-3">
+                                <label for="createUserName" class="form-label">Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="createUserName" placeholder="Enter full name" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="createUserEmail" class="form-label">Email<span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="createUserEmail" placeholder="Enter email address" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="createUserContact" class="form-label">Contact<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="createUserContact" placeholder="Enter contact number" required />
+                            </div>
+                        
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </form>
                     </div>
             </div>
         </div>
@@ -137,19 +138,36 @@
                         { data: 'email' },
                         { data: 'contact' },
                         {
+                            data: 'email_verified_at',
+                            render: function (data, type, row) {
+                                return data ? 'Approved' : 'Pending';
+                            }
+                        },
+                        {
                             data: null,
                             render: function (data, type, row) {
-                                return `
+                                let buttons = '';
+                                
+                                // Display "Approve" button only if email_verified_at is null
+                                if (!row.email_verified_at) {
+                                    buttons += `<button class="btn btn-secondary btn-sm" onclick="approveUser(${row.id})">Approve</button> `;
+                                }
+
+                                // Always display "Edit" and "Delete" buttons
+                                buttons += `
                                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="editUser(${row.id})">Edit</button>
                                     <button class="btn btn-danger btn-sm" onclick="deleteUser(${row.id})">Delete</button>
                                 `;
-                            }
+
+                                return buttons;
+                            },
                         }
                     ],
                     dom: 'lBfrtip', // Enable buttons for export functionality
                     buttons: [
                         'copy', 'csv', 'excel', 'pdf', 'print'
-                    ]
+                    ],
+                    order: [[0, 'desc']]
                 });
             });
 
@@ -201,6 +219,25 @@
                             alert("An error occurred. Please check your connection and try again.");
                         }
                     }
+                }
+            }
+
+            async function approveUser(userId) {
+                if (confirm("Are you sure you want to approve this user?")) {
+                    $.ajax({
+                        url: `/api/users/vendor-verify/${userId}/`,
+                        type: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        },
+                        success: function(response) {
+                            alert('The user has been approved successfully.');
+                            $('#usersTable').DataTable().ajax.reload();
+                        },
+                        error: function() {
+                            alert('Failed to process approval.');
+                        }
+                    });
                 }
             }
     </script>
