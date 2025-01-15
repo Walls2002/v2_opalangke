@@ -66,10 +66,10 @@ class CartController extends Controller
             ->first();
 
         if ($cartItem) {
-            if (!$request->quantity) {
-                $cartItem->increment('quantity', 1);
-            } else {
+            if ($request->quantity) {
                 $cartItem->quantity = $request->quantity;
+            } else {
+                $cartItem->increment('quantity', 1);
             }
 
             if ($request->measurement_type) {
@@ -80,11 +80,16 @@ class CartController extends Controller
                 return response()->json(['message' => 'Could not update cart quantity.'], 400);
             };
         } else {
+            $qty = 1;
+            if ($request->quantity) {
+                $qty = $request->quantity;
+            }
+
             $cartItem = Cart::create([
                 'user_id' => $request->user()->id,
                 'store_id' => $product->store_id,
                 'product_id' => $product->id,
-                'quantity' => 1,
+                'quantity' => $qty,
                 'measurement_type' => $request->measurement_type,
             ]);
         }
