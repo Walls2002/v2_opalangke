@@ -41,10 +41,10 @@ return [
             'provider' => 'users',
         ],
 
-        'riders' => [
-            'driver' => 'sanctum',
-            'provider' => 'riders',
-        ],
+        // 'riders' => [
+        //     'driver' => 'sanctum',
+        //     'provider' => 'riders',
+        // ],
     ],
 
     /*
@@ -70,10 +70,10 @@ return [
             'model' => App\Models\User::class,
         ],
 
-        'riders' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Rider::class,
-        ],
+        // 'riders' => [
+        //     'driver' => 'eloquent',
+        //     'model' => App\Models\Rider::class,
+        // ],
     ],
 
     /*
