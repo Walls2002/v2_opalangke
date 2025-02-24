@@ -15,6 +15,6 @@ class Location extends Model
         'city_code',
         'barangay',
         'barangay_code',
+        'shipping_fee',
     ];
 }
-

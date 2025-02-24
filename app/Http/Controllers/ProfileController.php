@@ -33,4 +33,20 @@ class ProfileController extends Controller
 
         return response()->json(['message' => 'Profile updated.', 'user' => $user], 200);
     }
+
+    public function changeLocation(Request $request)
+    {
+        $request->validate([
+            'location_id' => ['required', 'exists:locations,id'],
+        ]);
+
+        $user = $request->user();
+        $user->location_id = $request->location_id;
+
+        if (!$user->save()) {
+            return response()->json(['message' => 'Encountered an error while updating your location.'], 400);
+        }
+
+        return response()->json(['message' => 'User location updated successfully'], 200);
+    }
 }

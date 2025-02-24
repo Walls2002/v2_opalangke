@@ -5,12 +5,15 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Cart;
-use App\Models\Location;
-use App\Models\Product;
+use App\Models\User;
 use App\Models\Rider;
 use App\Models\Store;
-use App\Models\User;
+use App\Models\Product;
+use App\Models\Category;
+use App\Models\Location;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 
 class DatabaseSeeder extends Seeder
 {
@@ -30,16 +33,74 @@ class DatabaseSeeder extends Seeder
             return;
         }
 
+        $locations = $this->createLocations();
+        $admin = $this->createTestAdmin();
+        $riders = $this->setupRiders(locations: $locations);
+        $categories = $this->createCategories();
+        $stores = $this->setupStores(locations: $locations, categories: $categories);
+        // $this-setupStoreRiders(stores: $stores, riders: $riders);
+
+        $customers = $this->setupCustomers(locations: $locations);
+    }
+
+    private function createTestAdmin(): User
+    {
         $admin = User::create([
-            "name" => "Palengke Admin",
+            'location_id' => 1,
+            "last_name" => "Admin",
+            "first_name" => "The Admin",
+            "middle_name" => "Min",
             "email" => "palengke.admin@example.com",
             "password" => "helloworld",
             "contact" => "09087654321",
-            "plate_number" => "",
             "role" => "admin",
             'email_verified_at' => now(),
         ]);
 
+        return $admin;
+    }
+
+    private function createCategories(): Collection
+    {
+        $categoriesArray = [
+            'wet' => [
+                'seafoods',
+                'meat',
+                'vegetables',
+                'fruits',
+                'tofu',
+            ],
+            'dry' => [
+                'rice',
+                'canned goods',
+                'flour',
+                'noodles',
+                'sugar',
+            ],
+        ];
+
+        $categories = [];
+
+        foreach ($categoriesArray as $parent => $children) {
+            $parentCategory = Category::create([
+                'name' => $parent,
+            ]);
+
+            $categories[] = $parentCategory;
+
+            foreach ($children as $child) {
+                $categories[] = Category::create([
+                    'parent_id' => $parentCategory->id,
+                    'name' => $child,
+                ]);
+            }
+        }
+
+        return collect($categories);
+    }
+
+    private function createLocations(): Collection
+    {
         $locationsArray = [
             [
                 'province' => 'BATAAN',
@@ -47,6 +108,7 @@ class DatabaseSeeder extends Seeder
                 'city_code' => '030807',
                 'barangay' => 'SAN ISIDRO',
                 'barangay_code' => '030807',
+                'shipping_fee' => '49',
             ],
             [
                 'province' => 'BATAAN',
@@ -54,6 +116,7 @@ class DatabaseSeeder extends Seeder
                 'city_code' => '030801',
                 'barangay' => 'BANGKAL',
                 'barangay_code' => '030801',
+                'shipping_fee' => '59',
             ],
         ];
 
@@ -63,130 +126,140 @@ class DatabaseSeeder extends Seeder
             $locations[] = Location::create($loc);
         }
 
-        $vendorsPerLocation = 2;
-        $productsPerVendor = 5;
-        foreach ($locations as $location) {
+        return collect($locations);
+    }
 
-            for ($vendorNumber = 1; $vendorNumber <= $vendorsPerLocation; $vendorNumber++) {
-                $storeName = "$location->province Vendor $vendorNumber";
-
-                $vendorAdmin = User::create([
-                    "name" => "$storeName Admin",
-                    "email" => "$location->city.store.$vendorNumber.admin@example.com",
-                    "password" => "password",
-                    "contact" => "09087654321",
-                    "plate_number" => "",
-                    "role" => "vendor",
-                    'email_verified_at' => now(),
-                ]);
-
-                $store = Store::create([
-                    'vendor_id' => $vendorAdmin->id,
-                    'location_id' => $location->id,
-                    'store_name' => $storeName,
-                    'image' => null,
-                    'street' => fake()->streetName(),
-                    'contact_number' => "09087654321",
-                    'is_verified' => true,
-                ]);
-
-                $rider = Rider::create([
-                    'vendor_id' => $vendorAdmin->id,
-                    "name" => "$storeName Rider",
-                    "email" => "$location->city.store.$vendorNumber.rider@example.com",
-                    "password" => "password",
-                    "license_number" => random_int(1000, 9999) . ' ' . random_int(1000, 9999),
-                    "contact_number" => "09087654321",
-                    "plate_number" => "",
-                ]);
-
-                for ($productNumber = 1; $productNumber <= $productsPerVendor; $productNumber++) {
-                    Product::create([
-                        'store_id' => $store->id,
-                        'name' => "$storeName Product $productNumber",
-                        'price' => random_int(25, 400),
-                        'quantity' => random_int(1, 3000),
-                        'image' => null,
-                    ]);
-                }
-            }
-        }
-
-
-        $customer = User::create([
-            "name" => "Customer Doe",
-            "email" => "customerdoe@example.com",
+    private function createRider(Location $location, string $email): Rider
+    {
+        $user = User::create([
+            'location_id' => $location->id,
+            "last_name" => fake()->lastName(),
+            "first_name" => fake()->firstName(),
+            "middle_name" => fake()->lastName(),
+            "email" => $email,
             "password" => "password",
             "contact" => "09087654321",
-            "plate_number" => "",
-            "role" => "customer",
+            "role" => "rider",
             'email_verified_at' => now(),
         ]);
 
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 1,
-            'product_id' => 1,
-            'quantity' => 1,
-            'measurement_type' => 'piece',
+        return Rider::create([
+            'user_id' => $user->id,
+            'license_number' => fake()->numberBetween(100000, 999999),
+            'plate_number' => fake()->randomLetter() . fake()->randomLetter() . fake()->randomLetter() . ' ' . fake()->randomNumber(1, 9999),
         ]);
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 1,
-            'product_id' => 2,
-            'quantity' => 1.5,
-            'measurement_type' => 'kg',
-        ]);
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 1,
-            'product_id' => 3,
-            'quantity' => 2,
-            'measurement_type' => 'piece',
+    }
+
+    private function setupRiders(Collection $locations): Collection
+    {
+        $riderEmails = [
+            'rider1.example.com',
+            'rider2.example.com',
+            'rider3.example.com',
+            'rider4.example.com',
+            'rider5.example.com',
+        ];
+
+        $riders = [];
+        foreach ($riderEmails as $riderEmail) {
+            $riders[] = $this->createRider(location: $locations->random(), email: $riderEmail);
+        }
+
+        return collect($riders);
+    }
+
+    private function createStore(Location $location, string $storeName): Store
+    {
+        $email = Str::snake("{$storeName}.admin@example.com");
+        $vendorAdmin = User::create([
+            'location_id' => $location->id,
+            "last_name" => 'Admin',
+            "first_name" => "$storeName Admin",
+            "middle_name" => 'Vendor',
+            "email" => $email,
+            "password" => "password",
+            "contact" => "09087654321",
+            "role" => "vendor",
+            'email_verified_at' => now(),
         ]);
 
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 2,
-            'product_id' => 7,
-            'quantity' => 10,
-            'measurement_type' => 'piece',
-        ]);
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 2,
-            'product_id' => 8,
-            'quantity' => 1,
-            'measurement_type' => 'piece',
-        ]);
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 2,
-            'product_id' => 9,
-            'quantity' => 1,
-            'measurement_type' => 'piece',
+        $store = Store::create([
+            'vendor_id' => $vendorAdmin->id,
+            'location_id' => $location->id,
+            'store_name' => $storeName,
+            'image' => null,
+            'street' => fake()->streetName(),
+            'contact_number' => "09087654321",
+            'is_verified' => true,
         ]);
 
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 3,
-            'product_id' => 12,
-            'quantity' => 10,
-            'measurement_type' => 'piece',
+        return $store;
+    }
+
+    private function setupStores(Collection $locations, Collection $categories): Collection
+    {
+        $storesList = [
+            'Aling Nena' => $locations->random(),
+            'Tita Bebe' => $locations->random(),
+            'Mareng Juana' => $locations->random(),
+            'Lita General Goods' => $locations->random(),
+            'Caloy Wholesale' => $locations->random(),
+        ];
+
+        $stores = [];
+        foreach ($storesList as $storeName => $location) {
+            $stores[] = $this->createStore(location: $location, storeName: $storeName);
+        }
+
+        foreach ($stores as $store) {
+            for ($i = 0; $i < 10; $i++) {
+                $this->createProduct(store: $store, category: $categories->random());
+            }
+        }
+
+        return collect($stores);
+    }
+
+    private function createProduct(Store $store, Category $category): Product
+    {
+        $name = fake()->word();
+
+        return  Product::create([
+            'category_id' => $category->id,
+            'store_id' => $store->id,
+            'name' => "{$store->store_name} Product {$name}",
+            'measurement' => fake()->randomElement(['piece', '1 kg', '1/2 kg', '1/4 kg', '200ml', '500ml', '1 Liter']),
+            'price' => random_int(25, 400),
+            'quantity' => random_int(1, 3000),
+            'image' => null,
         ]);
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 3,
-            'product_id' => 14,
-            'quantity' => 1,
-            'measurement_type' => 'piece',
-        ]);
-        Cart::create([
-            'user_id' => $customer->id,
-            'store_id' => 3,
-            'product_id' => 15,
-            'quantity' => 1,
-            'measurement_type' => 'piece',
-        ]);
+    }
+
+    private function setupCustomers(Collection $locations): Collection
+    {
+        $customersList = [
+            'customer1.example.com',
+            'customer2.example.com',
+            'customer3.example.com',
+            'customer4.example.com',
+            'customer5.example.com',
+        ];
+
+        $customers = [];
+        foreach ($customersList as $index => $email) {
+            $customers[] = User::create([
+                "location_id" => $locations->random()->id,
+                "last_name" => "Doe",
+                "first_name" => "Customer {$index}",
+                "middle_name" => "John",
+                "email" => $email,
+                "password" => "password",
+                "contact" => "09087654321",
+                "role" => "customer",
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        return collect($customers);
     }
 }

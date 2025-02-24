@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->foreignId('location_id');
+            $table->string('last_name');
+            $table->string('first_name');
+            $table->string('middle_name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('profile_picture')->nullable(); // Add contact column
             $table->string('contact')->nullable(); // Add contact column
-            $table->string('plate_number')->nullable(); // Add plate number column
             $table->enum('role', ['admin', 'vendor', 'customer', 'rider'])->default('customer'); // Add role column
             $table->dateTime('email_verified_at')->nullable();
             $table->rememberToken();

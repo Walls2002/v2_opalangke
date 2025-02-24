@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
@@ -58,6 +59,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('riders', RiderController::class);
 });
 
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/categories/parents', [CategoryController::class, 'parents']);
+    Route::get('/categories/children', [CategoryController::class, 'children']);
+
+    Route::post('/categories', [CategoryController::class, 'store']);
+    Route::put('/categories/{category}', [CategoryController::class, 'update']);
+    Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductController::class);
 });
@@ -66,11 +77,16 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/customers', [CustomerController::class, 'store']);
 });
 
-Route::get('/catalog', [ProductCatalogController::class, 'index']);
+Route::get('/public-catalog', [ProductCatalogController::class, 'publicIndex']);
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/catalog', [ProductCatalogController::class, 'index']);
+});
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/profile/update', [ProfileController::class, 'update']);
     Route::put('/profile/change-password', [ChangePasswordController::class, 'update']);
+    Route::put('profile/change-location', [ProfileController::class, 'changeLocation']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -94,7 +110,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/customer-orders/{order}', [CustomerOrderController::class, 'show']);
 });
 
-Route::middleware(['auth:riders'])->group(function () {
+Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/rider-orders', [RiderOrderController::class, 'index']);
     Route::get('/rider-orders/{order}/show', [RiderOrderController::class, 'show']);
     Route::post('/rider-orders/{order}/deliver', [RiderOrderController::class, 'store']);

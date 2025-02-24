@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Store;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -37,8 +36,10 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'category_id' => 'required|exists:categories,id',
             'store_id' => 'required|exists:stores,id',
             'name' => 'required|string|max:255',
+            'measurement' => 'required|string|max:30',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -46,7 +47,7 @@ class ProductController extends Controller
 
         $store = Store::find($request->store_id);
 
-        if (Auth::user()->id !== $store->vendor_id) {
+        if ($request->user()->id !== $store->vendor_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -72,7 +73,9 @@ class ProductController extends Controller
         }
 
         $request->validate([
+            'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
+            'measurement' => 'required|string|max:30',
             'price' => 'required|numeric|min:0',
             'quantity' => 'required|integer|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -94,8 +97,17 @@ class ProductController extends Controller
         return response()->json(['message' => 'Product updated successfully', 'product' => $product], 201);
     }
 
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
+        $user = $request->user();
+        $product->load('store');
+        $store = $product->store;
+
+        if ($store->vendor_id != $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+
         if ($product->image) {
             Storage::disk('public')->delete($product->image);
         }

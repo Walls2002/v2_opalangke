@@ -12,38 +12,17 @@ class Rider extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'vendor_id',
-        'name',
-        'contact_number',
+        'user_id',
         'license_number',
         'plate_number',
-        'email',
-        'password',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-    ];
-
-    /**
-     * Hash the password automatically when setting it.
-     */
-    public function setPasswordAttribute($password)
-    {
-        $this->attributes['password'] = bcrypt($password);
-    }
-
-    /**
-     * Relationship with vendor (user table).
+     * The user record of this rider.
      */
     public function vendor()
     {
-        return $this->belongsTo(User::class, 'vendor_id');
+        return $this->belongsTo(User::class);
     }
 
     public function orders()
