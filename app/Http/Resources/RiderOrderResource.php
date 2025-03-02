@@ -21,6 +21,7 @@ class RiderOrderResource extends JsonResource
                 'name' => $this->status->getLabel(),
             ],
             'total_price' => $this->total_price,
+            'final_price' => $this->final_price,
             'address' => $this->address,
             'note' => $this->note,
             'delivery_image' => $this->delivery_image,

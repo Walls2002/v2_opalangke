@@ -6,10 +6,8 @@ use App\Enums\OrderStatus;
 use App\Http\Resources\RiderOrderResource;
 use App\Models\Order;
 use App\Models\Rider;
-use App\Models\Store;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RiderOrderController extends Controller
@@ -24,9 +22,6 @@ class RiderOrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $rider = $request->user();
-        if (!$rider) {
-            return response()->json(['message' => 'Not a rider.'], 403);
-        }
 
         $data = Order::query()
             ->with(['items', 'user'])
@@ -48,9 +43,6 @@ class RiderOrderController extends Controller
     public function show(Request $request, Order $order): JsonResponse
     {
         $rider = $request->user();
-        if (!$rider) {
-            return response()->json(['message' => 'Not a rider.'], 403);
-        }
 
         if ($rider->id !== $order->rider_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
@@ -87,7 +79,6 @@ class RiderOrderController extends Controller
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
 
-
         DB::beginTransaction();
         try {
             if ($request->hasFile('image')) {
@@ -101,7 +92,6 @@ class RiderOrderController extends Controller
             if (!$order->save()) {
                 throw new \Exception('Order updated failed.');
             }
-
 
             DB::commit();
         } catch (\Throwable $th) {

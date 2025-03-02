@@ -111,6 +111,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/cart/{product}', [CartController::class, 'update']);
     Route::delete('/cart', [CartController::class, 'destroy']);
     Route::post('/cart/checkout/{store}', [CheckoutController::class, 'store']);
+    Route::post('/cart/checkout-preview/{store}', [CheckoutController::class, 'storePreview']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
