@@ -27,6 +27,7 @@ use App\Http\Controllers\RiderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiderOrderController;
+use App\Http\Controllers\UserVoucherController;
 use App\Http\Controllers\VendorOrderController;
 use App\Http\Controllers\VoucherController;
 use Illuminate\Http\Request;
@@ -88,6 +89,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/profile/update', [ProfileController::class, 'update']);
     Route::put('/profile/change-password', [ChangePasswordController::class, 'update']);
     Route::put('/profile/change-location', [ProfileController::class, 'changeLocation']);
+    Route::post('/profile/change-profile-picture', [ProfileController::class, 'changeProfilePhoto']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -99,6 +101,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::post('/vouchers/{voucher}/give-all', [VoucherController::class, 'giveVoucherAll']);
     Route::post('/vouchers/{voucher}/give-single', [VoucherController::class, 'giveVoucherSingle']);
+
+    Route::get('/my-vouchers', [UserVoucherController::class, 'index']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {

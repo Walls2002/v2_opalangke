@@ -13,17 +13,11 @@ class ProfileController extends Controller
 
         $rules['name'] = ['required', 'string', 'min:3', 'max:100'];
         $rules['contact'] = ['required'];
-
-        if (get_class($user) === 'App\Models\Rider') {
-            $rules['email'] = ['required', 'email', Rule::unique('riders', 'email')->ignore($user->id)];
-            $user->contact_number = $request->contact;
-        } elseif (get_class($user) === 'App\Models\User') {
-            $rules['email'] = ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)];
-            $user->contact = $request->contact;
-        }
+        $rules['email'] = ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)];
 
         $request->validate(rules: $rules);
 
+        $user->contact = $request->contact;
         $user->name = $request->name;
         $user->email = $request->email;
 
@@ -48,5 +42,22 @@ class ProfileController extends Controller
         }
 
         return response()->json(['message' => 'User location updated successfully'], 200);
+    }
+
+    public function changeProfilePhoto(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = $request->user();
+        $fileName = $request->file('image')->store('profiles', 'public');
+        $user->profile_picture = $fileName;
+
+        if (!$user->save()) {
+            return response()->json(['message' => 'Encountered an error updating the profile picture.'], 400);
+        }
+
+        return response()->json(['message' => 'Profile picture updated successfully'], 200);
     }
 }

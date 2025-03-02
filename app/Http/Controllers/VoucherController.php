@@ -164,8 +164,7 @@ class VoucherController extends Controller
             'amount' => ['required', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $expiration = Carbon::parse($request->expiration_date, 'Asia/Manila');
-        $expiration = $expiration->copy()->setTimezone('UTC');
+        $expiration = $request->date('expiration_date')->endOfDay();
         $amount = $request->amount;
 
         DB::beginTransaction();
@@ -227,8 +226,7 @@ class VoucherController extends Controller
             'amount' => ['required', 'integer', 'min:1', 'max:100'],
         ]);
 
-        $expiration = Carbon::parse($request->expiration_date, 'Asia/Manila');
-        $expiration = $expiration->copy()->setTimezone('UTC');
+        $expiration = $request->date('expiration_date')->endOfDay();
         $amount = $request->integer('amount');
 
         DB::beginTransaction();
