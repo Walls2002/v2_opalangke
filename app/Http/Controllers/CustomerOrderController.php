@@ -21,7 +21,7 @@ class CustomerOrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Order::query()
-            ->with(['items', 'user', 'rider', 'store'])
+            ->with(['items', 'user', 'rider', 'store', 'userVoucher.voucher'])
             ->where('user_id', $request->user()->id);
 
         $selectedStatus = [];

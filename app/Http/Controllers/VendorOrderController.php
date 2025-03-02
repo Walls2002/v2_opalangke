@@ -71,7 +71,7 @@ class VendorOrderController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        $order->load(['items', 'user', 'rider']);
+        $order->load(['items', 'user', 'rider', 'userVoucher.voucher']);
 
         return response()->json(['message' => 'Order fetched.', 'order' => new StoreOrderResource($order)], 200);
     }
@@ -123,37 +123,34 @@ class VendorOrderController extends Controller
     }
 
     /**
-     * Assign the order.
+     * Dispatch the order.
+     *
+     * Dispatch it to only the store's rider pool or the location rider pool.
      *
      * @param Request $request
      * @param Order $order
      * @return JsonResponse
      */
-    public function assign(Request $request, Order $order): JsonResponse
+    public function dispatchOrder(Request $request, Order $order): JsonResponse
     {
         if ($request->user()->id !== $order->store->vendor_id) {
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
         if ($order->status != OrderStatus::CONFIRMED) {
-            return response()->json(['message' => 'You can only assign confirmed orders.'], 422);
+            return response()->json(['message' => 'You can only dispatch confirmed orders.'], 422);
         }
 
         $request->validate([
-            'rider_id' => ['required', 'exists:riders,id'],
+            'rider_team_only' => ['required', 'boolean'],
         ]);
 
-        $rider = Rider::find($request->rider_id);
-        if ($rider->vendor_id != $order->store->vendor_id) {
-            return response()->json(['message' => 'The rider does not work for this store.'], 422);
-        }
-
-        $order->status = OrderStatus::ASSIGNED;
-        $order->rider_id = $request->rider_id;
+        $order->status = OrderStatus::DISPATCHED;
+        $order->rider_team_only = $request->boolean('rider_team_only');
         if (!$order->save()) {
-            return response()->json(['message' => 'Encountered an error assigning the order.'], 400);
+            return response()->json(['message' => 'Encountered an error dispatching the order.'], 400);
         }
 
-        return response()->json(['message' => 'Order assigned.', 'order' => $order, 'rider' => $rider], 200);
+        return response()->json(['message' => 'Order dispatched.', 'order' => $order], 200);
     }
 }

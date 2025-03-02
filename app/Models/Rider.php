@@ -20,7 +20,7 @@ class Rider extends Authenticatable
     /**
      * The user record of this rider.
      */
-    public function vendor()
+    public function user()
     {
         return $this->belongsTo(User::class);
     }

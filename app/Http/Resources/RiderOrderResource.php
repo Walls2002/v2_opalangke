@@ -20,6 +20,7 @@ class RiderOrderResource extends JsonResource
                 'id' => $this->status,
                 'name' => $this->status->getLabel(),
             ],
+            'rider_team_only' => $this->rider_team_only,
             'total_price' => $this->total_price,
             'final_price' => $this->final_price,
             'address' => $this->address,
@@ -31,6 +32,7 @@ class RiderOrderResource extends JsonResource
             'customer' => $this->user,
             'store' => $this->store,
             'items' => $this->items,
+            'voucher' => $this->userVoucher,
         ];
     }
 }

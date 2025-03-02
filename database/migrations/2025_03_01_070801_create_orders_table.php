@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('store_id')->constrained('stores');
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers');
             $table->foreignId('rider_id')->nullable()->constrained('riders');
+            $table->boolean('rider_team_only')->nullable();
             $table->decimal('total_price', 8, 2);
             $table->string('address')->nullable();
             $table->string('note')->nullable();

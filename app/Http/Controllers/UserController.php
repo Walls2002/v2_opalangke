@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Rider;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -29,7 +30,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'location_id' => 'required|exists:locations,id',
             'last_name' => 'required|string|max:50',
             'first_name' => 'required|string|max:50',
@@ -38,11 +39,9 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'contact' => 'nullable|string|max:15',
             'role' => 'required|in:admin,vendor,customer,rider',
+            'license_number' => ['required_if:role,rider', 'string', 'max:15'],
+            'plate_number' => ['required_if:role,rider', 'string', 'max:15'],
         ]);
-
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
 
         $user = User::create([
             'location_id' => $request->location_id,
@@ -55,6 +54,14 @@ class UserController extends Controller
             'role' => $request->role,
             'email_verified_at' => now(),
         ]);
+
+        if ($request->role === 'rider') {
+            Rider::create([
+                'user_id' => $request->user_id,
+                'license_number' => $request->license_number,
+                'plate_number' => $request->plate_number,
+            ]);
+        }
 
         return response()->json($user, 201);
     }

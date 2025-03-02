@@ -15,6 +15,7 @@ class Order extends Model
         'store_id',
         'rider_id',
         'voucher_id',
+        'rider_team_only',
         'total_price',
         'final_price',
         'address',
@@ -30,6 +31,7 @@ class Order extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'rider_team_only' => 'boolean',
         'delivered_at' => 'datetime',
         'status' => OrderStatus::class,
     ];

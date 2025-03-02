@@ -27,6 +27,7 @@ use App\Http\Controllers\RiderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiderOrderController;
+use App\Http\Controllers\RiderStoreController;
 use App\Http\Controllers\UserVoucherController;
 use App\Http\Controllers\VendorOrderController;
 use App\Http\Controllers\VoucherController;
@@ -118,7 +119,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/vendor-orders/{store}', [VendorOrderController::class, 'index']);
     Route::get('/vendor-orders/{order}/show', [VendorOrderController::class, 'show']);
     Route::put('/vendor-orders/{order}/confirm', [VendorOrderController::class, 'confirm']);
-    Route::post('/vendor-orders/{order}/assign', [VendorOrderController::class, 'assign']);
+    Route::post('/vendor-orders/{order}/dispatch', [VendorOrderController::class, 'dispatchOrder']);
     Route::delete('/vendor-orders/{order}/cancel', [VendorOrderController::class, 'cancel']);
 });
 
@@ -130,5 +131,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/rider-orders', [RiderOrderController::class, 'index']);
     Route::get('/rider-orders/{order}/show', [RiderOrderController::class, 'show']);
+    Route::post('/rider-orders/{order}/take', [RiderOrderController::class, 'take']);
     Route::post('/rider-orders/{order}/deliver', [RiderOrderController::class, 'store']);
+});
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/store-riders', [RiderStoreController::class, 'index']);
+    Route::post('/store-riders', [RiderStoreController::class, 'store']);
+    Route::delete('/store-riders/{riderStore}', [RiderStoreController::class, 'destroy']);
 });
