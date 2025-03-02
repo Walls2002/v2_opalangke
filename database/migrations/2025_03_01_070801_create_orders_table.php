@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('store_id')->constrained('stores');
-            $table->foreignId('rider_id')->nullable();
-            $table->string('total_price');
+            $table->foreignId('voucher_id')->nullable()->constrained('vouchers');
+            $table->foreignId('rider_id')->nullable()->constrained('riders');
+            $table->decimal('total_price', 8, 2);
             $table->string('address')->nullable();
             $table->string('note')->nullable();
             $table->unsignedTinyInteger('status');

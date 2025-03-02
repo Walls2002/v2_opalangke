@@ -28,6 +28,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RiderOrderController;
 use App\Http\Controllers\VendorOrderController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Http\Request;
 
 Route::get('/me', function (Request $request) {
@@ -86,7 +87,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/profile/update', [ProfileController::class, 'update']);
     Route::put('/profile/change-password', [ChangePasswordController::class, 'update']);
-    Route::put('profile/change-location', [ProfileController::class, 'changeLocation']);
+    Route::put('/profile/change-location', [ProfileController::class, 'changeLocation']);
+});
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/vouchers', [VoucherController::class, 'index']);
+    Route::post('/vouchers', [VoucherController::class, 'store']);
+    Route::get('/vouchers/{voucher}', [VoucherController::class, 'show']);
+    Route::put('/vouchers/{voucher}', [VoucherController::class, 'update']);
+    Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {

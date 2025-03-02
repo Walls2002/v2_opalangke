@@ -14,7 +14,9 @@ class Order extends Model
         'user_id',
         'store_id',
         'rider_id',
+        'voucher_id',
         'total_price',
+        'final_price',
         'address',
         'note',
         'status',
@@ -46,6 +48,14 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the voucher the user used in the order.
+     */
+    public function userVoucher()
+    {
+        return $this->belongsTo(UserVoucher::class);
     }
 
     /**
