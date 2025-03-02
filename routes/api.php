@@ -96,6 +96,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/vouchers/{voucher}', [VoucherController::class, 'show']);
     Route::put('/vouchers/{voucher}', [VoucherController::class, 'update']);
     Route::delete('/vouchers/{voucher}', [VoucherController::class, 'destroy']);
+
+    Route::post('/vouchers/{voucher}/give-all', [VoucherController::class, 'giveVoucherAll']);
+    Route::post('/vouchers/{voucher}/give-single', [VoucherController::class, 'giveVoucherSingle']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {

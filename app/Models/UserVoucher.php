@@ -22,8 +22,8 @@ class UserVoucher extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_percent' => 'boolean',
-        'is_deleted' => 'boolean',
+        'used_at' => 'datetime',
+        'expired_at' => 'datetime',
     ];
 
 
