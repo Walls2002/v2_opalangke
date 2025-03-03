@@ -28,6 +28,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RiderOrderController;
+use App\Http\Controllers\RiderReviewController;
 use App\Http\Controllers\RiderStoreController;
 use App\Http\Controllers\UserVoucherController;
 use App\Http\Controllers\VendorOrderController;
@@ -127,7 +128,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/customer-orders', [CustomerOrderController::class, 'index']);
     Route::get('/customer-orders/{order}', [CustomerOrderController::class, 'show']);
-    Route::post('/customer-orders/review/{orderItem}', [ReviewController::class, 'store']);
+    Route::post('/customer-orders/product-review/{orderItem}', [ReviewController::class, 'store']);
+    Route::post('/customer-orders/rider-review/{order}', [RiderReviewController::class, 'store']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {

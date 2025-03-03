@@ -77,4 +77,9 @@ class Order extends Model
     {
         return $this->belongsTo(Rider::class);
     }
+
+    public function riderReview()
+    {
+        return $this->hasOne(ReviewRider::class);
+    }
 }
