@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
+use App\Http\Resources\StoreOrderResource;
+use App\Models\Order;
 use App\Models\Rider;
 use App\Models\RiderStore;
 use App\Models\Store;
@@ -93,5 +96,62 @@ class RiderStoreController extends Controller
         $riderStore->delete();
 
         return response()->json(['message' => 'Rider removed from store team.'], 200);
+    }
+
+    /**
+     * View all the orders of a rider from the vendor.
+     *
+     * @param Request $request
+     * @param Store $store
+     * @return JsonResponse
+     */
+    public function riderOrders(Request $request, Store $store): JsonResponse
+    {
+        if ($request->user()->id !== $store->vendor_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'rider_store_id' => ['required', 'exists:rider_stores,id']
+        ]);
+
+        $riderStore = RiderStore::find($request->rider_store_id);
+
+        $query = Order::query()
+            ->with(['items', 'user', 'rider'])
+            ->where('store_id', $store->id)
+            ->where('rider_id', $riderStore->rider_id);
+
+        $selectedStatus = [];
+        if ($request->boolean('show_pending')) {
+            $selectedStatus[] = OrderStatus::PENDING;
+        }
+
+        if ($request->boolean('show_confirmed')) {
+            $selectedStatus[] = OrderStatus::CONFIRMED;
+        }
+
+        if ($request->boolean('show_dispatched')) {
+            $selectedStatus[] = OrderStatus::DISPATCHED;
+        }
+
+        if ($request->boolean('show_assigned')) {
+            $selectedStatus[] = OrderStatus::ASSIGNED;
+        }
+
+        if ($request->boolean('show_delivered')) {
+            $selectedStatus[] = OrderStatus::DELIVERED;
+        }
+
+        if ($request->boolean('show_canceled')) {
+            $selectedStatus[] = OrderStatus::CANCELED;
+        }
+
+        $query->whereIn('status', $selectedStatus);
+        $query->orderBy('created_at', 'desc');
+
+        $data = $query->get();
+
+        return response()->json(['message' => 'Rider vendor orders fetched.', 'orders' => StoreOrderResource::collection($data)], 200);
     }
 }
