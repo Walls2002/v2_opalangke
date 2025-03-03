@@ -153,11 +153,11 @@ class DatabaseSeeder extends Seeder
     private function setupRiders(Collection $locations): Collection
     {
         $riderEmails = [
-            'rider1.example.com',
-            'rider2.example.com',
-            'rider3.example.com',
-            'rider4.example.com',
-            'rider5.example.com',
+            'rider1@example.com',
+            'rider2@example.com',
+            'rider3@example.com',
+            'rider4@example.com',
+            'rider5@example.com',
         ];
 
         $riders = [];
@@ -238,11 +238,11 @@ class DatabaseSeeder extends Seeder
     private function setupCustomers(Collection $locations): Collection
     {
         $customersList = [
-            'customer1.example.com',
-            'customer2.example.com',
-            'customer3.example.com',
-            'customer4.example.com',
-            'customer5.example.com',
+            'customer1@example.com',
+            'customer2@example.com',
+            'customer3@example.com',
+            'customer4@example.com',
+            'customer5@example.com',
         ];
 
         $customers = [];

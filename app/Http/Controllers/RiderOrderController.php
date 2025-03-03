@@ -14,6 +14,59 @@ use Illuminate\Support\Facades\DB;
 class RiderOrderController extends Controller
 {
     /**
+     * View all the available orders the rider can take in the local location pool.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function localOrders(Request $request): JsonResponse
+    {
+        $rider = $request->user();
+        if ($rider->role !== 'rider') {
+            return response()->json(['message' => 'You are not a rider.'], 403);
+        }
+
+        $data = Order::query()
+            ->with(['items', 'store', 'user', 'userVoucher.voucher'])
+            ->where('rider_team_only', false)
+            ->where('status', OrderStatus::DISPATCHED)
+            ->whereRelation('store', 'location_id', '=', $rider->location_id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json(['message' => 'Available local orders fetched.', 'orders' => RiderOrderResource::collection($data)], 200);
+    }
+
+    /**
+     * View all the available orders the rider can take in the rider's team pool.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function teamOrders(Request $request): JsonResponse
+    {
+        $rider = $request->user();
+        if ($rider->role !== 'rider') {
+            return response()->json(['message' => 'You are not a rider.'], 403);
+        }
+
+        $rider->load('rider');
+
+        $riderStoreIds = RiderStore::where('rider_id', $rider->rider->id)->get(['store_id']);
+
+        $data = Order::query()
+            ->with(['items', 'store', 'user', 'userVoucher.voucher'])
+            ->whereIn('store_id', $riderStoreIds)
+            ->where('rider_team_only', true)
+            ->where('status', OrderStatus::DISPATCHED)
+            ->whereRelation('store', 'location_id', '=', $rider->location_id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json(['message' => 'Available team orders fetched.', 'orders' => RiderOrderResource::collection($data)], 200);
+    }
+
+    /**
      * View all the orders assigned to the rider.
      *
      * @param Request $request
@@ -66,10 +119,11 @@ class RiderOrderController extends Controller
     public function take(Request $request, Order $order): JsonResponse
     {
         $rider = $request->user();
+        $rider->load('rider');
         $order->load(['items', 'user', 'store']);
 
         if ($order->rider_team_only) {
-            if (!RiderStore::where('rider_id', $rider->id)->where('store_id', $order->store->id)->exists()) {
+            if (!RiderStore::where('rider_id', $rider->rider->id)->where('store_id', $order->store->id)->exists()) {
                 return response()->json(['message' => 'You are not part of the rider team of this store.'], 403);
             }
         }
@@ -82,7 +136,7 @@ class RiderOrderController extends Controller
             return response()->json(['message' => 'This order is already taken by another rider.'], 422);
         }
 
-        $order->rider_id = $rider->id;
+        $order->rider_id = $rider->rider->id;
         $order->status = OrderStatus::ASSIGNED;
 
         if (!$order->save()) {

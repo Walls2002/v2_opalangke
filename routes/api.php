@@ -129,6 +129,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/rider-orders/local', [RiderOrderController::class, 'localOrders']);
+    Route::get('/rider-orders/team', [RiderOrderController::class, 'teamOrders']);
     Route::get('/rider-orders', [RiderOrderController::class, 'index']);
     Route::get('/rider-orders/{order}/show', [RiderOrderController::class, 'show']);
     Route::post('/rider-orders/{order}/take', [RiderOrderController::class, 'take']);
@@ -136,7 +138,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/store-riders', [RiderStoreController::class, 'index']);
-    Route::post('/store-riders', [RiderStoreController::class, 'store']);
+    Route::get('/store-riders/{store}', [RiderStoreController::class, 'index']);
+    Route::post('/store-riders/{store}', [RiderStoreController::class, 'store']);
     Route::delete('/store-riders/{riderStore}', [RiderStoreController::class, 'destroy']);
 });
