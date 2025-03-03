@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdminRiderController;
+use App\Http\Controllers\AdminStoreController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -40,6 +42,19 @@ Route::get('/me', function (Request $request) {
         'user' => $request->user(),
     ]);
 })->middleware('auth:sanctum');
+
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/admin/stores', [AdminStoreController::class, 'storeIndex']);
+    Route::get('/admin/stores/{store}', [AdminStoreController::class, 'storeShow']);
+    Route::get('/admin/stores/{store}/products', [AdminStoreController::class, 'productIndex']);
+    Route::get('/admin/stores/{store}/products/{product}', [AdminStoreController::class, 'productShow']);
+    Route::get('/admin/stores/{store}/orders', [AdminStoreController::class, 'orderIndex']);
+    Route::get('/admin/stores/{store}/orders/{order}', [AdminStoreController::class, 'orderShow']);
+
+    Route::get('/admin/riders', [AdminRiderController::class, 'index']);
+    Route::get('/admin/riders/{rider}', [AdminRiderController::class, 'show']);
+    Route::get('/admin/riders/{rider}/orders', [AdminRiderController::class, 'showOrders']);
+});
 
 Route::post('users/vendor-register', [UserController::class, 'storeVendor']);
 
