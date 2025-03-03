@@ -43,7 +43,7 @@ class CheckoutController extends Controller
             }
 
             $order = $this->createOrder($customer, $store, $cartItems, $request->address, $request->note, $voucher ?? null);
-            $this->createOrderItems($order, $store, $cartItems);
+            $this->createOrderItems($order, $cartItems);
             $this->clearCartItems($cartItems);
 
             DB::commit();
@@ -156,10 +156,11 @@ class CheckoutController extends Controller
         return $order;
     }
 
-    private function createOrderItems(Order $order, Store $store, Collection $cartItems): void
+    private function createOrderItems(Order $order, Collection $cartItems): void
     {
         foreach ($cartItems as $item) {
             $orderItem = new OrderItem();
+            $orderItem->product_id = $item->product_id;
             $orderItem->order_id = $order->id;
             $orderItem->name = "{$item->product->name}";
             $orderItem->unit_price = $item->product->price;
@@ -217,7 +218,7 @@ class CheckoutController extends Controller
             }
 
             $order = $this->createOrder($customer, $store, $cartItems, $request->address, $request->note, $voucher ?? null);
-            $this->createOrderItems($order, $store, $cartItems);
+            $this->createOrderItems($order, $cartItems);
             $this->clearCartItems($cartItems);
 
             DB::rollBack();

@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 class CustomerOrderController extends Controller
 {
     /**
-     * View all the orders assigned to the rider.
+     * View all the orders of the customer.
      *
      * @param Request $request
      * @param Rider $rider
@@ -21,7 +21,7 @@ class CustomerOrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Order::query()
-            ->with(['items', 'user', 'rider', 'store', 'userVoucher.voucher'])
+            ->with(['items', 'user', 'rider.user', 'store', 'userVoucher.voucher'])
             ->where('user_id', $request->user()->id);
 
         $selectedStatus = [];
@@ -31,6 +31,10 @@ class CustomerOrderController extends Controller
 
         if ($request->boolean('show_confirmed')) {
             $selectedStatus[] = OrderStatus::CONFIRMED;
+        }
+
+        if ($request->boolean('show_dispatched')) {
+            $selectedStatus[] = OrderStatus::DISPATCHED;
         }
 
         if ($request->boolean('show_assigned')) {

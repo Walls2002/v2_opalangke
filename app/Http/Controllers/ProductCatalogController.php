@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,7 @@ class ProductCatalogController extends Controller
 
         $products = $query->get();
 
-        return response()->json($products);
+        return response()->json(ProductResource::collection($products));
     }
 
     public function index(Request $request)
@@ -28,6 +29,6 @@ class ProductCatalogController extends Controller
 
         $products = $query->get();
 
-        return response()->json($products);
+        return response()->json(ProductResource::collection($products));
     }
 }

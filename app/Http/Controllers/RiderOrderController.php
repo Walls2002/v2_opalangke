@@ -160,7 +160,7 @@ class RiderOrderController extends Controller
             return response()->json(['message' => 'You are not a rider.'], 403);
         }
 
-        if ($rider->id !== $order->rider_id) {
+        if ($rider->rider->id !== $order->rider_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

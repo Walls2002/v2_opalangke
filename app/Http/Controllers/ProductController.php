@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProductResource;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Store;
@@ -27,9 +28,9 @@ class ProductController extends Controller
         }
 
         // Fetch products belonging to the store
-        $products = Product::where('store_id', $request->store_id)->with('store')->get();
+        $products = Product::where('store_id', $request->store_id)->with(['store', 'category'])->get();
 
-        return response()->json($products);
+        return response()->json(ProductResource::collection($products));
     }
 
 

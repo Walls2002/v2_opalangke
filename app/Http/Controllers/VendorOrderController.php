@@ -38,6 +38,10 @@ class VendorOrderController extends Controller
             $selectedStatus[] = OrderStatus::CONFIRMED;
         }
 
+        if ($request->boolean('show_dispatched')) {
+            $selectedStatus[] = OrderStatus::DISPATCHED;
+        }
+
         if ($request->boolean('show_assigned')) {
             $selectedStatus[] = OrderStatus::ASSIGNED;
         }
@@ -137,8 +141,8 @@ class VendorOrderController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        if ($order->status != OrderStatus::CONFIRMED) {
-            return response()->json(['message' => 'You can only dispatch confirmed orders.'], 422);
+        if (!in_array($order->status, [OrderStatus::CONFIRMED, OrderStatus::DISPATCHED])) {
+            return response()->json(['message' => 'You can only dispatch confirmed or dispatched orders.'], 422);
         }
 
         $request->validate([

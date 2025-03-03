@@ -19,6 +19,33 @@ class Product extends Model
         'image'
     ];
 
+    public function getAverageRatings(): string
+    {
+        $orderItems = $this->orderItems()->whereHas('orderItemReview')->with('orderItemReview')->get();
+
+        if ($orderItems->isEmpty()) {
+            return '0';
+        }
+
+        $totalStars = 0;
+        $reviewCount = 0;
+
+        foreach ($orderItems as $orderItem) {
+            if ($orderItem->orderItemReview) {
+                $totalStars += $orderItem->orderItemReview->stars;
+                $reviewCount++;
+            }
+        }
+
+        if ($reviewCount === 0) {
+            return '0';
+        }
+
+        $averageRating = $totalStars / $reviewCount;
+
+        return number_format($averageRating, 2);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -27,5 +54,10 @@ class Product extends Model
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }
