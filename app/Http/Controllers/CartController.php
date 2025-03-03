@@ -31,7 +31,7 @@ class CartController extends Controller
                 'price' => $item->product->price,
                 'remaining_qty' => $item->product->quantity,
                 'selected_qty' => $item->quantity,
-                'measurement_type' => $item->product->measurement,
+                'measurement' => $item->product->measurement,
                 'total_cost' => $item->product->price * $item->quantity
             ];
 

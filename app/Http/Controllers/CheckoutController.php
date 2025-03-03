@@ -113,24 +113,28 @@ class CheckoutController extends Controller
 
     private function createOrder(User $customer, Store $store, Collection $cartItems, string $address, string $note, ?Voucher $voucher): Order
     {
-        $totalPrice = 0;
+        $shippingFee = $store->location->shipping_fee;
+        $totalItemPrice = 0;
 
         foreach ($cartItems as $item) {
-            $totalPrice += $item->quantity * $item->product->price;
+            $totalItemPrice += $item->quantity * $item->product->price;
         }
 
         if ($voucher) {
             if ($voucher->is_percent) {
                 $voucherDiscount = $voucher->value / 100;
-                $finalPrice = round($totalPrice - ($totalPrice * $voucherDiscount), 2);
+                $discount = round($totalItemPrice * $voucherDiscount);
+                $finalPrice = round($totalItemPrice - $discount, 2);
             } else {
                 $voucherDiscount = $voucher->value;
-                $finalPrice = round($totalPrice - $voucherDiscount, 2);
+                $discount = $voucher->value;
+                $finalPrice = round($totalItemPrice - $voucherDiscount, 2);
             }
         } else {
-            $finalPrice = $totalPrice;
+            $finalPrice = $totalItemPrice;
         }
 
+        $finalPrice += $shippingFee;
         $finalPrice = $finalPrice < 0 ? 0 : $finalPrice;
 
         $order = Order::create([
@@ -139,8 +143,10 @@ class CheckoutController extends Controller
             'address' => $address,
             'note' => $note,
             'status' => OrderStatus::PENDING,
-            'total_price' => $totalPrice,
+            'total_item_price' => $totalItemPrice,
             'final_price' => $finalPrice,
+            'shipping_fee' => $shippingFee,
+            'discount' => $discount,
         ]);
 
         if (!$order->id) {

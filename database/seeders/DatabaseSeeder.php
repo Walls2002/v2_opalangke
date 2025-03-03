@@ -11,6 +11,9 @@ use App\Models\Store;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Location;
+use App\Models\RiderStore;
+use App\Models\UserVoucher;
+use App\Models\Voucher;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -38,9 +41,10 @@ class DatabaseSeeder extends Seeder
         $riders = $this->setupRiders(locations: $locations);
         $categories = $this->createCategories();
         $stores = $this->setupStores(locations: $locations, categories: $categories);
-        // $this-setupStoreRiders(stores: $stores, riders: $riders);
+        $this->setupStoreRiders(stores: $stores, riders: $riders);
 
         $customers = $this->setupCustomers(locations: $locations);
+        $this->createVouchers(customers: $customers);
     }
 
     private function createTestAdmin(): User
@@ -261,5 +265,61 @@ class DatabaseSeeder extends Seeder
         }
 
         return collect($customers);
+    }
+
+    private function setupStoreRiders(Collection $stores, Collection $riders): void
+    {
+        foreach ($stores as $store) {
+            $rider = $riders->shift();
+            RiderStore::create([
+                'store_id' => $store->id,
+                'rider_id' => $rider->id,
+            ]);
+        }
+    }
+
+    private function createVouchers(Collection $customers): void
+    {
+        $voucherList = [
+            'bigbente' => [
+                'value' => 20,
+                'is_percent' => false,
+                'min_order_price' => 199,
+                'description' => "Get 20 pesos off on your next order.",
+            ],
+            'supersale' => [
+                'value' => 30,
+                'is_percent' => true,
+                'min_order_price' => 799,
+                'description' => "Get 30% off in our mega super sale!!!.",
+            ],
+        ];
+
+        $vouchers = [];
+
+        foreach ($voucherList as $name => $data) {
+            $vouchers[] = Voucher::create([
+                'code' => $name,
+                'min_order_price' => $data['min_order_price'],
+                'value' => $data['value'],
+                'description' => $data['description'],
+                'is_percent' => $data['is_percent'],
+                'is_deleted' => false,
+            ]);
+        }
+
+        $expiration = now()->addDays(10);
+        foreach ($customers as $customer) {
+            foreach ($vouchers as $voucher) {
+                for ($i = 0; $i < 3; $i++) {
+                    UserVoucher::create([
+                        'user_id' => $customer->id,
+                        'voucher_id' => $voucher->id,
+                        'used_at' => null,
+                        'expired_at' => $expiration,
+                    ]);
+                }
+            }
+        }
     }
 }

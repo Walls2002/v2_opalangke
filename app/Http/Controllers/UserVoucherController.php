@@ -19,6 +19,7 @@ class UserVoucherController extends Controller
     {
         $vouchers = UserVoucher::query()
             ->with(['voucher'])
+            ->where('user_id', $request->user()->id)
             ->where('used_at', null)
             ->where('expired_at', '>', now('Asia/Manila'))
             ->whereRelation('voucher', 'is_deleted', '=', false)
