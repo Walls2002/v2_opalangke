@@ -2,29 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Location;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
 class ProductCatalogController extends Controller
 {
-    public function index(Request $request)
+    public function publicIndex(Request $request)
     {
-        $query = Product::query()
-            ->with(['store.location']);
-
-        if ($request->location_id) {
-            $location = Location::find($request->location_id);
-
-            if (!$location) {
-                return response()->json(['message' => 'location not found.'], 404);
-            }
-
-            $query->whereRelation('store', 'location_id', '=', $location->id);
-        }
+        $query = Product::with(['category', 'store.location']);
 
         $products = $query->get();
 
-        return response()->json($products);
+        return response()->json(ProductResource::collection($products));
+    }
+
+    public function index(Request $request)
+    {
+        $query = Product::with(['category', 'store'])
+            ->whereRelation(
+                'store',
+                'location_id',
+                '=',
+                $request->user()->location_id
+            );
+
+        $products = $query->get();
+
+        return response()->json(ProductResource::collection($products));
     }
 }

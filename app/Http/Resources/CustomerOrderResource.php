@@ -20,7 +20,11 @@ class CustomerOrderResource extends JsonResource
                 'id' => $this->status,
                 'name' => $this->status->getLabel(),
             ],
-            'total_price' => $this->total_price,
+            'rider_team_only' => $this->rider_team_only,
+            'discount' => $this->discount,
+            'shipping_fee' => $this->shipping_fee,
+            'total_item_price' => $this->total_item_price,
+            'final_price' => $this->final_price,
             'address' => $this->address,
             'note' => $this->note,
             'delivery_image' => $this->delivery_image,
@@ -31,6 +35,7 @@ class CustomerOrderResource extends JsonResource
             'store' => $this->store,
             'rider' => $this->rider,
             'items' => $this->items,
+            'voucher' => $this->userVoucher,
         ];
     }
 }

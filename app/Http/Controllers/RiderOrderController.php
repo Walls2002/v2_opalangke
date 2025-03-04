@@ -6,14 +6,66 @@ use App\Enums\OrderStatus;
 use App\Http\Resources\RiderOrderResource;
 use App\Models\Order;
 use App\Models\Rider;
-use App\Models\Store;
+use App\Models\RiderStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class RiderOrderController extends Controller
 {
+    /**
+     * View all the available orders the rider can take in the local location pool.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function localOrders(Request $request): JsonResponse
+    {
+        $rider = $request->user();
+        if ($rider->role !== 'rider') {
+            return response()->json(['message' => 'You are not a rider.'], 403);
+        }
+
+        $data = Order::query()
+            ->with(['items', 'store', 'user', 'userVoucher.voucher'])
+            ->where('rider_team_only', false)
+            ->where('status', OrderStatus::DISPATCHED)
+            ->whereRelation('store', 'location_id', '=', $rider->location_id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json(['message' => 'Available local orders fetched.', 'orders' => RiderOrderResource::collection($data)], 200);
+    }
+
+    /**
+     * View all the available orders the rider can take in the rider's team pool.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function teamOrders(Request $request): JsonResponse
+    {
+        $rider = $request->user();
+        if ($rider->role !== 'rider') {
+            return response()->json(['message' => 'You are not a rider.'], 403);
+        }
+
+        $rider->load('rider');
+
+        $riderStoreIds = RiderStore::where('rider_id', $rider->rider->id)->get(['store_id']);
+
+        $data = Order::query()
+            ->with(['items', 'store', 'user', 'userVoucher.voucher'])
+            ->whereIn('store_id', $riderStoreIds)
+            ->where('rider_team_only', true)
+            ->where('status', OrderStatus::DISPATCHED)
+            ->whereRelation('store', 'location_id', '=', $rider->location_id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json(['message' => 'Available team orders fetched.', 'orders' => RiderOrderResource::collection($data)], 200);
+    }
+
     /**
      * View all the orders assigned to the rider.
      *
@@ -24,12 +76,12 @@ class RiderOrderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $rider = $request->user();
-        if (!$rider) {
-            return response()->json(['message' => 'Not a rider.'], 403);
+        if ($rider->role !== 'rider') {
+            return response()->json(['message' => 'You are not a rider.'], 403);
         }
 
         $data = Order::query()
-            ->with(['items', 'user'])
+            ->with(['items', 'user', 'userVoucher.voucher'])
             ->where('rider_id', $rider->id)
             ->where('status', OrderStatus::ASSIGNED)
             ->orderBy('created_at', 'asc')
@@ -48,17 +100,50 @@ class RiderOrderController extends Controller
     public function show(Request $request, Order $order): JsonResponse
     {
         $rider = $request->user();
-        if (!$rider) {
-            return response()->json(['message' => 'Not a rider.'], 403);
-        }
-
-        if ($rider->id !== $order->rider_id) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+        if ($rider->role !== 'rider') {
+            return response()->json(['message' => 'You are not a rider.'], 403);
         }
 
         $order->load(['items', 'user', 'store']);
 
-        return response()->json(['message' => 'Assigned order fetched.', 'order' => new RiderOrderResource($order)], 200);
+        return response()->json(['message' => 'Order fetched.', 'order' => new RiderOrderResource($order)], 200);
+    }
+
+    /**
+     * Take the order for delivery.
+     *
+     * @param Request $request
+     * @param Order $order
+     * @return JsonResponse
+     */
+    public function take(Request $request, Order $order): JsonResponse
+    {
+        $rider = $request->user();
+        $rider->load('rider');
+        $order->load(['items', 'user', 'store']);
+
+        if ($order->rider_team_only) {
+            if (!RiderStore::where('rider_id', $rider->rider->id)->where('store_id', $order->store->id)->exists()) {
+                return response()->json(['message' => 'You are not part of the rider team of this store.'], 403);
+            }
+        }
+
+        if ($order->status != OrderStatus::DISPATCHED) {
+            return response()->json(['message' => 'You can only take dispatched orders.'], 422);
+        }
+
+        if ($order->rider_id) {
+            return response()->json(['message' => 'This order is already taken by another rider.'], 422);
+        }
+
+        $order->rider_id = $rider->rider->id;
+        $order->status = OrderStatus::ASSIGNED;
+
+        if (!$order->save()) {
+            return response()->json(['message' => 'Encountered an error taking the order.'], 400);
+        }
+
+        return response()->json(['message' => 'Order taken fetched.', 'order' => new RiderOrderResource($order)], 200);
     }
 
     /**
@@ -71,11 +156,11 @@ class RiderOrderController extends Controller
     public function store(Request $request, Order $order): JsonResponse
     {
         $rider = $request->user();
-        if (!$rider) {
-            return response()->json(['message' => 'Not a rider.'], 403);
+        if ($rider->role !== 'rider') {
+            return response()->json(['message' => 'You are not a rider.'], 403);
         }
 
-        if ($rider->id !== $order->rider_id) {
+        if ($rider->rider->id !== $order->rider_id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -86,7 +171,6 @@ class RiderOrderController extends Controller
         $request->validate([
             'image' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ]);
-
 
         DB::beginTransaction();
         try {
@@ -101,7 +185,6 @@ class RiderOrderController extends Controller
             if (!$order->save()) {
                 throw new \Exception('Order updated failed.');
             }
-
 
             DB::commit();
         } catch (\Throwable $th) {

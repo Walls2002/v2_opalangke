@@ -18,14 +18,8 @@ class UserController extends Controller
     public function indexAll()
     {
         $users = User::all();
-        $riders = Rider::all();
 
-        $usersArray = $users->toArray();
-        $ridersArray = $riders->toArray();
-
-        $allUsers = array_merge($usersArray, $ridersArray);
-
-        return response()->json($allUsers, 200);
+        return response()->json($users, 200);
     }
 
     public function index()
@@ -36,28 +30,38 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+        $request->validate([
+            'location_id' => 'required|exists:locations,id',
+            'last_name' => 'required|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'required|string|max:50',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'contact' => 'nullable|string|max:15',
-            'plate_number' => 'nullable|string|max:50',
             'role' => 'required|in:admin,vendor,customer,rider',
+            'license_number' => ['required_if:role,rider', 'string', 'max:15'],
+            'plate_number' => ['required_if:role,rider', 'string', 'max:15'],
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
-
         $user = User::create([
-            'name' => $request->name,
+            'location_id' => $request->location_id,
+            'last_name' => $request->last_name,
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'contact' => $request->contact,
-            'plate_number' => $request->plate_number,
             'role' => $request->role,
             'email_verified_at' => now(),
         ]);
+
+        if ($request->role === 'rider') {
+            Rider::create([
+                'user_id' => $request->user_id,
+                'license_number' => $request->license_number,
+                'plate_number' => $request->plate_number,
+            ]);
+        }
 
         return response()->json($user, 201);
     }
@@ -65,11 +69,13 @@ class UserController extends Controller
     public function storeVendor(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'location_id' => 'required|exists:locations,id',
+            'last_name' => 'required|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'required|string|max:50',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'contact' => 'nullable|string|max:15',
-            'plate_number' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -77,11 +83,13 @@ class UserController extends Controller
         }
 
         $user = User::create([
-            'name' => $request->name,
+            'location_id' => $request->location_id,
+            'last_name' => $request->last_name,
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'contact' => $request->contact,
-            'plate_number' => $request->plate_number,
             'role' => 'vendor',
             'email_verified_at' => null,
         ]);
@@ -137,11 +145,13 @@ class UserController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'name' => 'nullable|string|max:255',
+            'location_id' => 'required|exists:locations,id',
+            'last_name' => 'required|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'required|string|max:50',
             'email' => 'nullable|string|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|string|min:8',
             'contact' => 'nullable|string|max:15',
-            'plate_number' => 'nullable|string|max:50',
             'role' => 'nullable|in:admin,vendor,customer,rider',
         ]);
 

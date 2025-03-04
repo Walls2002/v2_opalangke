@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_items', function (Blueprint $table) {
+        Schema::create('review_riders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
-            $table->string('name');
-            $table->string('unit_price');
-            $table->decimal('quantity');
-            $table->string('measurement_type')->comment('kg or piece');
+            $table->foreignId('rider_id')->constrained('riders');
+            $table->foreignId('order_id')->constrained('orders');
+            $table->unsignedInteger('stars');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_items');
+        Schema::dropIfExists('review_riders');
     }
 };

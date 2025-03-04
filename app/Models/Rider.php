@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,43 +12,63 @@ class Rider extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = ['rating'];
+
     protected $fillable = [
-        'vendor_id',
-        'name',
-        'contact_number',
+        'user_id',
         'license_number',
         'plate_number',
-        'email',
-        'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-    ];
-
-    /**
-     * Hash the password automatically when setting it.
-     */
-    public function setPasswordAttribute($password)
+    public function rating(): Attribute
     {
-        $this->attributes['password'] = bcrypt($password);
+        return new Attribute(
+            get: function () {
+                $reviews = $this->reviews()->get();
+
+                if ($reviews->isEmpty()) {
+                    return '0';
+                }
+
+                $totalStars = 0;
+                $reviewCount = 0;
+
+                foreach ($reviews as $review) {
+                    $totalStars += $review->stars;
+                    $reviewCount++;
+                }
+
+                if ($reviewCount === 0) {
+                    return '0';
+                }
+
+                $averageRating = $totalStars / $reviewCount;
+
+                return number_format($averageRating, 2);
+            }
+        );
     }
 
     /**
-     * Relationship with vendor (user table).
+     * The user record of this rider.
      */
-    public function vendor()
+    public function user()
     {
-        return $this->belongsTo(User::class, 'vendor_id');
+        return $this->belongsTo(User::class);
     }
 
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(ReviewRider::class);
     }
 }

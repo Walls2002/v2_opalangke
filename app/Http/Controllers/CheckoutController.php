@@ -8,6 +8,8 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Store;
 use App\Models\User;
+use App\Models\UserVoucher;
+use App\Models\Voucher;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,6 +29,7 @@ class CheckoutController extends Controller
         $request->validate([
             'address' => ['required', 'string', 'max:255'],
             'note' => ['nullable', 'string', 'max:255'],
+            'voucher_code' => ['nullable', 'exists:vouchers,code'],
         ]);
 
         DB::beginTransaction();
@@ -34,13 +37,18 @@ class CheckoutController extends Controller
             $customer = $request->user();
 
             $cartItems = $this->getCartItemsFromStore($customer, $store->id);
-            $order = $this->createOrder($customer, $store, $cartItems, $request->address, $request->note);
-            $this->createOrderItems($order, $store, $cartItems);
+
+            if ($request->voucher_code) {
+                $voucher = $this->verifyVoucher($customer, $cartItems, $request->voucher_code);
+            }
+
+            $order = $this->createOrder($customer, $store, $cartItems, $request->address, $request->note, $voucher ?? null);
+            $this->createOrderItems($order, $cartItems);
             $this->clearCartItems($cartItems);
 
             DB::commit();
 
-            return response()->json(['message' => 'Check out success', 'order' => $order], 200);
+            return response()->json(['message' => 'Check out success', 'order' => $order], 201);
         } catch (\InvalidArgumentException $e) {
             DB::rollBack();
 
@@ -54,6 +62,40 @@ class CheckoutController extends Controller
         }
     }
 
+    private function verifyVoucher(User $customer, Collection $cartItems, string $voucherCode): Voucher
+    {
+        $userVoucher = UserVoucher::with(['voucher'])
+            ->where('user_id', $customer->id)
+            ->where('used_at', null)
+            ->where('expired_at', '>', now())
+            ->whereRelation('voucher', 'code', '=', $voucherCode)
+            ->whereRelation('voucher', 'is_deleted', '=', false)
+            ->orderBy('expired_at', 'ASC')
+            ->first();
+
+        if (!$userVoucher) {
+            throw new \InvalidArgumentException('This voucher is invalid, and can not be used.');
+        }
+
+        $voucher = $userVoucher->voucher;
+        $totalPrice = 0;
+
+        foreach ($cartItems as $item) {
+            $totalPrice += $item->quantity * $item->product->price;
+        }
+
+        if ($totalPrice < $voucher->min_order_price) {
+            throw new \InvalidArgumentException('Total price does not meet the minimum spending cost of the voucher.');
+        }
+
+        $userVoucher->used_at = now();
+        if (!$userVoucher->save()) {
+            throw new \InvalidArgumentException('Encountered an error applying the voucher.');
+        }
+
+        return $voucher;
+    }
+
     private function getCartItemsFromStore(User $customer, string $storeId): Collection
     {
         $cartItems = Cart::query()
@@ -62,20 +104,38 @@ class CheckoutController extends Controller
             ->where('store_id', $storeId)
             ->get();
 
-        if ($cartItems->count() < 0) {
+        if ($cartItems->count() <= 0) {
             throw new \InvalidArgumentException("There must be at least one product to create a order.");
         }
 
         return $cartItems;
     }
 
-    private function createOrder(User $customer, Store $store, Collection $cartItems, string $address, string $note): Order
+    private function createOrder(User $customer, Store $store, Collection $cartItems, string $address, string $note, ?Voucher $voucher): Order
     {
-        $totalPrice = 0;
+        $shippingFee = $store->location->shipping_fee;
+        $totalItemPrice = 0;
 
         foreach ($cartItems as $item) {
-            $totalPrice += $item->quantity * $item->product->price;
+            $totalItemPrice += $item->quantity * $item->product->price;
         }
+
+        if ($voucher) {
+            if ($voucher->is_percent) {
+                $voucherDiscount = $voucher->value / 100;
+                $discount = round($totalItemPrice * $voucherDiscount);
+                $finalPrice = round($totalItemPrice - $discount, 2);
+            } else {
+                $voucherDiscount = $voucher->value;
+                $discount = $voucher->value;
+                $finalPrice = round($totalItemPrice - $voucherDiscount, 2);
+            }
+        } else {
+            $finalPrice = $totalItemPrice;
+        }
+
+        $finalPrice += $shippingFee;
+        $finalPrice = $finalPrice < 0 ? 0 : $finalPrice;
 
         $order = Order::create([
             'user_id' => $customer->id,
@@ -83,7 +143,10 @@ class CheckoutController extends Controller
             'address' => $address,
             'note' => $note,
             'status' => OrderStatus::PENDING,
-            'total_price' => $totalPrice,
+            'total_item_price' => $totalItemPrice,
+            'final_price' => $finalPrice,
+            'shipping_fee' => $shippingFee,
+            'discount' => $discount,
         ]);
 
         if (!$order->id) {
@@ -93,15 +156,15 @@ class CheckoutController extends Controller
         return $order;
     }
 
-    private function createOrderItems(Order $order, Store $store, Collection $cartItems): void
+    private function createOrderItems(Order $order, Collection $cartItems): void
     {
         foreach ($cartItems as $item) {
             $orderItem = new OrderItem();
+            $orderItem->product_id = $item->product_id;
             $orderItem->order_id = $order->id;
             $orderItem->name = "{$item->product->name}";
             $orderItem->unit_price = $item->product->price;
             $orderItem->quantity = $item->quantity;
-            $orderItem->measurement_type = $item->measurement_type;
 
             if (!$orderItem->save()) {
                 throw new \Exception("Encountered an error creating the order item.");
@@ -127,5 +190,48 @@ class CheckoutController extends Controller
                 throw new \Exception("Encountered an error clearing the cart.");
             }
         });
+    }
+
+    /**
+     * Preview the checkout of items in the cart.
+     *
+     * @param Request $request
+     * @param Store $store
+     * @return JsonResponse
+     */
+    public function storePreview(Request $request, Store $store): JsonResponse
+    {
+        $request->validate([
+            'address' => ['required', 'string', 'max:255'],
+            'note' => ['nullable', 'string', 'max:255'],
+            'voucher_code' => ['nullable', 'exists:vouchers,code'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $customer = $request->user();
+
+            $cartItems = $this->getCartItemsFromStore($customer, $store->id);
+
+            if ($request->voucher_code) {
+                $voucher = $this->verifyVoucher($customer, $cartItems, $request->voucher_code);
+            }
+
+            $order = $this->createOrder($customer, $store, $cartItems, $request->address, $request->note, $voucher ?? null);
+            $this->createOrderItems($order, $cartItems);
+            $this->clearCartItems($cartItems);
+
+            DB::rollBack();
+
+            return response()->json(['message' => 'Check out preview displayed.', 'order' => $order], 200);
+        } catch (\InvalidArgumentException $e) {
+            DB::rollBack();
+
+            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json(['message' => 'Encountered an error while previewing the check out.'], 400);
+        }
     }
 }

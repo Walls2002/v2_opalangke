@@ -15,8 +15,13 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('store_id')->constrained('stores');
-            $table->foreignId('rider_id')->nullable();
-            $table->string('total_price');
+            $table->foreignId('voucher_id')->nullable()->constrained('vouchers');
+            $table->foreignId('rider_id')->nullable()->constrained('riders');
+            $table->boolean('rider_team_only')->nullable();
+            $table->decimal('shipping_fee', 8, 2);
+            $table->decimal('discount', 8, 2);
+            $table->decimal('total_item_price', 8, 2);
+            $table->decimal('final_price', 8, 2);
             $table->string('address')->nullable();
             $table->string('note')->nullable();
             $table->unsignedTinyInteger('status');

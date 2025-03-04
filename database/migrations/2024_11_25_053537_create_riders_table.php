@@ -13,17 +13,13 @@ class CreateRidersTable extends Migration
     {
         Schema::create('riders', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('vendor_id'); // Foreign key to vendors (users with role 'vendor')
-            $table->string('name');
-            $table->string('contact_number', 20);
+            $table->foreignId('user_id'); // Foreign key to vendors (users with role 'vendor')
             $table->string('license_number')->unique();
-            $table->string('plate_number')->nullable();
-            $table->string('email')->unique();
-            $table->string('password');
+            $table->string('plate_number')->unique();
             $table->timestamps();
 
             // Foreign key constraint
-            $table->foreign('vendor_id')->references('id')->on('users')->onDelete('cascade');
+            // $table->foreign('vendor_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

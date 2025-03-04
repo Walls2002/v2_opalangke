@@ -31,7 +31,7 @@ class CartController extends Controller
                 'price' => $item->product->price,
                 'remaining_qty' => $item->product->quantity,
                 'selected_qty' => $item->quantity,
-                'measurement_type' => $item->measurement_type,
+                'measurement' => $item->product->measurement,
                 'total_cost' => $item->product->price * $item->quantity
             ];
 
@@ -57,7 +57,6 @@ class CartController extends Controller
     {
         $request->validate([
             'quantity' => ['nullable', 'numeric', 'min:0.1', 'max:1000000'],
-            'measurement_type' => ['nullable', 'in:kg,piece'],
         ]);;
 
         $cartItem = Cart::query()
@@ -70,10 +69,6 @@ class CartController extends Controller
                 $cartItem->quantity = $request->quantity;
             } else {
                 $cartItem->increment('quantity', 1);
-            }
-
-            if ($request->measurement_type) {
-                $cartItem->measurement_type = $request->measurement_type;
             }
 
             if (!$cartItem->save()) {
@@ -90,7 +85,6 @@ class CartController extends Controller
                 'store_id' => $product->store_id,
                 'product_id' => $product->id,
                 'quantity' => $qty,
-                'measurement_type' => $request->measurement_type,
             ]);
         }
 

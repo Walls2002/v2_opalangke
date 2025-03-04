@@ -3,50 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rider;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class RiderController extends Controller
 {
-    // public function index(Request $request)
-    // {
-    //     $riders = Rider::with('vendor')->get();
-    //     return response()->json($riders);
-    // }
-
-    public function index(Request $request)
+    /**
+     * Make a rider.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function store(Request $request): JsonResponse
     {
-        $riders = Rider::query()
-            ->with('vendor')
-            ->where('vendor_id', $request->user()->id)
-            ->get();
-        return response()->json(['riders' => $riders]);
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'vendor_id' => 'required|exists:users,id',
-            'name' => 'required|string|max:255',
-            'contact_number' => 'required|string|max:20',
-            'license_number' => 'required|string|max:50|unique:riders',
-            'plate_number' => 'nullable|string|max:50',
-            'email' => 'required|string|email|max:255|unique:riders',
+        $request->validate([
+            'location_id' => 'required|exists:locations,id',
+            'last_name' => 'required|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'required|string|max:50',
+            'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'contact' => 'nullable|string|max:15',
+            'license_number' => 'required|string|max:15|unique:riders,license_number',
+            'plate_number' => 'required|string|max:15|unique:riders,plate_number',
         ]);
 
-        $rider = Rider::create($validated);
+        $user = User::create([
+            'location_id' => $request->location_id,
+            'last_name' => $request->last_name,
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'contact' => $request->contact,
+            'role' => 'rider',
+            'email_verified_at' => now(),
+        ]);
+
+        $rider = Rider::create([
+            'user_id' => $user->id,
+            'license_number' => $request->license_number,
+            'plate_number' => $request->plate_number,
+        ]);
+
         return response()->json(['message' => 'Rider created successfully.', 'rider' => $rider], 201);
     }
 
     public function update(Request $request, Rider $rider)
     {
         $validated = $request->validate([
+            'location_id' => 'required|exists:locations,id',
             'name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:20',
             'license_number' => "required|string|max:50|unique:riders,license_number,{$rider->id}",
-            'plate_number' => 'nullable|string|max:50',
-            'email' => "required|string|email|max:255|unique:riders,email,{$rider->id}",
+            'plate_number' => "required|string|max:50|unique:riders,plate_number,{$rider->id}",
+            'email' => "required|string|email|max:255|unique:users,email,{$rider->id}",
             'password' => 'nullable|string|min:8',
         ]);
 
@@ -54,7 +66,14 @@ class RiderController extends Controller
             $validated['password'] = bcrypt($request->password);
         }
 
-        $rider->update($validated);
+        $rider->load('user');
+
+        $rider->user->update($validated);
+        $rider->update([
+            'license_number' => $request->license_number,
+            'plate_number' => $request->plate_number,
+        ]);
+
         return response()->json(['message' => 'Rider updated successfully.', 'rider' => $rider]);
     }
 

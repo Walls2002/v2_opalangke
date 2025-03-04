@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('city_code');
             $table->string('barangay');
             $table->string('barangay_code');
+            $table->decimal('shipping_fee', 8, 2);
             $table->timestamps();
         });
     }
@@ -30,4 +31,3 @@ return new class extends Migration
         Schema::dropIfExists('locations');
     }
 };
-

@@ -20,6 +20,7 @@ class LocationController extends Controller
             'city_code' => 'required|string|max:255',
             'barangay' => 'required|string|max:255',
             'barangay_code' => 'required|string|max:255',
+            'shipping_fee' => 'required|decimal:0,2|min:0.00,max:100000',
         ]);
 
         $location = Location::create($validated);
@@ -43,6 +44,7 @@ class LocationController extends Controller
             'city_code' => 'sometimes|string|max:255',
             'barangay' => 'sometimes|string|max:255',
             'barangay_code' => 'sometimes|string|max:255',
+            'shipping_fee' => 'sometimes|decimal:0,2|min:0.00,max:100000',
         ]);
 
         $location->update($validated);

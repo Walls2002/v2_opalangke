@@ -14,7 +14,12 @@ class Order extends Model
         'user_id',
         'store_id',
         'rider_id',
-        'total_price',
+        'voucher_id',
+        'rider_team_only',
+        'shipping_fee',
+        'discount',
+        'total_item_price',
+        'final_price',
         'address',
         'note',
         'status',
@@ -28,6 +33,7 @@ class Order extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'rider_team_only' => 'boolean',
         'delivered_at' => 'datetime',
         'status' => OrderStatus::class,
     ];
@@ -49,6 +55,14 @@ class Order extends Model
     }
 
     /**
+     * Get the voucher the user used in the order.
+     */
+    public function userVoucher()
+    {
+        return $this->belongsTo(UserVoucher::class);
+    }
+
+    /**
      * Get the store who owns the order.
      */
     public function store()
@@ -62,5 +76,10 @@ class Order extends Model
     public function rider()
     {
         return $this->belongsTo(Rider::class);
+    }
+
+    public function riderReview()
+    {
+        return $this->hasOne(ReviewRider::class);
     }
 }
