@@ -40,9 +40,9 @@ class ProductController extends Controller
             'category_id' => 'required|exists:categories,id',
             'store_id' => 'required|exists:stores,id',
             'name' => 'required|string|max:255',
-            'measurement' => 'required|string|max:30',
+            'measurement' => 'required|in:piece,kilo',
             'price' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|decimal:0,2|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -76,14 +76,16 @@ class ProductController extends Controller
         $request->validate([
             'category_id' => 'required|exists:categories,id',
             'name' => 'required|string|max:255',
-            'measurement' => 'required|string|max:30',
+            'measurement' => 'required|in:piece,kilo',
             'price' => 'required|numeric|min:0',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|decimal:0,2|min:1',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $product->category_id = $request->category_id;
         $product->name = $request->name;
         $product->price = $request->price;
+        $product->measurement = $request->measurement;
         $product->quantity = $request->quantity;
 
         if ($request->hasFile('image')) {

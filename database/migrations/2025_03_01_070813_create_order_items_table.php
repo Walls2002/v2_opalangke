@@ -16,8 +16,9 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained('orders');
             $table->foreignId('product_id')->constrained('products');
             $table->string('name');
-            $table->decimal('unit_price', 8, 2);
-            $table->unsignedInteger('quantity');
+            $table->unsignedDecimal('unit_price', 8, 2);
+            $table->string('measurement');
+            $table->unsignedDecimal('quantity', 8, 2);
             $table->timestamps();
         });
     }

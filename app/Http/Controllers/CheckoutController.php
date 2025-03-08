@@ -117,7 +117,11 @@ class CheckoutController extends Controller
         $totalItemPrice = 0;
 
         foreach ($cartItems as $item) {
-            $totalItemPrice += $item->quantity * $item->product->price;
+            if ($item->product->measurement === 'kilo') {
+                $totalItemPrice += $item->quantity * ($item->product->price * $item->kilo_measurement);
+            } else {
+                $totalItemPrice += $item->quantity * $item->product->price;
+            }
         }
 
         if ($voucher) {
@@ -159,11 +163,23 @@ class CheckoutController extends Controller
     private function createOrderItems(Order $order, Collection $cartItems): void
     {
         foreach ($cartItems as $item) {
+            if ($item?->kilo_measurement) {
+                $measurement = match ($item->kilo_measurement) {
+                    "0.25" => '1/4',
+                    "0.50" => '1/2',
+                    "1" => '1/4',
+                };
+            } else {
+                $measurement = 'piece';
+            }
+
+
             $orderItem = new OrderItem();
             $orderItem->product_id = $item->product_id;
             $orderItem->order_id = $order->id;
             $orderItem->name = "{$item->product->name}";
             $orderItem->unit_price = $item->product->price;
+            $orderItem->measurement = $measurement;
             $orderItem->quantity = $item->quantity;
 
             if (!$orderItem->save()) {
@@ -171,7 +187,12 @@ class CheckoutController extends Controller
             }
 
             $product = $item->product;
-            $product->quantity -= $item->quantity;
+
+            if ($item?->kilo_measurement) {
+                $product->quantity -= ($item->quantity * $item->kilo_measurement);
+            } else {
+                $product->quantity -= $item->quantity;
+            }
 
             if ($product->quantity < 0) {
                 throw new \InvalidArgumentException("Vendor does not have enough {$product->name} in stock.");
@@ -229,6 +250,7 @@ class CheckoutController extends Controller
 
             return response()->json(['message' => $e->getMessage()], 400);
         } catch (\Throwable $th) {
+            logger($th->getMessage());
             DB::rollBack();
 
             return response()->json(['message' => 'Encountered an error while previewing the check out.'], 400);

@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('store_id')->constrained('stores')->onDelete('cascade');
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->unsignedInteger('quantity');
+            $table->unsignedDecimal('kilo_measurement', 8, 2)->nullable();
+            $table->unsignedDecimal('quantity', 8, 2);
             $table->timestamps();
         });
     }

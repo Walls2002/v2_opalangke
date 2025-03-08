@@ -25,6 +25,12 @@ class CartController extends Controller
         $cart = [];
 
         foreach ($cartItems as $item) {
+            if ($item?->kilo_measurement) {
+                $cost = ($item->product->price * $item->kilo_measurement) * $item->quantity;
+            } else {
+                $cost = $item->product->price * $item->quantity;
+            }
+
             $product = [
                 'id' => $item->product->id,
                 'name' => $item->product->name,
@@ -32,7 +38,8 @@ class CartController extends Controller
                 'remaining_qty' => $item->product->quantity,
                 'selected_qty' => $item->quantity,
                 'measurement' => $item->product->measurement,
-                'total_cost' => $item->product->price * $item->quantity
+                'kilo_measurement' => $item->kilo_measurement,
+                'total_cost' => $cost
             ];
 
             $cart[$item->store->id]['id'] = $item->store->id;
@@ -55,9 +62,13 @@ class CartController extends Controller
      */
     public function store(Request $request, Product $product): JsonResponse
     {
-        $request->validate([
-            'quantity' => ['nullable', 'numeric', 'min:0.1', 'max:1000000'],
-        ]);;
+        $rules = ['quantity' => 'nullable', 'integer', 'min:1', 'max:10000'];
+
+        if ($product->measurement === 'kilo') {
+            $rules['kilo_measurement'] = ['required', 'in:0.25,0.50,1'];
+        }
+
+        $validated = $request->validate($rules);
 
         $cartItem = Cart::query()
             ->where('user_id', $request->user()->id)
@@ -70,6 +81,8 @@ class CartController extends Controller
             } else {
                 $cartItem->increment('quantity', 1);
             }
+
+            $cartItem->kilo_measurement = $validated['kilo_measurement'] ?? null;
 
             if (!$cartItem->save()) {
                 return response()->json(['message' => 'Could not update cart quantity.'], 400);
@@ -84,6 +97,7 @@ class CartController extends Controller
                 'user_id' => $request->user()->id,
                 'store_id' => $product->store_id,
                 'product_id' => $product->id,
+                'kilo_measurement' => $validated['kilo_measurement'] ?? null,
                 'quantity' => $qty,
             ]);
         }
