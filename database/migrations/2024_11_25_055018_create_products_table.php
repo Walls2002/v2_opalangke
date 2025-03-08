@@ -14,8 +14,8 @@ class CreateProductsTable extends Migration
             $table->foreignId('store_id')->constrained('stores')->onDelete('cascade');
             $table->string('name');
             $table->string('measurement');
-            $table->decimal('price', 8, 2);
-            $table->integer('quantity')->default(1);
+            $table->unsignedDecimal('price', 8, 2);
+            $table->unsignedDecimal('quantity', 8, 2);
             $table->string('image')->nullable(); // Path to image file
             $table->timestamps();
         });

@@ -232,9 +232,9 @@ class DatabaseSeeder extends Seeder
             'category_id' => $category->id,
             'store_id' => $store->id,
             'name' => "{$store->store_name} Product {$name}",
-            'measurement' => fake()->randomElement(['piece', '1 kg', '1/2 kg', '1/4 kg', '200ml', '500ml', '1 Liter']),
+            'measurement' => fake()->randomElement(['piece', 'kilo']),
             'price' => random_int(25, 400),
-            'quantity' => random_int(1, 3000),
+            'quantity' => (float) random_int(1, 3000),
             'image' => null,
         ]);
     }
