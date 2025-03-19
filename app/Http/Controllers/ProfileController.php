@@ -11,14 +11,18 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $rules['name'] = ['required', 'string', 'min:3', 'max:100'];
-        $rules['contact'] = ['required'];
-        $rules['email'] = ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)];
+        $request->validate([
+            'last_name' => 'required|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'required|string|max:50',
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'contact' => 'nullable|string|max:15',
+        ]);
 
-        $request->validate(rules: $rules);
-
+        $user->last_name = $request->last_name;
+        $user->first_name = $request->first_name;
+        $user->middle_name = $request->middle_name;
         $user->contact = $request->contact;
-        $user->name = $request->name;
         $user->email = $request->email;
 
         if (!$user->save()) {
@@ -46,11 +50,12 @@ class ProfileController extends Controller
 
     public function changeProfilePhoto(Request $request)
     {
+        $user = $request->user();
+
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $user = $request->user();
         $fileName = $request->file('image')->store('profiles', 'public');
         $user->profile_picture = $fileName;
 
