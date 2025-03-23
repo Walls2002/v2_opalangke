@@ -52,6 +52,8 @@ class RiderController extends Controller
 
     public function update(Request $request, Rider $rider)
     {
+        $rider->load('user');
+
         $validated = $request->validate([
             'location_id' => 'required|exists:locations,id',
             'last_name' => 'required|string|max:50',
@@ -60,7 +62,7 @@ class RiderController extends Controller
             'contact_number' => 'required|string|max:20',
             'license_number' => "required|string|max:50|unique:riders,license_number,{$rider->id}",
             'plate_number' => "required|string|max:50|unique:riders,plate_number,{$rider->id}",
-            'email' => "required|string|email|max:255|unique:users,email,{$rider->id}",
+            'email' => "required|string|email|max:255|unique:users,email,{$rider->user->id}",
             'password' => 'nullable|string|min:8',
         ]);
 
@@ -68,7 +70,6 @@ class RiderController extends Controller
             $validated['password'] = bcrypt($request->password);
         }
 
-        $rider->load('user');
 
         $rider->user->update($validated);
         $rider->update([
