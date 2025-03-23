@@ -16,6 +16,7 @@ class CreateRidersTable extends Migration
             $table->foreignId('user_id'); // Foreign key to vendors (users with role 'vendor')
             $table->string('license_number')->unique();
             $table->string('plate_number')->unique();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
 
             // Foreign key constraint

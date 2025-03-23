@@ -122,6 +122,10 @@ class RiderOrderController extends Controller
         $rider->load('rider');
         $order->load(['items', 'user', 'store']);
 
+        if ($rider->is_active === false) {
+            return response()->json(['message' => 'Your rider account is deactivated, you can not take orders.'], 422);
+        }
+
         if ($order->rider_team_only) {
             if (!RiderStore::where('rider_id', $rider->rider->id)->where('store_id', $order->store->id)->exists()) {
                 return response()->json(['message' => 'You are not part of the rider team of this store.'], 403);

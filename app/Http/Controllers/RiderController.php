@@ -54,7 +54,9 @@ class RiderController extends Controller
     {
         $validated = $request->validate([
             'location_id' => 'required|exists:locations,id',
-            'name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'required|string|max:50',
             'contact_number' => 'required|string|max:20',
             'license_number' => "required|string|max:50|unique:riders,license_number,{$rider->id}",
             'plate_number' => "required|string|max:50|unique:riders,plate_number,{$rider->id}",
@@ -95,13 +97,18 @@ class RiderController extends Controller
             return response()->json(['message' => 'Error verifying rider account.']);
         }
 
-
         return response()->json(['message' => 'Rider verified successfully.', 'rider' => $rider]);
     }
 
     public function destroy(Rider $rider)
     {
-        $rider->delete();
-        return response()->json(['message' => 'Rider deleted successfully.']);
+        $rider->riderStores()->delete();
+        $rider->is_active = false;
+
+        if (!$rider->save()) {
+            return response()->json(['message' => 'Error deactivating rider account.']);
+        }
+
+        return response()->json(['message' => 'Rider deactivated successfully.']);
     }
 }

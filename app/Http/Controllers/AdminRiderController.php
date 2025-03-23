@@ -27,8 +27,9 @@ class AdminRiderController extends Controller
         }
 
         $riders = User::query()
-            ->where('role', 'rider')
             ->with(['rider'])
+            ->where('role', 'rider')
+            ->whereRelation('rider', 'is_active', '=', true)
             ->get();
 
         return response()->json(['riders' => $riders]);

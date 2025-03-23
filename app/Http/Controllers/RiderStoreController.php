@@ -15,6 +15,30 @@ use Illuminate\Http\Request;
 class RiderStoreController extends Controller
 {
     /**
+     * Get all the riders added by in this stores location.
+     *
+     * @param Request $request
+     * @param Store $store
+     * @return JsonResponse
+     */
+    public function indexLocal(Request $request, Store $store): JsonResponse
+    {
+        if ($request->user()->id !== $store->vendor_id) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $storeRiders = Rider::with(['user'])
+            ->whereRelation('user', 'location_id', '=', $store->location_id)
+            ->where('is_active', true)
+            ->get();
+
+        return response()->json([
+            'message' => 'Local riders fetched.',
+            'store_riders' => $storeRiders,
+        ]);
+    }
+
+    /**
      * Get all the riders added by this store as part of their team.
      *
      * @param Request $request
@@ -27,8 +51,9 @@ class RiderStoreController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        $storeRiders = RiderStore::with(['rider.user'])
-            ->where('store_id', $store->id)
+        $storeRiders = Rider::with(['user'])
+            ->whereRelation('riderStores', 'store_id', '=', $store->id)
+            ->where('is_active', true)
             ->get();
 
         return response()->json([
@@ -111,6 +136,12 @@ class RiderStoreController extends Controller
         if (!$futureRider || $futureRider->role !== 'rider') {
             return response()->json([
                 'message' => 'Invalid user, the user must be a registered rider.'
+            ]);
+        }
+
+        if ($futureRider->location_id !== $store->location_id) {
+            return response()->json([
+                'message' => 'Invalid rider, the rider and store must be on the same location.'
             ]);
         }
 

@@ -23,6 +23,16 @@ class Rider extends Authenticatable
         'user_id',
         'license_number',
         'plate_number',
+        'is_deleted',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_deleted' => 'boolean',
     ];
 
     public function rating(): Attribute
@@ -70,5 +80,10 @@ class Rider extends Authenticatable
     public function reviews()
     {
         return $this->hasMany(ReviewRider::class);
+    }
+
+    public function riderStores()
+    {
+        return $this->hasMany(RiderStore::class);
     }
 }

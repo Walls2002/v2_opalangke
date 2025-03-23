@@ -159,8 +159,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/store-riders/{store}/local', [RiderStoreController::class, 'indexLocal']);
     Route::post('/store-riders/{store}/register', [RiderStoreController::class, 'storeRegister']);
-    Route::get('/store-riders/{store}', [RiderStoreController::class, 'index']);
+    Route::get('/store-riders/{store}/team', [RiderStoreController::class, 'index']);
     Route::post('/store-riders/{store}', [RiderStoreController::class, 'store']);
     Route::delete('/store-riders/{riderStore}', [RiderStoreController::class, 'destroy']);
 });
