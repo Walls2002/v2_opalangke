@@ -16,12 +16,12 @@
 
         <!-- User Dropdown-->
         <li class="nav-item dropdown no-caret dropdown-user me-3 me-lg-4">
-            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="img-fluid" src="../assets/img/user.jpg" /></a>
+            <a class="btn btn-icon btn-transparent-dark dropdown-toggle" id="navbarDropdownUserImage" href="javascript:void(0);" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img class="img-fluid" id="dropdownUserImg2" src="../assets/img/user.jpg" /></a>
             <div class="dropdown-menu dropdown-menu-end border-0 shadow animated--fade-in-up" aria-labelledby="navbarDropdownUserImage">
                 <h6 class="dropdown-header d-flex align-items-center">
-                    <img class="dropdown-user-img" src="../assets/img/user.jpg" />
+                    <img class="dropdown-user-img" id="dropdownUserImg" src="../assets/img/user.jpg" />
                     <div class="dropdown-user-details">
-                        <div class="dropdown-user-details-name"></div>
+                        <div class="dropdown-user-details-name" id="dropdownUserName"></div>
                     </div>
                 </h6>
                 <div class="dropdown-divider"></div>
@@ -39,20 +39,31 @@
 </nav>
 
 <script>
-    const user2 = JSON.parse(localStorage.getItem('user'));
-
-    // Display user name if available
-    if (user2 && user2.name) {
-        $('.dropdown-user-details-name').text(user2.name);
-    }
-</script>
-
-<script>
     document.getElementById('logoutButton').addEventListener('click', function () {
         // Clear all local storage
         localStorage.clear();
 
         // Redirect to home page
         window.location.href = '/';
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        const user = JSON.parse(localStorage.getItem("user"));
+
+        if (user) {
+            // Set user name
+            $("#dropdownUserName").text(user.first_name + " " + user.last_name);
+
+            // Set profile picture if it exists
+            if (user.profile_picture) {
+                $("#dropdownUserImg").attr("src", `/storage/${user.profile_picture}`);
+            }
+
+            if (user.profile_picture) {
+                $("#dropdownUserImg2").attr("src", `/storage/${user.profile_picture}`);
+            }
+        }
     });
 </script>

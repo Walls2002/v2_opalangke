@@ -18,11 +18,25 @@
                                         <form id="registrationForm">
                                             <!-- Form Row-->
                                             <div class="row gx-3">
-                                                <div class="col-12">
+                                                <div class="col-4">
                                                     <!-- Form Group (name)-->
                                                     <div class="mb-3">
-                                                        <label class="small mb-1" for="inputName">Name</label>
-                                                        <input class="form-control" id="inputName" type="text" placeholder="Enter name" required />
+                                                        <label class="small mb-1" for="inputName">First Name</label>
+                                                        <input class="form-control" id="inputFirstName" type="text" placeholder="Enter first name" required />
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <!-- Form Group (name)-->
+                                                    <div class="mb-3">
+                                                        <label class="small mb-1" for="inputName">Middle Name</label>
+                                                        <input class="form-control" id="inputMiddleName" type="text" placeholder="Enter middle name" required />
+                                                    </div>
+                                                </div>
+                                                <div class="col-4">
+                                                    <!-- Form Group (name)-->
+                                                    <div class="mb-3">
+                                                        <label class="small mb-1" for="inputName">Last Name</label>
+                                                        <input class="form-control" id="inputLastName" type="text" placeholder="Enter last name" required />
                                                     </div>
                                                 </div>
                                             </div>
@@ -36,6 +50,14 @@
                                                 <label class="small mb-1" for="inputContact">Contact Number</label>
                                                 <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required />
                                             </div>
+
+                                            <div class="mb-3">
+                                                <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
+                                                <select id="locationDropdown" class="form-select" required>
+                                                    <option value="">Select Location</option>
+                                                </select>
+                                            </div>
+
                                             <!-- Form Row -->
                                             <div class="row gx-3">
                                                 <div class="col-md-6">
@@ -70,15 +92,39 @@
         @include('layout.scripts')
 
         <script>
+            document.addEventListener("DOMContentLoaded", async function () {
+                const locationDropdown = $('#locationDropdown');
+                $.ajax({
+                        url: '/api/locations',
+                        method: 'GET',
+                        dataType: 'json',
+                        success: function (locations) {
+                            // Populate the dropdown with locations
+                            locations.forEach(location => {
+                                const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
+                                locationDropdown.append(option);
+                            });
+                        },
+                        error: function (error) {
+                            console.error('Error fetching locations:', error);
+                        }
+                    });
+                });
+        </script>
+
+        <script>
             document.getElementById('registrationForm').addEventListener('submit', function (event) {
                 event.preventDefault(); // Prevent default form submission
 
                 // Get form data
-                const name = document.getElementById('inputName').value;
+                const first_name = document.getElementById('inputFirstName').value;
+                const middle_name = document.getElementById('inputMiddleName').value;
+                const last_name = document.getElementById('inputLastName').value;
                 const email = document.getElementById('inputEmail').value;
                 const contact = document.getElementById('inputContact').value;
                 const password = document.getElementById('inputPassword').value;
                 const confirmPassword = document.getElementById('inputConfirmPassword').value;
+                const location_id = document.getElementById("locationDropdown").value.trim();
 
                 // Simple password match validation
                 if (password !== confirmPassword) {
@@ -88,10 +134,13 @@
 
                 // Prepare payload
                 const payload = {
-                    name: name,
+                    first_name: first_name,
+                    last_name: last_name,
+                    middle_name: middle_name,
                     email: email,
                     password: password,
                     contact: contact,
+                    location_id: location_id,
                 };
 
                 // Make AJAX request

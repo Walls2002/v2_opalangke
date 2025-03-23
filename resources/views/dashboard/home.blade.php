@@ -322,8 +322,8 @@
         const user = JSON.parse(localStorage.getItem('user'));
 
         // Display user name if available
-        if (user && user.name) {
-            document.getElementById('welcomeMessage').textContent = `Welcome back, ${user.name} 👋`;
+        if (user && user.first_name) {
+            document.getElementById('welcomeMessage').textContent = `Welcome back, ${user.first_name} 👋`;
         }
     </script>
 

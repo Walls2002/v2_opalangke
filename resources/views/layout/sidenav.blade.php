@@ -14,6 +14,10 @@
                     <div class="nav-link-icon"><i data-feather="users"></i></div>
                     Vendors
                 </a>
+                <a class="nav-link role-admin" href="/vouchers">
+                    <div class="nav-link-icon"><i data-feather="percent"></i></div>
+                    Vouchers
+                </a>
                 <a class="nav-link role-admin" href="/locations">
                     <div class="nav-link-icon"><i data-feather="map"></i></div>
                     Location
@@ -99,8 +103,8 @@
         const user_type = JSON.parse(localStorage.getItem('user_type'));
 
         // Display user name if available
-        if (user && user.name) {
-            $('.sidenav-footer-title').text('Logged in as: '+user.name);
+        if (user && user.first_name) {
+            $('.sidenav-footer-title').text('Logged in as: '+user.first_name);
         }
 
         if (user && user.role) {

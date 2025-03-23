@@ -26,7 +26,9 @@
                                     <thead>
                                         <tr>
                                             <th>ID</th>
-                                            <th>Name</th>
+                                            <th>First Name</th>
+                                            <th>Middle Name</th>
+                                            <th>Last Name</th>
                                             <th>Email</th>
                                             <th>Contact</th>
                                             <th>Status</th>
@@ -54,7 +56,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="createUserModalLabel">Create New User</h5>
+                    <h5 class="modal-title" id="createUserModalLabel">Create New Vendor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 
@@ -62,8 +64,16 @@
                     <div class="modal-body">
                         <form id="createUserForm">
                             <div class="mb-3">
-                                <label for="createUserName" class="form-label">Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="createUserName" placeholder="Enter full name" required />
+                                <label for="createUserName" class="form-label">First Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="createUserFirstName" placeholder="Enter first name" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="createUserName" class="form-label">Middle Name</label>
+                                <input type="text" class="form-control" id="createUserMiddleName" placeholder="Enter middle name" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="createUserName" class="form-label">Last Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="createUserLastName" placeholder="Enter last name" required />
                             </div>
                             <div class="mb-3">
                                 <label for="createUserEmail" class="form-label">Email<span class="text-danger">*</span></label>
@@ -72,6 +82,12 @@
                             <div class="mb-3">
                                 <label for="createUserContact" class="form-label">Contact<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="createUserContact" placeholder="Enter contact number" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
+                                <select id="locationDropdown" class="form-select" required>
+                                    <option value="">Select Location</option>
+                                </select>
                             </div>
                         
                             <div class="modal-footer">
@@ -89,22 +105,36 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                    <h5 class="modal-title" id="editUserModalLabel">Edit Vendor</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <form id="editUserForm">
                         <div class="mb-3">
-                            <label for="editName" class="form-label">Name<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="editName" name="name">
+                            <label for="createUserName" class="form-label">First Name<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="editFirstName" placeholder="Enter first name" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="createUserName" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control" id="editMiddleName" placeholder="Enter middle name" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="createUserName" class="form-label">Last Name<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="editLastName" placeholder="Enter last name" required />
                         </div>
                         <div class="mb-3">
                             <label for="editEmail" class="form-label">Email<span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" id="editEmail" name="email">
+                            <input type="email" class="form-control" id="editEmail" name="email" required>
                         </div>
                         <div class="mb-3">
                             <label for="editContact" class="form-label">Contact<span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="editContact" name="contact">
+                            <input type="text" class="form-control" id="editContact" name="contact" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
+                            <select id="locationDropdown2" class="form-select" required>
+                                <option value="">Select Location</option>
+                            </select>
                         </div>
                     
                         <div class="modal-footer">
@@ -134,7 +164,9 @@
                     },
                     columns: [
                         { data: 'id' },
-                        { data: 'name' },
+                        { data: 'first_name' },
+                        { data: 'middle_name' },
+                        { data: 'last_name' },
                         { data: 'email' },
                         { data: 'contact' },
                         {
@@ -184,9 +216,12 @@
                     const user = response.data;
 
                     // Populate form fields with user data
-                    document.getElementById('editName').value = user.name;
+                    document.getElementById('editFirstName').value = user.first_name;
+                    document.getElementById('editMiddleName').value = user.middle_name;
+                    document.getElementById('editLastName').value = user.last_name;
                     document.getElementById('editEmail').value = user.email;
                     document.getElementById('editContact').value = user.contact || '';
+                    document.getElementById('locationDropdown2').value = user.location_id || '';
 
                     // Attach user ID to the form for submission
                     document.getElementById('editUserForm').dataset.userId = userId;
@@ -243,17 +278,44 @@
     </script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const locationDropdown = $('#locationDropdown');
+            const locationDropdown2 = $('#locationDropdown2');
+
+            $.ajax({
+                    url: '/api/locations',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (locations) {
+                        // Populate the dropdown with locations
+                        locations.forEach(location => {
+                            const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
+                            locationDropdown.append(option);
+                            locationDropdown2.append(option);
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error fetching locations:', error);
+                    }
+                });
+            });
+    </script>
+
+    <script>
         //CREATE USER
         document.getElementById("createUserForm").addEventListener("submit", async function (event) {
                 event.preventDefault(); // Prevent default form submission behavior
 
                 // Get form input values
-                const name = document.getElementById("createUserName").value.trim();
+                const first_name = document.getElementById("createUserFirstName").value.trim();
+                const middle_name = document.getElementById("createUserMiddleName").value.trim();
+                const last_name = document.getElementById("createUserLastName").value.trim();
                 const email = document.getElementById("createUserEmail").value.trim();
                 const contact = document.getElementById("createUserContact").value.trim();
+                const location_id = document.getElementById("locationDropdown").value.trim();
 
                 // Basic validation
-                if (!name || !email || !contact) {
+                if (!first_name || !last_name || !email || !contact || !location_id) {
                     alert("Please fill in all required fields.");
                     return;
                 }
@@ -261,12 +323,14 @@
                 try {
                     // Send POST request to create user
                     const response = await axios.post('/api/users', {
-                        name: name,
+                        first_name: first_name,
+                        middle_name: middle_name,
+                        last_name: last_name,
                         email: email,
                         contact: contact,
-                        plate_number: null,
                         role: "vendor",
-                        password: 'password'
+                        password: 'password',
+                        location_id: location_id
                     }, );
 
                     // Show success message
@@ -300,12 +364,15 @@
             const userId = this.dataset.userId; // Retrieve user ID from the form's dataset
 
             // Get updated data from form inputs
-            const name = document.getElementById('editName').value.trim();
+            const first_name = document.getElementById("editFirstName").value.trim();
+            const middle_name = document.getElementById("editMiddleName").value.trim();
+            const last_name = document.getElementById("editLastName").value.trim();
             const email = document.getElementById('editEmail').value.trim();
             const contact = document.getElementById('editContact').value.trim();
+            const location_id = document.getElementById("locationDropdown2").value.trim();
 
             // Basic validation
-            if (!name || !email || !contact) {
+            if (!first_name || !last_name || !email || !contact || !location_id) {
                 alert("Please fill in all required fields.");
                 return;
             }
@@ -313,11 +380,13 @@
             try {
                 // Send PUT request to update the user
                 const response = await axios.put(`/api/users/${userId}`, {
-                    name: name,
+                    first_name: first_name,
+                    middle_name: middle_name,
+                    last_name: last_name,
                     email: email,
                     contact: contact,
-                    plate_number: null,
                     role: "vendor",
+                    location_id: location_id
                 }, {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required

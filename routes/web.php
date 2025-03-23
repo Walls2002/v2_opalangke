@@ -42,6 +42,10 @@ Route::get('/vendors', function () {
     return view('dashboard/vendors');
 });
 
+Route::get('/vouchers', function () {
+    return view('dashboard/vouchers');
+});
+
 Route::get('/locations', function () {
     return view('dashboard/locations');
 });

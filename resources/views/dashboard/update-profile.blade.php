@@ -19,13 +19,36 @@
                     </div>
                     <!-- Illustration dashboard card example-->
                     <div class="row">
+                        <div class="col-12 col-lg-12 mb-3">
+                            <div class="card">
+                                <div class="card-body p-5 text-center">
+                                    <!-- Profile Picture Display -->
+                                    <img id="profilePicture" src="" alt="Profile Picture" class="img-fluid rounded-circle" width="150" height="150">
+                        
+                                    <!-- File Upload Input -->
+                                    <input type="file" id="profilePicInput" class="form-control mt-3" accept="image/*">
+                                    
+                                    <!-- Update Button -->
+                                    <button id="updateProfilePicBtn" class="btn btn-primary mt-3">Change Profile Picture</button>
+                                </div>
+                            </div>  
+                        </div>
+
                         <div class="col-12 col-lg-6 mb-3">
                             <div class="card">
                                 <div class="card-body p-5">
                                     <form id="updateProfile">
                                         <div class="mb-3">
-                                            <label for="createUserName" class="form-label">Name<span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="name" placeholder="Enter full name" required />
+                                            <label for="createUserName" class="form-label">First Name<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="first_name" placeholder="Enter first name" required />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="createUserName" class="form-label">Middle Name<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="middle_name" placeholder="Enter middle name" required />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="createUserName" class="form-label">Last Name<span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="last_name" placeholder="Enter last name" required />
                                         </div>
                                         <div class="mb-3">
                                             <label for="createUserEmail" class="form-label">Email<span class="text-danger">*</span></label>
@@ -35,7 +58,12 @@
                                             <label for="createUserContact" class="form-label">Contact<span class="text-danger">*</span></label>
                                             <input type="text" class="form-control" id="contact" placeholder="Enter contact number" required />
                                         </div>
-                                    
+                                        <div class="mb-3">
+                                            <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
+                                            <select id="locationDropdown" class="form-select" required>
+                                                <option value="">Select Location</option>
+                                            </select>
+                                        </div>
                                         <div class="modal-footer">
                                             <button type="submit" class="btn btn-primary">Update Details</button>
                                         </div>
@@ -90,23 +118,64 @@
             // Get user details from localStorage
             const user = JSON.parse(localStorage.getItem('user'));
             const userId = user.id;
-
+            const token = localStorage.getItem('token');
+    
             // Fetch user details using AJAX
             $.ajax({
                 url: `/api/users/${userId}`, // API endpoint
                 type: 'GET',
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}` // Include token if required
+                    Authorization: `Bearer ${token}` // Include token
                 },
                 success: function (response) {
-                    // Populate the form fields with the user details
-                    $('#name').val(response.name);
+                    // Populate form fields
+                    $('#first_name').val(response.first_name);
+                    $('#middle_name').val(response.middle_name);
+                    $('#last_name').val(response.last_name);
                     $('#email').val(response.email);
                     $('#contact').val(response.contact);
+                    $('#locationDropdown').val(response.location_id);
+    
+                    // Set profile picture
+                    const profilePicUrl = response.profile_picture 
+                        ? `/storage/${response.profile_picture}` 
+                        : '/default-avatar.png'; // Fallback image
+                    $('#profilePicture').attr('src', profilePicUrl);
+
+                    localStorage.setItem("user", JSON.stringify(response));
                 },
                 error: function (xhr, status, error) {
                     console.error('Error fetching user details:', error);
                     alert('Failed to load user details. Please try again.');
+                }
+            });
+    
+            // Handle Profile Picture Upload
+            $('#updateProfilePicBtn').on('click', async function () {
+                const fileInput = $('#profilePicInput')[0].files[0];
+    
+                if (!fileInput) {
+                    alert("Please select an image to upload.");
+                    return;
+                }
+    
+                let formData = new FormData();
+                formData.append("image", fileInput);
+    
+                try {
+                    const response = await axios.post(`/api/profile/change-profile-picture`, formData, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                            "Content-Type": "multipart/form-data"
+                        },
+                    });
+    
+                    alert("Profile picture updated successfully!");
+                    location.reload()
+    
+                } catch (error) {
+                    console.error("Error uploading profile picture:", error);
+                    alert("Failed to update profile picture. Please try again.");
                 }
             });
         });
@@ -118,40 +187,49 @@
             event.preventDefault(); // Prevent default form submission behavior
 
             // Get updated data from form inputs
-            const name = document.getElementById('name').value.trim();
+            const first_name = document.getElementById("first_name").value.trim();
+            const middle_name = document.getElementById("middle_name").value.trim();
+            const last_name = document.getElementById("last_name").value.trim();
             const email = document.getElementById('email').value.trim();
             const contact = document.getElementById('contact').value.trim();
-
-            // Basic validation
-            if (!name || !email || !contact) {
-                alert("Please fill in all required fields.");
-                return;
-            }
+            const location_id = document.getElementById("locationDropdown").value.trim();
+            const token = localStorage.getItem('token'); // Retrieve the token
 
             try {
-                // Send PUT request to update the user
+                // Send PUT request to update the user profile
                 const response = await axios.put(`/api/profile/update`, {
-                    name: name,
-                    email: email,
-                    contact: contact
+                    first_name,
+                    middle_name,
+                    last_name,
+                    email,
+                    contact,
                 }, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
+                        Authorization: `Bearer ${token}`, // Include token if required
                     },
                 });
 
                 // Update the user data in localStorage
                 const updatedUser = {
                     ...JSON.parse(localStorage.getItem('user')), // Get the existing user object
-                    name: response.data.user.name,                  // Update the name
-                    email: response.data.user.email,                // Update the email
-                    contact: response.data.user.contact             // Update the contact
+                    first_name: response.data.user.first_name,
+                    email: response.data.user.email,
+                    contact: response.data.user.contact
                 };
                 localStorage.setItem('user', JSON.stringify(updatedUser));
 
-                // Show success message
-                alert("Profile has been updated successfully!");
-                location.reload()
+                // After success, update the location_id
+                await axios.put(`/api/profile/change-location`, {
+                    location_id: location_id
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Include token
+                    },
+                });
+
+                // Show success message and reload the page
+                alert("Profile and location have been updated successfully!");
+                location.reload();
 
             } catch (error) {
                 // Handle error response
@@ -164,6 +242,8 @@
         });
     </script>
 
+
+    //password
     <script>
         $(document).ready(function () {
             // Add toggle for showing/hiding passwords inside input groups
@@ -216,6 +296,27 @@
                 }
             });
         });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const locationDropdown = $('#locationDropdown');
+            $.ajax({
+                    url: '/api/locations',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (locations) {
+                        // Populate the dropdown with locations
+                        locations.forEach(location => {
+                            const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
+                            locationDropdown.append(option);
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error fetching locations:', error);
+                    }
+                });
+            });
     </script>
     
 </body>

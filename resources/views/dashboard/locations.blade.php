@@ -28,7 +28,9 @@
                                             <th>Province</th>
                                             <th>City</th>
                                             <th>Barangay</th>
+                                            <th>Shipping Fee</th>
                                             <th>Actions</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -57,16 +59,20 @@
                 <div class="modal-body">
                     <form id="locationForm">
                         <div class="mb-3">
-                            <label for="createCity" class="form-label">City</label>
+                            <label for="createCity" class="form-label">City<span class="text-danger">*</span></label>
                             <select class="form-select" id="createCity" required>
                                 <option value="">Select City</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="createBarangay" class="form-label">Barangay</label>
+                            <label for="createBarangay" class="form-label">Barangay<span class="text-danger">*</span></label>
                             <select class="form-select" id="createBarangay" required>
                                 <option value="">Select Barangay</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Shipping Fee<span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="shipping_fee" placeholder="Enter shipping fee" required />
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
@@ -101,6 +107,10 @@
                                 <option value="">Select Barangay</option>
                             </select>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Shipping Fee<span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="updateshipping_fee" placeholder="Enter shipping fee" required />
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -127,6 +137,15 @@
                     { data: 'province' },
                     { data: 'city' },
                     { data: 'barangay' },
+                    { data: 'shipping_fee' },
+                    {
+                        data: 'id',
+                        render: function (data, type, row) {
+                            return `
+                                <button class="btn btn-warning btn-sm" onclick="editLocation(${data})">Edit</button>
+                            `;
+                        }
+                    },
                     {
                         data: 'id',
                         render: function (data, type, row) {
@@ -160,6 +179,63 @@
     
             // Attach the delete function globally for dynamic elements
             window.deleteLocation = deleteLocation;
+
+            // Function to populate the update form with location data
+            function editLocation(id) {
+                axios.get(`/api/locations/${id}`)
+                    .then(response => {
+                        const location = response.data;
+                        $('#updateLocationId').val(location.id);
+                        $('#updateCity').html(`<option value="${location.city_code}">${location.city}</option>`);
+                        $('#updateBarangay').html(`<option value="${location.barangay_code}">${location.barangay}</option>`);
+                        $('#updateshipping_fee').val(location.shipping_fee);
+
+                        // Show the update modal
+                        const updateModal = new bootstrap.Modal(document.getElementById('updateLocationModal'));
+                        updateModal.show();
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        alert('Failed to load location details.');
+                    });
+            }
+
+            // Handle update form submission
+            $('#updateLocationForm').on('submit', function (e) {
+                e.preventDefault();
+
+                const id = $('#updateLocationId').val();
+                const city = $('#updateCity').val();
+                const barangay = $('#updateBarangay').val();
+                const shipping_fee = $('#updateshipping_fee').val();
+
+                if (!city || !barangay || !shipping_fee) {
+                    alert('Please fill out all required fields.');
+                    return;
+                }
+
+                axios.put(`/api/locations/${id}`, {
+                    city_code: city,
+                    barangay_code: barangay,
+                    shipping_fee: shipping_fee
+                })
+                .then(response => {
+                    alert('Location updated successfully!');
+                    
+                    // Close modal
+                    const updateModal = bootstrap.Modal.getInstance(document.getElementById("updateLocationModal"));
+                    updateModal.hide();
+
+                    $('#locationsTable').DataTable().ajax.reload(); // Refresh table
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('Failed to update location.');
+                });
+            });
+
+            // Attach edit function globally for dynamic elements
+            window.editLocation = editLocation;
         });
     </script>    
 
@@ -207,6 +283,7 @@
             const cityName = $('#createCity option:selected').text(); // Get selected city name
             const barangayCode = $('#createBarangay').val();
             const barangayName = $('#createBarangay option:selected').text().toUpperCase();
+            const shipping_fee = $('#shipping_fee').val();
 
             if (!cityCode || !barangayCode) {
                 alert('Please select both City and Barangay.');
@@ -219,7 +296,8 @@
                 city_code: cityCode,
                 city: cityName,
                 barangay_code: barangayCode,
-                barangay: barangayName
+                barangay: barangayName,
+                shipping_fee: shipping_fee
             })
             .then(response => {
                 alert('Location created successfully!');
