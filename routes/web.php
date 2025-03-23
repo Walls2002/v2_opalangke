@@ -56,6 +56,10 @@ Route::get('/admin/stores', function () {
     return view('dashboard/admin-stores');
 });
 
+Route::get('/admin/riders', function () {
+    return view('dashboard/admin-riders');
+});
+
 
 //
 

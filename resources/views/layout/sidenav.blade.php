@@ -14,6 +14,10 @@
                     <div class="nav-link-icon"><i data-feather="users"></i></div>
                     Vendors
                 </a>
+                <a class="nav-link role-admin" href="/admin/riders">
+                    <div class="nav-link-icon"><i data-feather="users"></i></div>
+                    Riders
+                </a>
                 <a class="nav-link role-admin" href="/admin/stores">
                     <div class="nav-link-icon"><i data-feather="shopping-bag"></i></div>
                     Stores
