@@ -38,17 +38,26 @@ Route::get('/update-profile', function () {
     return view('dashboard/update-profile');
 });
 
-Route::get('/vendors', function () {
-    return view('dashboard/vendors');
+//admin
+
+Route::get('/admin/vendors', function () {
+    return view('dashboard/admin-vendors');
 });
 
-Route::get('/vouchers', function () {
-    return view('dashboard/vouchers');
+Route::get('/admin/vouchers', function () {
+    return view('dashboard/admin-vouchers');
 });
 
-Route::get('/locations', function () {
-    return view('dashboard/locations');
+Route::get('/admin/locations', function () {
+    return view('dashboard/admin-locations');
 });
+
+Route::get('/admin/stores', function () {
+    return view('dashboard/admin-stores');
+});
+
+
+//
 
 Route::get('/cart', function () {
     return view('dashboard/cart');

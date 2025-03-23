@@ -25,7 +25,6 @@
                                 <table id="usersTable" class="table">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>First Name</th>
                                             <th>Middle Name</th>
                                             <th>Last Name</th>
@@ -163,7 +162,6 @@
                         dataSrc: '' // Adjust based on the response structure ('' if data is a direct array)
                     },
                     columns: [
-                        { data: 'id' },
                         { data: 'first_name' },
                         { data: 'middle_name' },
                         { data: 'last_name' },

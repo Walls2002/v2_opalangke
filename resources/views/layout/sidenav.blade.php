@@ -10,15 +10,19 @@
 
             <div class="sidenav-menu-heading">Pages</div>
                 <!-- admin -->
-                <a class="nav-link role-admin" href="/vendors">
+                <a class="nav-link role-admin" href="/admin/vendors">
                     <div class="nav-link-icon"><i data-feather="users"></i></div>
                     Vendors
                 </a>
-                <a class="nav-link role-admin" href="/vouchers">
+                <a class="nav-link role-admin" href="/admin/stores">
+                    <div class="nav-link-icon"><i data-feather="shopping-bag"></i></div>
+                    Stores
+                </a>
+                <a class="nav-link role-admin" href="/admin/vouchers">
                     <div class="nav-link-icon"><i data-feather="percent"></i></div>
                     Vouchers
                 </a>
-                <a class="nav-link role-admin" href="/locations">
+                <a class="nav-link role-admin" href="/admin/locations">
                     <div class="nav-link-icon"><i data-feather="map"></i></div>
                     Location
                 </a>
