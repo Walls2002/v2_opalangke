@@ -35,6 +35,7 @@ use App\Http\Controllers\RiderStoreController;
 use App\Http\Controllers\UserVoucherController;
 use App\Http\Controllers\VendorOrderController;
 use App\Http\Controllers\VoucherController;
+use App\Models\RiderStore;
 use Illuminate\Http\Request;
 
 Route::get('/me', function (Request $request) {
@@ -76,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::put('riders/{rider}/verify', [RiderController::class, 'updateVerify']);
     Route::apiResource('riders', RiderController::class);
 });
 
@@ -157,6 +159,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::post('/store-riders/{store}/register', [RiderStoreController::class, 'storeRegister']);
     Route::get('/store-riders/{store}', [RiderStoreController::class, 'index']);
     Route::post('/store-riders/{store}', [RiderStoreController::class, 'store']);
     Route::delete('/store-riders/{riderStore}', [RiderStoreController::class, 'destroy']);

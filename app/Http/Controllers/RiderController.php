@@ -77,6 +77,28 @@ class RiderController extends Controller
         return response()->json(['message' => 'Rider updated successfully.', 'rider' => $rider]);
     }
 
+    public function updateVerify(Request $request, Rider $rider)
+    {
+        if ($request->user()->role !== 'admin') {
+            return response()->json(
+                data: ['message' => 'Unauthorized.'],
+                status: 422,
+            );
+        }
+
+        $rider->load('user');
+        $user = $rider->user;
+
+        $user->email_verified_at = now();
+
+        if (!$user->save()) {
+            return response()->json(['message' => 'Error verifying rider account.']);
+        }
+
+
+        return response()->json(['message' => 'Rider verified successfully.', 'rider' => $rider]);
+    }
+
     public function destroy(Rider $rider)
     {
         $rider->delete();

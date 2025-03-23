@@ -38,6 +38,59 @@ class RiderStoreController extends Controller
     }
 
     /**
+     * Register a rider to this store and add them as a part of their team.
+     *
+     * @param Request $request
+     * @param Store $store
+     * @return JsonResponse
+     */
+    public function storeRegister(Request $request, Store $store): JsonResponse
+    {
+        if ($request->user()->id !== $store->vendor_id) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $request->validate([
+            'last_name' => 'required|string|max:50',
+            'first_name' => 'required|string|max:50',
+            'middle_name' => 'required|string|max:50',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'contact' => 'nullable|string|max:15',
+            'license_number' => 'required|string|max:15|unique:riders,license_number',
+            'plate_number' => 'required|string|max:15|unique:riders,plate_number',
+        ]);
+
+        $futureRider = User::create([
+            'location_id' => $store->location_id,
+            'last_name' => $request->last_name,
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'contact' => $request->contact,
+            'role' => 'rider',
+            'email_verified_at' => null,
+        ]);
+
+        $futureRider->rider = Rider::create([
+            'user_id' => $futureRider->id,
+            'license_number' => $request->license_number,
+            'plate_number' => $request->plate_number,
+        ]);
+
+        $riderStore = RiderStore::create([
+            'rider_id' => $futureRider->rider->id,
+            'store_id' => $store->id,
+        ]);
+
+        return response()->json([
+            'message' => 'Rider created, waiting for admin verification.',
+            'store_rider' => $riderStore,
+        ]);
+    }
+
+    /**
      * Add a rider to this store as part of their team.
      *
      * @param Request $request

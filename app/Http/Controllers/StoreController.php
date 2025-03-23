@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 class StoreController extends Controller
 {
     /**
-     * Display a listing of the stores.
+     * Display a listing of the logged user's stores.
      */
     public function index(Request $request)
     {
