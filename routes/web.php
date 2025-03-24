@@ -63,6 +63,10 @@ Route::get('/admin/riders', function () {
 
 //
 
+Route::get('/view-product', function () {
+    return view('dashboard/view-product');
+});
+
 Route::get('/cart', function () {
     return view('dashboard/cart');
 });

@@ -42,9 +42,9 @@
                 <!-- Section-->
                     <section class="py-5 role-customer">
                         <div class="mx-5">
-                            <label for="locationDropdown" class="form-label">Choose a Location:</label>
-                            <select id="locationDropdown" class="form-select">
-                                <option value="">Select Location</option>
+                            <label for="categoryDropdown" class="form-label">Select a Category:</label>
+                            <select id="categoryDropdown" class="form-select">
+                                <option value="">Select Category</option>
                             </select>
                         </div>
                         <div class="container px-4 px-lg-5 mt-5">
@@ -59,36 +59,65 @@
     </div>
     
     @include('layout.scripts')
+
+    
+
     <script>
         $(document).ready(function () {
-            const locationDropdown = $('#locationDropdown');
+            function checkUserRole() {
+                const user = JSON.parse(localStorage.getItem('user'));
+
+                if (user && user.role !== 'customer') {
+                    $('.role-customer').addClass('d-none');
+                }
+            }
+
+            // Initial role check for elements already present in the DOM
+            checkUserRole();
+
+            // Example: Re-run the check after dynamic content is loaded
+            $(document).ajaxComplete(function () {
+                checkUserRole();
+            });
+        });
+    </script>
+    
+    <script>
+        $(document).ready(function () {
+            const categoryDropdown = $('#categoryDropdown');
             const productContainer = $('#productContainer');
             
-            // Fetch locations for the dropdown
+            // Fetch category for the dropdown
+
             $.ajax({
-                url: '/api/locations',
+                url: '/api/categories',
                 method: 'GET',
                 dataType: 'json',
-                success: function (locations) {
-                    // Populate the dropdown with locations
-                    locations.forEach(location => {
-                        const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
-                        locationDropdown.append(option);
-                    });
+                success: function (response) {
+                    // Check if response contains categories
+                    if (response.categories && Array.isArray(response.categories)) {
+                        response.categories.forEach(category => {
+                            const option = `<option value="${category.id}">${category.name}</option>`;
+                            categoryDropdown.append(option);
+                        });
+                    }
                 },
                 error: function (error) {
-                    console.error('Error fetching locations:', error);
+                    console.error('Error fetching categories:', error);
                 }
             });
 
             // Fetch and display products based on the selected location
-            function fetchProducts(locationId) {
-                const apiEndpoint = locationId ? `/api/catalog?location_id=${locationId}` : '/api/catalog';
+            function fetchProducts(categoryId) {
+                const apiEndpoint = categoryId ? `/api/catalog?category_id=${categoryId}` : '/api/catalog';
 
                 $.ajax({
                     url: apiEndpoint,
                     method: 'GET',
                     dataType: 'json',
+                    headers: {
+                                Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
+                            },
                     success: function (products) {
                         // Clear existing products
                         productContainer.empty();
@@ -109,38 +138,15 @@
                                                 <small>Stocks: ${product.quantity}</small>
                                                 <h4 class="pt-3">₱<span class="product-price" id="product-price-${product.id}">${parseFloat(product.price).toFixed(2)}</span></h4>
                                                 <small class="text-primary">Store: ${product.store.store_name}</small><br>
-                                                <small>${product.store.street}, ${product.store.location.barangay}, 
-                                                ${product.store.location.city}, ${product.store.location.province} | 
-                                                ${product.store.contact_number}</small>
+                                                <small>${product?.store?.street}, ${product?.store?.location?.barangay}, 
+                                                ${product?.store?.location?.city}, ${product?.store?.location?.province} | 
+                                                ${product?.store?.contact_number}</small>
                                             </div>
                                         </div>
                                         <!-- Product actions -->
                                         <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                                             <div class="text-center">
-                                                <!-- Measurement Type Selection -->
-                                                <label for="measurement_type_${product.id}">Measurement Type</label>
-                                                <select id="measurement_type_${product.id}" class="form-select form-select-sm" data-product-id="${product.id}" data-price="${product.price}">
-                                                    <option value="" selected disabled>Select Measurement</option>
-                                                    <option value="kg">kg</option>
-                                                    <option value="piece">Piece</option>
-                                                </select><br>
-
-                                                <!-- Measurement Value - will show based on selection -->
-                                                <div id="kg_options_${product.id}" class="kg-options mb-3" style="display:none;">
-                                                    <label for="quantity_kg_${product.id}">Select Weight</label>
-                                                    <select class="form-select form-select-sm" id="quantity_kg_${product.id}" data-product-id="${product.id}">
-                                                        <option value="1">1 kg</option>
-                                                        <option value="0.5">1/2 kg</option>
-                                                        <option value="0.25">1/4 kg</option>
-                                                    </select>
-                                                </div>
-
-                                                <div id="piece_options_${product.id}" class="piece-options mb-3" style="display:none;">
-                                                    <label for="quantity_piece_${product.id}">Enter Quantity</label>
-                                                    <input type="number" class="form-control form-control-sm" id="quantity_piece_${product.id}" data-product-id="${product.id}" />
-                                                </div>
-
-                                                <button class="btn btn-outline-primary mt-auto add-to-cart role-customer" data-product-id="${product.id}">Add to cart</button>
+                                                <button class="btn btn-outline-primary mt-auto add-to-cart role-customer" data-product-id="${product.id}">View Product</button>
                                             </div>
                                         </div>
                                     </div>
@@ -148,17 +154,6 @@
                             `;
 
                             productContainer.append(productCard);
-
-                            // Show/Hide options based on the selected measurement type
-                            $(`#measurement_type_${product.id}`).change(function () {
-                                if ($(this).val() === 'kg') {
-                                    $(`#kg_options_${product.id}`).show();
-                                    $(`#piece_options_${product.id}`).hide();
-                                } else {
-                                    $(`#kg_options_${product.id}`).hide();
-                                    $(`#piece_options_${product.id}`).show();
-                                }
-                            });
                         });
                     },
                     error: function (error) {
@@ -168,47 +163,9 @@
             }
 
             // Fetch products when a location is selected
-            locationDropdown.change(function () {
-                const locationId = $(this).val();
-                fetchProducts(locationId);
-            });
-
-            document.addEventListener('change', function (event) {
-                // Check if the target is a measurement type (select) or quantity (input/select)
-                const productId = event.target.getAttribute('data-product-id'); // Get product ID from the element that triggered the event
-
-                if (!productId) return; // If no product ID is found, exit
-
-                // Get the unit price from the data-price attribute of the measurement type select
-                const measurementTypeSelect = document.querySelector(`#measurement_type_${productId}`);
-                if (!measurementTypeSelect) return; // If measurement type select is not found, exit
-
-                const unitPrice = parseFloat(measurementTypeSelect.getAttribute('data-price')); // Retrieve the unit price
-
-                let quantity = 0;
-
-                // Handle different measurement types
-                if (event.target.id.startsWith('quantity_kg')) {
-                    // Get the selected kg value
-                    quantity = parseFloat(event.target.value);
-                } else if (event.target.id.startsWith('quantity_piece')) {
-                    // Get the entered piece quantity
-                    quantity = parseFloat(document.getElementById(`quantity_piece_${productId}`).value);
-                }
-
-                // If quantity is not valid, return early
-                if (isNaN(quantity) || quantity <= 0) {
-                    return;
-                }
-
-                // Calculate the new price based on the quantity and unit price
-                const totalPrice = unitPrice * quantity;
-
-                // Update the price display
-                const priceDisplay = document.getElementById(`product-price-${productId}`);
-                if (priceDisplay) {
-                    priceDisplay.textContent = totalPrice.toFixed(2); // Update the displayed price
-                }
+            categoryDropdown.change(function () {
+                const categoryId = $(this).val();
+                fetchProducts(categoryId);
             });
 
             document.addEventListener('click', function (event) {
@@ -218,54 +175,14 @@
                     const token = localStorage.getItem('token');
 
                     if (!token) {
-                        alert('You need to login first to add items to your cart.');
+                        alert('You need to login first to view product.');
                         window.location.href = '/login';
                     } else {
                         const productId = event.target.getAttribute('data-product-id');
-                        const measurementType = $(`#measurement_type_${productId}`).val();
 
-                        let quantity = 0;
+                        localStorage.setItem('product_id', JSON.stringify(productId));
 
-                        // If the user selected 'kg'
-                        if (measurementType === 'kg') {
-                            quantity = parseFloat($(`#quantity_kg_${productId}`).val());
-                        }
-                        // If the user selected 'piece'
-                        else if (measurementType === 'piece') {
-                            quantity = parseFloat($(`#quantity_piece_${productId}`).val());
-                        }
-
-                        if (!quantity || isNaN(quantity) || quantity <= 0) {
-                            alert('Please enter a valid quantity.');
-                            return;
-                        }
-
-                        // Make a POST request to add the product to the cart
-                        fetch(`/api/cart/${productId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: JSON.stringify({
-                                measurement_type: measurementType,
-                                quantity: quantity
-                            })
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            alert('Product successfully added to the cart!');
-                            console.log('Response from server:', data);
-                        })
-                        .catch(error => {
-                            console.error('Error adding product to cart:', error);
-                            alert('Failed to add product to cart. Please try again.');
-                        });
+                        window.location.href = '/view-product';
                     }
                 }
             });
@@ -273,25 +190,6 @@
 
             // Initial load of all products
             fetchProducts();
-        });
-    </script>
-    <script>
-        $(document).ready(function () {
-            function checkUserRole() {
-                const user = JSON.parse(localStorage.getItem('user'));
-
-                if (user && user.role !== 'customer') {
-                    $('.role-customer').addClass('d-none');
-                }
-            }
-
-            // Initial role check for elements already present in the DOM
-            checkUserRole();
-
-            // Example: Re-run the check after dynamic content is loaded
-            $(document).ajaxComplete(function () {
-                checkUserRole();
-            });
         });
     </script>
 

@@ -25,12 +25,13 @@
                                 <table id="usersTable" class="table">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
                                             <th>Store</th>
                                             <th>Image</th>
                                             <th>Name</th>
+                                            <th>Measurement</th>
                                             <th>Price</th>
                                             <th>Quantity</th>
+                                            <th>Category</th>
                                             <th>Actions</th>
                                         
                                         </tr>
@@ -73,6 +74,14 @@
                             </div>
 
                             <div class="mb-3">
+                                <label class="form-label">Measurement<span class="text-danger">*</span></label>
+                                <select id="measurement" class="form-select" required>
+                                    <option value="kilo">Kilo</option>
+                                    <option value="piece">Piece</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="price" class="form-label">Price<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="price" placeholder="Enter price" required />
                             </div>
@@ -80,6 +89,13 @@
                             <div class="mb-3">
                                 <label for="quantity" class="form-label">Quantity<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="quantity" placeholder="Enter quantity" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Category<span class="text-danger">*</span></label>
+                                <select id="category_id" class="form-select" required>
+                                    <option value="">Select Category</option>
+                                </select>
                             </div>
 
                             <div class="modal-footer">
@@ -115,6 +131,14 @@
                             </div>
 
                             <div class="mb-3">
+                                <label class="form-label">Measurement<span class="text-danger">*</span></label>
+                                <select id="edit_measurement" class="form-select" required>
+                                    <option value="kilo">Kilo</option>
+                                    <option value="piece">Piece</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="price" class="form-label">Price<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="edit_price" placeholder="Enter price" required />
                             </div>
@@ -122,6 +146,12 @@
                             <div class="mb-3">
                                 <label for="quantity" class="form-label">Quantity<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="edit_quantity" placeholder="Enter quantity" required />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Category<span class="text-danger">*</span></label>
+                                <select id="category_id2" class="form-select" required>
+                                    <option value="">Select Category</option>
+                                </select>
                             </div>
 
                             <div class="modal-footer">
@@ -152,7 +182,6 @@
                         dataSrc: '' // Adjust based on the response structure ('' if data is a direct array)
                     },
                     columns: [
-                        { data: 'id' },
                         { data: 'store.store_name' },
                         { 
                             data: 'image',
@@ -163,8 +192,10 @@
                             }
                         },
                         { data: 'name' },
+                        { data: 'measurement' },
                         { data: 'price' },
                         { data: 'quantity' },
+                        { data: 'category.name' },
                         {
                             data: null,
                             render: function (data, type, row) {
@@ -222,6 +253,33 @@
     </script>
 
         <script>
+            document.addEventListener("DOMContentLoaded", async function () {
+                const category_id = $('#category_id');
+                const category_id2 = $('#category_id2');
+            
+                $.ajax({
+                    url: '/api/categories',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        // Check if response contains categories
+                        if (response.categories && Array.isArray(response.categories)) {
+                            response.categories.forEach(category => {
+                                const option = `<option value="${category.id}">${category.name}</option>`;
+                                category_id.append(option);
+                                category_id2.append(option);
+                            });
+                        }
+                    },
+                    error: function (error) {
+                        console.error('Error fetching categories:', error);
+                    }
+                });
+            });
+         </script>
+    
+
+        <script>
             // Function to populate the edit form with existing store data
             function editUser(button) {
                 // Get the row data from the data-row attribute
@@ -231,6 +289,8 @@
                 document.getElementById("edit_product_name").value = rowData.name;
                 document.getElementById("edit_price").value = rowData.price;
                 document.getElementById("edit_quantity").value = rowData.quantity;
+                document.getElementById("edit_measurement").value = rowData.measurement;
+                document.getElementById("category_id2").value = rowData.category.id;
 
                 // Store the product id for later use when submitting the form
                 document.getElementById("editForm").dataset.storeId = rowData.id;
@@ -245,6 +305,9 @@
                 const price = document.getElementById("edit_price").value.trim();
                 const quantity = document.getElementById("edit_quantity").value;
                 const image = document.getElementById("edit_image").files[0]; // Get the selected image file (optional)
+                
+                const measurement = document.getElementById("edit_measurement").value.trim();
+                const category_id = document.getElementById("category_id2").value.trim();
 
                 // Basic validation
                 if (!name || !price || !quantity) {
@@ -256,6 +319,9 @@
                 formData.append("name", name);
                 formData.append("price", price);
                 formData.append("quantity", quantity);
+                
+                formData.append("measurement", measurement);
+                formData.append("category_id", category_id);
                 if (image) {
                     formData.append("image", image); // Add the image if present
                 }
@@ -301,6 +367,8 @@
                 const quantity = document.getElementById("quantity").value.trim();
                 const image = document.getElementById("image").files[0]; // Get the selected image file
                 const store_id = JSON.parse(localStorage.getItem('store_id'));
+                const measurement = document.getElementById("measurement").value.trim();
+                const category_id = document.getElementById("category_id").value.trim();
 
                 // Basic validation
                 if (!name || !price || !quantity) {
@@ -313,6 +381,8 @@
                 formData.append("name", name);
                 formData.append("price", price);
                 formData.append("quantity", quantity);
+                formData.append("measurement", measurement);
+                formData.append("category_id", category_id);
                 if (image) {
                     formData.append("image", image);
                 }

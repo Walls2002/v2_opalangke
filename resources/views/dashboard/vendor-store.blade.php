@@ -196,15 +196,15 @@
                             data: null,
                             render: function (data, type, row) {
                                 return `
-                                    <button class="btn btn-primary btn-sm" onclick="viewProducts(${row.id})">View Products</button>
-
-                                    <button class="btn btn-warning btn-sm" 
+                                    <button class="btn btn-primary btn-sm m-1" onclick="viewProducts(${row.id})">View Products</button>
+                                    <button class="btn btn-primary btn-sm m-1" onclick="viewRiders(${row.id})">View Riders</button>
+                                    <button class="btn btn-warning btn-sm m-1" 
                                         data-bs-toggle="modal" 
                                         data-bs-target="#editModal" 
                                         data-row='${JSON.stringify(row)}'
                                         onclick="editUser(this)">Edit</button>
 
-                                    <button class="btn btn-danger btn-sm" onclick="deleteUser(${row.id})">Delete</button>
+                                    <button class="btn btn-danger btn-sm m-1" onclick="deleteUser(${row.id})">Delete</button>
                                 `;
                             }
                         }
@@ -220,6 +220,12 @@
                 localStorage.setItem('store_id', id);
 
                 window.location.href = '/products';
+            }
+
+            function viewRiders(id){
+                localStorage.setItem('store_id', id);
+
+                window.location.href = '/rider';
             }
 
             // Function to delete a user

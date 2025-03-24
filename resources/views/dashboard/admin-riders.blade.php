@@ -284,7 +284,7 @@
                 if (confirm("Are you sure you want to approve this rider?")) {
                     $.ajax({
                         url: `/api/riders/${userId}/verify`,
-                        type: 'POST',
+                        type: 'PUT',
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`,
                         },
