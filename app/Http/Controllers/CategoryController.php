@@ -16,7 +16,10 @@ class CategoryController extends Controller
      */
     public function index(): JsonResponse
     {
-        $categories = Category::query()->orderBy('name', 'asc')->get();
+        $categories = Category::query()
+            ->with(['children'])
+            ->orderBy('name', 'asc')
+            ->get();
 
         return response()->json(
             data: [
@@ -36,7 +39,10 @@ class CategoryController extends Controller
      */
     public function parents(): JsonResponse
     {
-        $categories = Category::query()->whereNull('parent_id')->orderBy('name', 'asc')->get();
+        $categories = Category::query()
+            ->with(['children'])
+            ->whereNull('parent_id')
+            ->orderBy('name', 'asc')->get();
 
         return response()->json(
             data: [
@@ -60,7 +66,12 @@ class CategoryController extends Controller
             'category_id' => ['required', 'exists:categories,id']
         ]);
 
-        $categories = Category::query()->where('parent_id', $request->category_id)->orderBy('name', 'asc')->get();
+        $categories = Category::query()
+            ->with(['parent'])
+            ->where('parent_id', $request->category_id)
+            ->orderBy('name', 'asc')
+            ->get();
+
         return response()->json(
             data: [
                 'message' => 'Category children fetched.',

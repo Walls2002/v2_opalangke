@@ -81,10 +81,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('riders', RiderController::class);
 });
 
+
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/parents', [CategoryController::class, 'parents']);
+Route::get('/categories/children', [CategoryController::class, 'children']);
+
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('/categories', [CategoryController::class, 'index']);
-    Route::get('/categories/parents', [CategoryController::class, 'parents']);
-    Route::get('/categories/children', [CategoryController::class, 'children']);
 
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{category}', [CategoryController::class, 'update']);
