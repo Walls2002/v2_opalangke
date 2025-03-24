@@ -30,6 +30,8 @@
                                             <th>Name</th>
                                             <th>Contact Number</th>
                                             <th>Address</th>
+                                            <th>Shipping Fee</th>
+                                            <th>Status</th>
                                             <th>Actions</th>
                                         
                                         </tr>
@@ -170,7 +172,7 @@
                             data: 'image',
                             render: function(data, type, row) {
                                 // Check if image exists and return the img tag, else show a default placeholder
-                                const imageUrl = data ? 'storage/' + data : 'no-image.jpg';
+                                const imageUrl = data ? '/storage/' + data : '/no-image.jpg';
                                 return `<img src="${imageUrl}" alt="${row.store_name}" class="img-thumbnail" style="width: 50px; height: 50px;">`;
                             }
                         },
@@ -181,6 +183,13 @@
                             render: function(data, type, row) {
                                 // Concatenate street, province, city, and barangay to show the full address
                                 return `${data}, ${row.location.barangay}, ${row.location.city}, ${row.location.province}`;
+                            }
+                        },
+                        { data: 'location.shipping_fee' },
+                        {
+                            data: 'is_verified',
+                            render: function (data, type, row) {
+                                return data ? 'Approved' : 'Pending';
                             }
                         },
                         {
@@ -396,7 +405,7 @@
 
                 try {
                     // Send POST request to create store
-                    const response = await axios.post('/api/stores', formData, {
+                    const response = await axios.post('/api/stores/self-register', formData, {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
                             "Content-Type": "multipart/form-data" // Important for uploading files

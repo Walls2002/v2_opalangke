@@ -32,7 +32,7 @@
                 </a>
 
                 {{-- vendor --}}
-                <a class="nav-link role-vendor" href="/store">
+                <a class="nav-link role-vendor" href="/vendor/store">
                     <div class="nav-link-icon"><i data-feather="shopping-bag"></i></div>
                     Store
                 </a>

@@ -283,7 +283,7 @@
                 if (confirm("Are you sure you want to approve this store?")) {
                     $.ajax({
                         url: `/api/stores/${userId}/verify`,
-                        type: 'POST',
+                        type: 'PUT',
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`,
                         },

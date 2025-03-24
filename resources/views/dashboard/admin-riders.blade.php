@@ -409,7 +409,7 @@
                     middle_name: middle_name,
                     last_name: last_name,
                     email: email,
-                    contact: contact,
+                    contact_number: contact,
                     location_id: location_id,
                     license_number: license_number,
                     plate_number: plate_number

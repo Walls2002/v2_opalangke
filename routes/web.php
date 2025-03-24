@@ -83,9 +83,7 @@ Route::get('/order-canceled', function () {
     return view('dashboard/order-canceled');
 });
 
-Route::get('/store', function () {
-    return view('dashboard/store');
-});
+//vendor
 
 Route::get('/rider', function () {
     return view('dashboard/rider');
@@ -93,6 +91,10 @@ Route::get('/rider', function () {
 
 Route::get('/products', function () {
     return view('dashboard/products');
+});
+
+Route::get('/vendor/store', function () {
+    return view('dashboard/vendor-store');
 });
 
 Route::get('/vendor-order-pending', function () {
