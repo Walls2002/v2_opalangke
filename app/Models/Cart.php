@@ -14,6 +14,7 @@ class Cart extends Model
         'store_id',
         'product_id',
         'quantity',
+        'kilo_measurement',
     ];
 
     /**
