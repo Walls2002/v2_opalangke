@@ -102,6 +102,7 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::get('/public-catalog', [ProductCatalogController::class, 'publicIndex']);
+Route::get('/catalog/products/{product}', [ProductCatalogController::class, 'show']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/catalog', [ProductCatalogController::class, 'index']);

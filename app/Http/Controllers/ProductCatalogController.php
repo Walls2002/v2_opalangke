@@ -68,4 +68,12 @@ class ProductCatalogController extends Controller
 
         return response()->json(ProductResource::collection($products));
     }
+
+    public function show(Request $request, Product $product)
+    {
+        return response()->json([
+            'message' => 'Product found',
+            'product' => $product,
+        ], 200);
+    }
 }
