@@ -43,7 +43,7 @@ class ProductCatalogController extends Controller
             'include_subcategories' => ['nullable', 'boolean'],
         ]);
 
-        $query = Product::with(['category', 'store'])
+        $query = Product::with(['category', 'store.location'])
             ->whereRelation(
                 'store',
                 'location_id',
