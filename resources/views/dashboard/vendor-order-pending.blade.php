@@ -95,7 +95,7 @@
                                     cartContent += `
                                         <div class="card mb-4">
                                             <div class="card-body p-5">
-                                                <h5 class="pb-2 text-primary">${order.customer.name}</h5>
+                                                <h5 class="pb-2 text-primary">${order.customer.first_name} ${order.customer.middle_name} ${order.customer.last_name}</h5>
                                                 <p>${order.customer.contact} | ${order.customer.email}</p>
                                                 <p>Address: ${order?.address}</p>
                                                 <p>Note: ${order?.note}</p>
@@ -115,7 +115,11 @@
                                     });
 
                                     cartContent += `
-                                            <p class="fw-bold">Total Price: ₱${order.total_price}</p>
+                                            <h5>Order Summary</h5>
+                                            <p class="fw-bold">Subtotal: ₱${order.total_item_price}</p>
+                                            <p class="fw-bold">Delivery Fee: ₱${order.shipping_fee}</p>
+                                            <p class="fw-bold">Discount: ₱${order.shipping_fee}</p>
+                                            <p class="fw-bold">Total: ₱${order.final_price}</p>
                                             <button class="btn btn-primary btn-sm btn-confirm" data-order-id="${order.id}">Confirm Order</button>
                                             <button class="btn btn-primary btn-sm btn-cancel" data-cancel-id="${order.id}">Cancel Order</button>
                                             </div>

@@ -30,42 +30,53 @@
                 @include('layout.footer')
             </div>
         </div>
-        
+
         <!-- Modal for checkout -->
-            <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="checkoutModalLabel">Confirm Checkout</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="locationForm">
-                                <div class="mb-3">
-                                    <label for="addressInput" class="form-label">Address<span class="text-danger">*</span></label>
-                                    <input type="text" id="addressInput" class="form-control address-input" placeholder="Enter address" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="barangayInput" class="form-label">Barangay<span class="text-danger">*</span></label>
-                                    <input type="text" id="barangayInput" class="form-control barangay-input" placeholder="Enter barangay" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="cityInput" class="form-label">City<span class="text-danger">*</span></label>
-                                    <input type="text" id="cityInput" class="form-control city-input" placeholder="Enter city" required />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="noteInput" class="form-label">Note</label>
-                                    <input type="text" id="noteInput" class="form-control note-input" placeholder="Enter note (optional)" />
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                    <button type="submit" class="btn btn-primary">Confirm Checkout</button>
-                                </div>
-                            </form>
-                        </div>
+        <div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="checkoutModalLabel">Confirm Checkout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="locationForm">
+                            <div class="mb-3">
+                                <label for="addressInput" class="form-label">Address<span class="text-danger">*</span></label>
+                                <input type="text" id="addressInput" class="form-control address-input" placeholder="Enter address" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="noteInput" class="form-label">Note</label>
+                                <input type="text" id="noteInput" class="form-control note-input" placeholder="Enter note (optional)" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="voucher_code" class="form-label">Voucher Code</label>
+                                <input type="text" id="voucher_code" class="form-control voucher_code" placeholder="Enter voucher (optional)" />
+                            </div>
+
+                            <hr>
+
+                            <!-- Order Preview Section -->
+                            <div id="orderPreview" class="d-none">
+                                <h5>Order Summary</h5>
+                                <p><strong>Subtotal:</strong> ₱<span id="totalItemPrice"></span></p>
+                                <p><strong>Delivery Fee:</strong> ₱<span id="shippingFee"></span></p>
+                                <p><strong>Discount:</strong> -₱<span id="discount"></span></p>
+                                <p class="fw-bold"><strong>Total:</strong> ₱<span id="finalPrice"></span></p>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                                <button type="button" id="previewCheckoutBtn" class="btn btn-info">Preview Order</button>
+                                <button type="submit" id="confirmCheckoutBtn" class="btn btn-primary d-none">Confirm Checkout</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
+        </div>
 
     
         @include('layout.scripts')
@@ -100,11 +111,23 @@
                                     
                                     // Loop through each product in the store
                                     store.products.forEach(product => {
+                                        let kiloMeasurementText = "";
+    
+                                        if (product.kilo_measurement) {
+                                            let kiloValue = parseFloat(product.kilo_measurement);
+                                            let displayValue = kiloValue === 0.25 ? "1/4" :
+                                                            kiloValue === 0.5 ? "1/2" :
+                                                            kiloValue; // Keep other values as is
+
+                                            kiloMeasurementText = `<small>Kilo Measurement: ${displayValue} kilos</small><br>`;
+                                        }
+
                                         cartContent += `
                                             <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row text-dark mb-3">
                                                 <div class="me-4 mb-3 mb-sm-0">
                                                     <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.total_cost).toFixed(2)}</p>
-                                                    <small>Quantity: ${product.selected_qty}</small>
+                                                    <small>Quantity: ${product.selected_qty}</small><br>
+                                                    ${kiloMeasurementText}
                                                 </div>
                                                 <!-- Product quantity controls -->
                                                 <div class="">
@@ -150,40 +173,67 @@
                     $('#checkoutModal').modal('show');
                 });
 
-                // Handle form submission for checkout
+                $('#previewCheckoutBtn').on('click', function() {
+                    // Get user inputs
+                    const address = $('.address-input').val();
+                    const note = $('.note-input').val();
+                    const voucher_code = $('.voucher_code').val();
+                    const storeId = $('#checkoutModal').data('store-id');
+
+                    // Ensure storeId exists
+                    if (!storeId) {
+                        alert("Store ID is missing!");
+                        return;
+                    }
+
+                    // Call checkout preview API
+                    $.ajax({
+                        url: `/api/cart/checkout-preview/${storeId}`,
+                        type: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
+                        },
+                        data: { address, note, voucher_code },
+                        success: function(response) {
+                            if (response.order) {
+                                // Update UI with order preview
+                                $('#totalItemPrice').text(response.order.total_item_price);
+                                $('#shippingFee').text(response.order.shipping_fee);
+                                $('#discount').text(response.order.discount);
+                                $('#finalPrice').text(response.order.final_price);
+
+                                // Show order preview and confirm button
+                                $('#orderPreview').removeClass('d-none');
+                                $('#confirmCheckoutBtn').removeClass('d-none');
+                            }
+                        },
+                        error: function() {
+                            alert("Failed to fetch checkout preview.");
+                        }
+                    });
+                });
+
+                // Handle final checkout after preview
                 $('#locationForm').on('submit', function(event) {
                     event.preventDefault();
 
-                    // Get values from the form
                     const address = $('.address-input').val();
-                    const barangay = $('.barangay-input').val();
-                    const city = $('.city-input').val();
                     const note = $('.note-input').val();
-
-                    // Combine the address fields
-                    const fullAddress = `${address}, ${barangay}, ${city}`;
-
-                    // Get storeId from the modal data
+                    const voucher_code = $('.voucher_code').val();
                     const storeId = $('#checkoutModal').data('store-id');
 
-                    // Send the data to the API for checkout
+                    // Proceed with actual checkout
                     $.ajax({
                         url: `/api/cart/checkout/${storeId}`,
                         type: 'POST',
                         headers: {
-                                Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
-                            },
-                        data: {
-                            address: fullAddress,  // Address combined from form fields
-                            note: note            // Optional note
+                            Authorization: `Bearer ${localStorage.getItem('token')}`,
                         },
+                        data: { address, note, voucher_code },
                         success: function(response) {
-                                // Close the modal
-                                $('#checkoutModal').modal('hide');
-
-                                // Optionally, reload the cart or redirect to another page
-                                alert('Checkout successful!');
-                                fetchCart();
+                            $('#checkoutModal').modal('hide');
+                            alert('Checkout successful!');
+                            fetchCart(); // Reload cart
                         },
                         error: function() {
                             alert('Failed to process checkout.');

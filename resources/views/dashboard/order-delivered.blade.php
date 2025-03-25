@@ -97,7 +97,11 @@
 
                                 // Close the store section
                                 cartContent += `
-                                        <p class="fw-bold">Total Price: ₱${order.total_price}</p>
+                                        <h5>Order Summary</h5>
+                                        <p class="fw-bold">Subtotal: ₱${order.total_item_price}</p>
+                                        <p class="fw-bold">Delivery Fee: ₱${order.shipping_fee}</p>
+                                        <p class="fw-bold">Discount: ₱${order.shipping_fee}</p>
+                                        <p class="fw-bold">Total: ₱${order.final_price}</p>
                                         </div><br>
                                             <button class="btn btn-primary btn-sm view-proof-btn" data-delivery-image="${order.delivery_image}">View Proof of Delivery</button>
                                     </div>
