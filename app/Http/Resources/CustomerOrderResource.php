@@ -34,7 +34,7 @@ class CustomerOrderResource extends JsonResource
             'customer' => $this->user,
             'store' => $this->store,
             'rider' => $this->rider,
-            'items' => $this->items,
+            'items' => OrderItemResource::collection($this->items),
             'voucher' => $this->userVoucher,
         ];
     }

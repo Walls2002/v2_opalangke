@@ -33,7 +33,7 @@ class RiderOrderResource extends JsonResource
             'updated_at' => $this->updated_at,
             'customer' => $this->user,
             'store' => $this->store,
-            'items' => $this->items,
+            'items' => OrderItemResource::collection($this->items),
             'voucher' => $this->userVoucher,
         ];
     }

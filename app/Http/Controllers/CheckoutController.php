@@ -164,17 +164,14 @@ class CheckoutController extends Controller
     private function createOrderItems(Order $order, Collection $cartItems): void
     {
         foreach ($cartItems as $item) {
-            $price = $item->product->price;
 
             if ($item?->kilo_measurement) {
                 switch ($item->kilo_measurement) {
                     case '0.25':
                         $measurement = '1/4 kilo';
-                        $price *= 0.25;
                         break;
                     case '0.50':
                         $measurement = '1/2 kilo';
-                        $price *= 0.50;
                         break;
                     case '1':
                         $measurement = '1 kilo';
@@ -192,7 +189,7 @@ class CheckoutController extends Controller
             $orderItem->product_id = $item->product_id;
             $orderItem->order_id = $order->id;
             $orderItem->name = "{$item->product->name}";
-            $orderItem->unit_price = $price;
+            $orderItem->unit_price = $item->product->price;
             $orderItem->measurement = $measurement;
             $orderItem->quantity = $item->quantity;
 
