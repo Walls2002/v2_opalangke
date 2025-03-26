@@ -111,7 +111,7 @@ class CheckoutController extends Controller
         return $cartItems;
     }
 
-    private function createOrder(User $customer, Store $store, Collection $cartItems, string $address, string $note, ?Voucher $voucher): Order
+    private function createOrder(User $customer, Store $store, Collection $cartItems, ?string $address, ?string $note, ?Voucher $voucher): Order
     {
         $shippingFee = $store->location->shipping_fee;
         $totalItemPrice = 0;
@@ -124,6 +124,7 @@ class CheckoutController extends Controller
             }
         }
 
+        $discount = 0;
         if ($voucher) {
             if ($voucher->is_percent) {
                 $voucherDiscount = $voucher->value / 100;
@@ -163,12 +164,25 @@ class CheckoutController extends Controller
     private function createOrderItems(Order $order, Collection $cartItems): void
     {
         foreach ($cartItems as $item) {
+            $price = $item->product->price;
+
             if ($item?->kilo_measurement) {
-                $measurement = match ($item->kilo_measurement) {
-                    "0.25" => '1/4',
-                    "0.50" => '1/2',
-                    "1" => '1/4',
-                };
+                switch ($item->kilo_measurement) {
+                    case '0.25':
+                        $measurement = '1/4 kilo';
+                        $price *= 0.25;
+                        break;
+                    case '0.50':
+                        $measurement = '1/2 kilo';
+                        $price *= 0.50;
+                        break;
+                    case '1':
+                        $measurement = '1 kilo';
+                        break;
+                    default:
+                        throw new \Exception('Invalid kilo measurement');
+                        break;
+                }
             } else {
                 $measurement = 'piece';
             }
@@ -178,7 +192,7 @@ class CheckoutController extends Controller
             $orderItem->product_id = $item->product_id;
             $orderItem->order_id = $order->id;
             $orderItem->name = "{$item->product->name}";
-            $orderItem->unit_price = $item->product->price;
+            $orderItem->unit_price = $price;
             $orderItem->measurement = $measurement;
             $orderItem->quantity = $item->quantity;
 
