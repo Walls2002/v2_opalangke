@@ -25,11 +25,13 @@ class CartController extends Controller
         $cart = [];
 
         foreach ($cartItems as $item) {
+            $price = $item->product->price;
+
             if ($item?->kilo_measurement) {
-                $cost = ($item->product->price * $item->kilo_measurement) * $item->quantity;
-            } else {
-                $cost = $item->product->price * $item->quantity;
+                $price = ($item->product->price * $item->kilo_measurement);
             }
+
+            $cost =  $price * $item->quantity;
 
             $product = [
                 'id' => $item->product->id,
