@@ -75,14 +75,16 @@ class RiderOrderController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $rider = $request->user();
-        if ($rider->role !== 'rider') {
+        $user = $request->user();
+        if ($user->role !== 'rider') {
             return response()->json(['message' => 'You are not a rider.'], 403);
         }
 
+        $user->load(['rider']);
+
         $data = Order::query()
             ->with(['items', 'user', 'userVoucher.voucher'])
-            ->where('rider_id', $rider->id)
+            ->where('rider_id', $user->rider->id)
             ->where('status', OrderStatus::ASSIGNED)
             ->orderBy('created_at', 'asc')
             ->get();
@@ -91,7 +93,7 @@ class RiderOrderController extends Controller
     }
 
     /**
-     * Show the order.
+     * Show the order assigned to the rider.
      *
      * @param Request $request
      * @param Order $order
@@ -104,7 +106,11 @@ class RiderOrderController extends Controller
             return response()->json(['message' => 'You are not a rider.'], 403);
         }
 
-        $order->load(['items', 'user', 'store']);
+        $order->load(['items', 'user', 'store', 'rider']);
+
+        if ($rider->id != $order->rider->user_id) {
+            return response()->json(['message' => 'You are not the assigned rider to this order.'], 403);
+        }
 
         return response()->json(['message' => 'Order fetched.', 'order' => new RiderOrderResource($order)], 200);
     }
