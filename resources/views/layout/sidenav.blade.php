@@ -58,6 +58,10 @@
                     <div class="nav-link-icon"><i data-feather="shopping-cart"></i></div>
                     Cart
                 </a>
+                <a class="nav-link role-customer" href="/myvouchers">
+                    <div class="nav-link-icon"><i data-feather="percent"></i></div>
+                    My Vouchers
+                </a>
                 <!-- Sidenav Accordion (Flows)-->
                 <a class="nav-link collapsed role-customer" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseFlows" aria-expanded="false" aria-controls="collapseFlows">
                     <div class="nav-link-icon"><i data-feather="check-square"></i></div>

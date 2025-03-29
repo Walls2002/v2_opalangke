@@ -204,13 +204,15 @@
                                 
                                 // Display "Approve" button only if is_verified is null
                                 if (!row.is_verified) {
-                                    buttons += `<button class="btn btn-secondary btn-sm" onclick="approveData(${row.id})">Approve</button> `;
+                                    buttons += `<button class="btn btn-secondary btn-sm m-1" onclick="approveData(${row.id})">Approve</button> `;
                                 }
 
                                 // Always display "Edit" and "Delete" buttons
                                 buttons += `
-                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editDataModal" onclick="editData(${row.id})">Edit</button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteData(${row.id})">Delete</button>
+                                    <button class="btn btn-primary btn-sm m-1" onclick="viewProducts(${row.id})">View Products</button>
+                                    <button class="btn btn-primary btn-sm m-1" onclick="viewOrders(${row.id})">View Orders</button>
+                                    <button class="btn btn-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#editDataModal" onclick="editData(${row.id})">Edit</button>
+                                    <button class="btn btn-danger btn-sm m-1" onclick="deleteData(${row.id})">Delete</button>
                                 `;
 
                                 return buttons;
@@ -224,6 +226,18 @@
                     order: [[0, 'desc']]
                 });
             });
+
+            function viewProducts(id){
+                localStorage.setItem('store_id', id);
+
+                window.location.href = '/admin/products';
+            }
+
+            function viewOrders(id){
+                localStorage.setItem('store_id', id);
+
+                window.location.href = '/admin/orders';
+            }
 
             // Function to populate the edit form with existing user data
             async function editData(userId) {

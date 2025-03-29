@@ -203,13 +203,14 @@
                                 
                                 // Display "Approve" button only if email_verified_at is null
                                 if (!row.email_verified_at) {
-                                    buttons += `<button class="btn btn-secondary btn-sm" onclick="approveUser(${row.rider.id})">Approve</button> `;
+                                    buttons += `<button class="btn btn-secondary btn-sm m-1" onclick="approveUser(${row.rider.id})">Approve</button> `;
                                 }
 
                                 // Always display "Edit" and "Delete" buttons
                                 buttons += `
-                                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="editUser(${row.rider.id})">Edit</button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteUser(${row.rider.id})">Delete</button>
+                                    <button class="btn btn-primary btn-sm m-1" onclick="viewOrders(${row.rider.id})">View Orders</button>
+                                    <button class="btn btn-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="editUser(${row.rider.id})">Edit</button>
+                                    <button class="btn btn-danger btn-sm m-1" onclick="deleteUser(${row.rider.id})">Delete</button>
                                 `;
 
                                 return buttons;
@@ -223,6 +224,12 @@
                     order: [[0, 'desc']]
                 });
             });
+
+            function viewOrders(id){
+                localStorage.setItem('rider_id', id);
+
+                window.location.href = '/admin/riderorders';
+            }
 
             // Function to populate the edit form with existing user data
             async function editUser(userId) {

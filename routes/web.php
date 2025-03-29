@@ -60,7 +60,17 @@ Route::get('/admin/riders', function () {
     return view('dashboard/admin-riders');
 });
 
+Route::get('/admin/products', function () {
+    return view('dashboard/admin-view-products');
+});
 
+Route::get('/admin/orders', function () {
+    return view('dashboard/admin-view-orders');
+});
+
+Route::get('/admin/riderorders', function () {
+    return view('dashboard/admin-view-rider-orders');
+});
 //
 
 Route::get('/view-product', function () {
@@ -69,6 +79,10 @@ Route::get('/view-product', function () {
 
 Route::get('/cart', function () {
     return view('dashboard/cart');
+});
+
+Route::get('/myvouchers', function () {
+    return view('dashboard/customer-vouchers');
 });
 
 Route::get('/order-pending', function () {
