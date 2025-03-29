@@ -26,7 +26,7 @@ class VendorOrderController extends Controller
         }
 
         $query = Order::query()
-            ->with(['items', 'user', 'rider'])
+            ->with(['items', 'user', 'rider.user', 'userVoucher.voucher'])
             ->where('store_id', $store->id);
 
         $selectedStatus = [];
