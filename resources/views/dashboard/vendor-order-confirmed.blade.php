@@ -102,10 +102,10 @@
                                                 <p>Address: ${order?.address}</p>
                                                 <p>Note: ${order?.note ? order.note : ''}</p>
 
-                                                <p class="pt-3">Rider: ${order?.rider?.name || 'Currently waiting for a rider to accept delivery.'} ${order?.rider?.contact_number || ''}</p>
+                                                <p class="pt-3">Rider: ${order?.rider?.user?.first_name || 'Currently waiting for a rider to accept delivery.'} ${order?.rider?.user?.middle_name || ''} ${order?.rider?.user?.last_name || ''} ${order?.rider?.user?.contact || ''}</p>
                                                 <hr>
                                                 
-                                                ${order.rider === null || order.rider_team_only != null ? '' : `
+                                                ${order.rider_team_only != null ? '' : `
                                                         <div class="row">
                                                             <div class="col-8">
                                                                 <select id="rider_team_only" class="form-control rider-selector">
@@ -126,7 +126,7 @@
                                         cartContent += `
                                             <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row text-dark mb-3">
                                                 <div class="me-4 mb-3 mb-sm-0">
-                                                    <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.total_cost).toFixed(2)}</p>
+                                                    <p class="mb-0 text-primary">${product.name} - ₱${product?.total_cost}</p>
                                                     <small>Quantity: ${product.quantity}</small>
                                                 </div>
                                             </div>

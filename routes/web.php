@@ -117,6 +117,16 @@ Route::get('/vendor-order-canceled', function () {
     return view('dashboard/vendor-order-canceled');
 });
 
+//rider
+
+Route::get('/local-orders', function () {
+    return view('dashboard/rider-local-orders');
+});
+
+Route::get('/team-orders', function () {
+    return view('dashboard/rider-team-orders');
+});
+
 Route::get('/delivery', function () {
     return view('dashboard/delivery');
 });

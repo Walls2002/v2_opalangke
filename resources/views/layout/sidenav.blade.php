@@ -75,8 +75,18 @@
 
                 {{-- rider --}}
                 <a class="nav-link role-rider" href="/delivery">
-                    <div class="nav-link-icon"><i data-feather="user"></i></div>
+                    <div class="nav-link-icon"><i data-feather="navigation"></i></div>
                     Delivery
+                </a>
+
+                <a class="nav-link role-rider" href="/local-orders">
+                    <div class="nav-link-icon"><i data-feather="map"></i></div>
+                    Local Orders
+                </a>
+
+                <a class="nav-link role-rider" href="/team-orders">
+                    <div class="nav-link-icon"><i data-feather="users"></i></div>
+                    Team Orders
                 </a>
             </div>
         </div>

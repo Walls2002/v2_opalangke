@@ -13,7 +13,8 @@
                         <!-- Custom page header alternative example-->
                         <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row mb-4">
                             <div class="me-4 mb-3 mb-sm-0">
-                                <h1 class="mb-0">For Delivery</h1>
+                                <h1 class="mb-0">Take Order to Delivery</h1>
+                                <h5 class="mt-2">Team Orders</h5>
                             </div>
                             <!-- clear all-->
                             <div class="">
@@ -35,19 +36,16 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="deliveryImageModalLabel">Upload Delivery Proof</h5>
+                        <h5 class="modal-title" id="deliveryImageModalLabel">Accept Delivery</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="deliveryForm">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="deliveryImageInput" class="form-label">Select Image</label>
-                                <input type="file" class="form-control" id="deliveryImageInput" accept="image/*" required>
-                            </div>
+                        <div class="modal-body text-center">
+                            <h1>Do you want to take this order for delivery?</h1>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
-                            <button type="submit" class="btn btn-primary">Submit</button>
+                            <button type="submit" class="btn btn-primary">Confirm</button>
                         </div>
                     </form>
                 </div>
@@ -62,7 +60,7 @@
             $(document).ready(function () {
                 // Fetch cart data
                 function fetchCart() {
-                    const apiUrl = `/api/rider-orders`;
+                    const apiUrl = `/api/rider-orders/team`;
         
                     $.ajax({
                         url: apiUrl,
@@ -76,7 +74,7 @@
                             if (response.orders.length === 0) {
                                 cartContent = `
                                     <div class="text-center mt-5">
-                                        <h4>No delivery available</h4>
+                                        <h4>No order available</h4>
                                         <p>Please check back later.</p>
                                     </div>
                                 `;
@@ -112,7 +110,7 @@
                                             <p class="fw-bold">Delivery Fee: ₱${order.shipping_fee}</p>
                                             <p class="fw-bold">Discount: ₱${order.discount}</p>
                                             <p class="fw-bold">Total: ₱${order.final_price}</p>
-                                            <button class="btn btn-primary btn-sm btn-confirm" data-order-id="${order.id}">Mark as Delivered</button>
+                                            <button class="btn btn-primary btn-sm btn-confirm" data-order-id="${order.id}">Accept Delivery Order</button>
                                             </div>
                                         </div>
                                     </div>
@@ -139,27 +137,17 @@
                     e.preventDefault();
         
                     const orderId = $('#deliveryImageModal').data('order-id');
-                    const formData = new FormData();
-                    const imageFile = $('#deliveryImageInput')[0].files[0];
-        
-                    if (!imageFile) {
-                        alert('Please select an image.');
-                        return;
-                    }
-        
-                    formData.append('image', imageFile);
         
                     $.ajax({
-                        url: `/api/rider-orders/${orderId}/deliver`,
+                        url: `/api/rider-orders/${orderId}/take`,
                         type: 'POST',
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`,
                         },
-                        data: formData,
                         processData: false,
                         contentType: false,
                         success: function () {
-                            alert('Order marked as delivered successfully.');
+                            alert('You have successfully accepted the order for delivery.');
                             $('#deliveryImageModal').modal('hide');
                             fetchCart(); // Refresh the cart
                         },
