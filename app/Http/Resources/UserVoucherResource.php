@@ -20,6 +20,7 @@ class UserVoucherResource extends JsonResource
             'expired_at_readable' => $this->expired_at->diffForHumans(),
             'used_at' => $this->used_at,
             'min_order_price' => $this->voucher->min_order_price,
+            'code' => $this->voucher->code,
             'value' => $this->voucher->value,
             'description' => $this->voucher->description,
             'is_percent' => $this->voucher->is_percent,
