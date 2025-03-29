@@ -75,7 +75,7 @@ class VendorOrderController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        $order->load(['items', 'user', 'rider', 'userVoucher.voucher']);
+        $order->load(['items', 'user', 'store', 'rider.user', 'userVoucher.voucher']);
 
         return response()->json(['message' => 'Order fetched.', 'order' => new StoreOrderResource($order)], 200);
     }

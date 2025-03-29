@@ -70,7 +70,7 @@ class CustomerOrderController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        $order->load(['items', 'user', 'store']);
+        $order->load(['items', 'user', 'store', 'rider.user', 'userVoucher.voucher']);
 
         return response()->json(['message' => 'Order fetched.', 'order' => new CustomerOrderResource($order)], 200);
     }
