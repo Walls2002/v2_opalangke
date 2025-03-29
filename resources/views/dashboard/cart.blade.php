@@ -119,20 +119,20 @@
                                                             kiloValue === 0.5 ? "1/2" :
                                                             kiloValue; // Keep other values as is
 
-                                            kiloMeasurementText = `<small>Kilo Measurement: ${displayValue} kilos</small><br>`;
+                                            kiloMeasurementText = `<small id="kilo-${product.id}">${displayValue} kilos</small><br>`;
                                         }
 
                                         cartContent += `
                                             <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row text-dark mb-3">
                                                 <div class="me-4 mb-3 mb-sm-0">
-                                                    <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.total_cost).toFixed(2)}</p>
+                                                    <p class="mb-0 text-primary">${product.name} - ₱${product?.total_cost}</p>
                                                     <small>Quantity: ${product.selected_qty}</small><br>
                                                     ${kiloMeasurementText}
                                                 </div>
                                                 <!-- Product quantity controls -->
                                                 <div class="">
                                                     <button class="btn btn-outline-primary btn-sm decrease" data-product-id="${product.id}">-</button>
-                                                    <button class="btn btn-outline-primary btn-sm increase" data-product-id="${product.id}">+</button>
+                                                    <button class="btn btn-outline-primary btn-sm add-increase" data-product-id="${product.id}">+</button>
                                                 </div>
                                             </div>
                                             <hr>
@@ -240,8 +240,10 @@
                         }
                     });
                 });
+
                 
-                // Event delegation for increase and decrease buttons
+                
+                // Event delegation for decrease buttons
                 $(document).on('click', '.increase, .decrease', function() {
                     const productId = $(this).data('product-id');
                     const action = $(this).hasClass('increase') ? 'increase' : 'decrease';
@@ -262,6 +264,43 @@
                         }
                     });
                 });
+
+                $(document).on('click', '.add-increase', function() {
+                    const productId = $(this).data('product-id');
+                    const token = localStorage.getItem('token');
+
+                    // Get the kilo measurement using its unique ID
+                    const kiloElement = $(`#kilo-${productId}`);
+                    let kiloMeasurement = null;
+
+                    if (kiloElement.length) { // Check if the product has a kilo measurement
+                        const value = kiloElement.text().split(' ')[0]; // Extract number part
+                        kiloMeasurement = value === "1/4" ? 0.25 :
+                                        value === "1/2" ? 0.5 :
+                                        parseFloat(value); // Convert to number
+                    }
+
+                    // Prepare request data
+                    const requestData = kiloMeasurement ? { kilo_measurement: kiloMeasurement } : { quantity: '' };
+
+                    // Send the API request
+                    $.ajax({
+                        url: `/api/cart/${productId}`,
+                        type: 'POST',
+                        headers: {
+                            Authorization: `Bearer ${token}`, 
+                            'Content-Type': 'application/json'
+                        },
+                        data: JSON.stringify(requestData),
+                        success: function(response) {
+                            fetchCart(); // Refresh cart after update
+                        },
+                        error: function() {
+                            alert('Failed to update quantity');
+                        }
+                    });
+                });
+
             });
 
         </script>

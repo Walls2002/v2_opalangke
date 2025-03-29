@@ -38,7 +38,7 @@
                 // Function to fetch cart data
                 function fetchCart() {
                     $.ajax({
-                        url: '/api/customer-orders?show_confirmed=1&show_assigned=1',
+                        url: '/api/customer-orders?show_confirmed=1&show_assigned=1&show_dispatched=1',
                         type: 'GET',
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
@@ -60,7 +60,7 @@
                                     <div class="card mb-4">
                                         <div class="card-body p-5">
                                             <h5 class="pb-2 text-primary">Store: ${order.store.store_name} - ${order.store.contact_number}</h5>
-                                            <p class="pt-3">Assigned Rider: ${order?.rider?.name || 'No rider assigned'} ${order?.rider?.contact_number || ''}</p>
+                                            <p class="pt-3">Rider: ${order?.rider?.name || 'Currently waiting for a rider to accept delivery.'} ${order?.rider?.contact_number || ''}</p>
                                             <div class="p-3" style="border: 1px solid rgb(184, 184, 184)">
                                 `;
                                 
@@ -69,7 +69,7 @@
                                     cartContent += `
                                         <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row text-dark mb-3">
                                             <div class="me-4 mb-3 mb-sm-0">
-                                                <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.unit_price).toFixed(2)}</p>
+                                                <p class="mb-0 text-primary">${product.name} - ₱${product?.total_cost}</p>
                                                 <small>Quantity: ${product.quantity}</small>
                                             </div>
                                         </div>
@@ -82,7 +82,7 @@
                                         <h5>Order Summary</h5>
                                         <p class="fw-bold">Subtotal: ₱${order.total_item_price}</p>
                                         <p class="fw-bold">Delivery Fee: ₱${order.shipping_fee}</p>
-                                        <p class="fw-bold">Discount: ₱${order.shipping_fee}</p>
+                                        <p class="fw-bold">Discount: ₱${order.discount}</p>
                                         <p class="fw-bold">Total: ₱${order.final_price}</p>
                                         </div>
                                     </div>

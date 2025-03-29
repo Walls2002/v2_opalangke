@@ -71,7 +71,7 @@
                         return;
                     }
         
-                    const apiUrl = `/api/vendor-orders/${storeId}?show_confirmed=1&show_assigned=1`;
+                    const apiUrl = `/api/vendor-orders/${storeId}?show_confirmed=1&show_assigned=1&show_dispatched=1`;
         
                     $.ajax({
                         url: apiUrl,
@@ -100,19 +100,21 @@
                                                 <h5 class="pb-2 text-primary">${order.customer.first_name} ${order.customer.middle_name} ${order.customer.last_name}</h5>
                                                 <p>${order.customer.contact} | ${order.customer.email}</p>
                                                 <p>Address: ${order?.address}</p>
-                                                <p>Note: ${order?.note}</p>
-                                                <p class="pt-3">Assigned Rider: ${order?.rider?.name || 'No rider assigned'} ${order?.rider?.contact_number || ''}</p>
+                                                <p>Note: ${order?.note ? order.note : ''}</p>
+
+                                                <p class="pt-3">Rider: ${order?.rider?.name || 'Currently waiting for a rider to accept delivery.'} ${order?.rider?.contact_number || ''}</p>
                                                 <hr>
                                                 
-                                                ${order.rider ? '' : `
+                                                ${order.rider === null || order.rider_team_only != null ? '' : `
                                                         <div class="row">
                                                             <div class="col-8">
-                                                                <select id="${riderSelectId}" class="form-control rider-selector">
-                                                                    <option value="" disabled selected>Select a Rider</option>
+                                                                <select id="rider_team_only" class="form-control rider-selector">
+                                                                    <option value="1">Dispatch to Store Riders Only</option>
+                                                                    <option value="0">Dispatch to All Riders in the Area</option>
                                                                 </select>    
                                                             </div>
                                                             <div class="col-4">
-                                                                <button class="btn btn-primary btn-confirm" data-order-id="${order.id}" data-rider-select-id="${riderSelectId}">Assign Rider</button>    
+                                                                <button class="btn btn-primary btn-confirm" data-order-id="${order.id}">Dispatch Order</button>    
                                                             </div>
                                                         </div>
                                                     `}
@@ -124,7 +126,7 @@
                                         cartContent += `
                                             <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row text-dark mb-3">
                                                 <div class="me-4 mb-3 mb-sm-0">
-                                                    <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.unit_price).toFixed(2)}</p>
+                                                    <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.total_cost).toFixed(2)}</p>
                                                     <small>Quantity: ${product.quantity}</small>
                                                 </div>
                                             </div>
@@ -136,7 +138,7 @@
                                             <h5>Order Summary</h5>
                                             <p class="fw-bold">Subtotal: ₱${order.total_item_price}</p>
                                             <p class="fw-bold">Delivery Fee: ₱${order.shipping_fee}</p>
-                                            <p class="fw-bold">Discount: ₱${order.shipping_fee}</p>
+                                            <p class="fw-bold">Discount: ₱${order.discount}</p>
                                             <p class="fw-bold">Total: ₱${order.final_price}</p>
                                             </div>
                                         </div>
@@ -161,26 +163,6 @@
                     });
                 }
         
-                // Function to populate a specific rider selector
-                function populateRiderSelector(selectorId) {
-                    $.ajax({
-                        url: '/api/riders',
-                        type: 'GET',
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        },
-                        success: function(response) {
-                            const riderSelector = $(`#${selectorId}`);
-                            response.riders.forEach(rider => {
-                                riderSelector.append(`<option value="${rider.id}">${rider.name}</option>`);
-                            });
-                        },
-                        error: function() {
-                            alert('Failed to fetch riders');
-                        }
-                    });
-                }
-        
                 // Handle store selection
                 $('#store-selector').on('change', function() {
                     storeId = $(this).val();
@@ -189,36 +171,34 @@
                         fetchCart();
                     }
                 });
-        
-                // Confirm order and assign rider
-                $(document).on('click', '.btn-confirm', function() {
-                    const orderId = $(this).data('order-id');
-                    const riderSelectId = $(this).data('rider-select-id');
-                    const riderId = $(`#${riderSelectId}`).val();
-        
-                    if (!riderId) {
-                        alert('Please select a rider.');
-                        return;
-                    }
-        
-                    $.ajax({
-                        url: `/api/vendor-orders/${orderId}/assign`,
-                        type: 'POST',
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        },
-                        data: {
-                            rider_id: riderId
-                        },
-                        success: function(response) {
-                            alert('Rider has been successfully assigned.');
+
+                document.addEventListener("click", function (event) {
+                    if (event.target.classList.contains("btn-confirm")) {
+                        const orderId = event.target.getAttribute("data-order-id");
+                        const riderTeamOnly = document.getElementById("rider_team_only").value;
+                        const token = localStorage.getItem("token");
+
+                        axios.post(`/api/vendor-orders/${orderId}/dispatch`, 
+                            { rider_team_only: riderTeamOnly }, 
+                            {
+                                headers: {
+                                    "Authorization": `Bearer ${token}`,
+                                    "Content-Type": "application/json"
+                                }
+                            }
+                        )
+                        .then(response => {
+                            alert("Order dispatched successfully!");
+                            console.log(response.data);
                             fetchCart();
-                        },
-                        error: function() {
-                            alert('Failed to process confirmation.');
-                        }
-                    });
+                        })
+                        .catch(error => {
+                            alert("Failed to dispatch order.");
+                            console.error(error);
+                        });
+                    }
                 });
+
         
                 // Fetch stores on page load
                 fetchStores();

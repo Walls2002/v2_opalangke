@@ -117,8 +117,9 @@
                                                 <h5 class="pb-2 text-primary">${order.customer.first_name} ${order.customer.middle_name} ${order.customer.last_name}</h5>
                                                 <p>${order.customer.contact} | ${order.customer.email}</p>
                                                 <p>Address: ${order?.address}</p>
-                                                <p>Note: ${order?.note}</p>
-                                                <p class="pt-3">Assigned Rider: ${order?.rider?.name || 'No rider assigned'} ${order?.rider?.contact_number || ''}</p>
+                                                <p>Note: ${order?.note ? order.note : ''}</p>
+
+                                                <p class="pt-3">Rider: ${order?.rider?.name || 'Currently waiting for a rider to accept delivery.'} ${order?.rider?.contact_number || ''}</p>
                                                 <div class="p-3" style="border: 1px solid rgb(184, 184, 184)">
                                     `;
 
@@ -126,7 +127,7 @@
                                         cartContent += `
                                             <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row text-dark mb-3">
                                                 <div class="me-4 mb-3 mb-sm-0">
-                                                    <p class="mb-0 text-primary">${product.name} - ₱${parseFloat(product.unit_price).toFixed(2)}</p>
+                                                    <p class="mb-0 text-primary">${product.name} - ₱${product?.total_cost}</p>
                                                     <small>Quantity: ${product.quantity}</small>
                                                 </div>
                                             </div>
@@ -138,7 +139,7 @@
                                             <h5>Order Summary</h5>
                                             <p class="fw-bold">Subtotal: ₱${order.total_item_price}</p>
                                             <p class="fw-bold">Delivery Fee: ₱${order.shipping_fee}</p>
-                                            <p class="fw-bold">Discount: ₱${order.shipping_fee}</p>
+                                            <p class="fw-bold">Discount: ₱${order.discount}</p>
                                             <p class="fw-bold">Total: ₱${order.final_price}</p>
                                             </div><br>
                                             <button class="btn btn-primary btn-sm view-proof-btn" data-delivery-image="${order.delivery_image}">View Proof of Delivery</button>
