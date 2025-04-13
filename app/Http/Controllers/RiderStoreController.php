@@ -133,9 +133,15 @@ class RiderStoreController extends Controller
         ]);
 
         $futureRider = User::with(['rider'])->where('email', $request->user_email)->first();
-        if (!$futureRider || $futureRider->role !== 'rider') {
+        if (!$futureRider || $futureRider->role !== 'rider' || $futureRider->rider === null) {
             return response()->json([
                 'message' => 'Invalid user, the user must be a registered rider.'
+            ]);
+        }
+
+        if (!$futureRider->rider->is_active) {
+            return response()->json([
+                'message' => 'Invalid user, the user must be a an active rider.'
             ]);
         }
 

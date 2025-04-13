@@ -23,6 +23,7 @@ class ProductResource extends JsonResource
             'quantity' => $this->quantity,
             'measurement' => $this->measurement,
             'image' => $this->image,
+            'is_active' => $this->is_active,
             'average_rating' => $this->getAverageRatings(),
         ];
     }

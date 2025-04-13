@@ -28,7 +28,10 @@ class ProductController extends Controller
         }
 
         // Fetch products belonging to the store
-        $products = Product::where('store_id', $request->store_id)->with(['store', 'category'])->get();
+        $products = Product::with(['store', 'category'])
+            ->where('store_id', $request->store_id)
+            ->where('is_active', true)
+            ->get();
 
         return response()->json(ProductResource::collection($products));
     }
@@ -110,12 +113,14 @@ class ProductController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
+        // if ($product->image) {
+        //     Storage::disk('public')->delete($product->image);
+        // }
 
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
+        $product->is_active = false;
+        if (!$product->save()) {
+            return response()->json(['message' => 'Product delete failed.'], 400);
         }
-
-        $product->delete();
 
         return response()->json(['message' => 'Product deleted successfully']);
     }

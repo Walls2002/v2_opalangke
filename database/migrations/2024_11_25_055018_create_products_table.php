@@ -17,6 +17,7 @@ class CreateProductsTable extends Migration
             $table->unsignedDecimal('price', 8, 2);
             $table->unsignedDecimal('quantity', 8, 2);
             $table->string('image')->nullable(); // Path to image file
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

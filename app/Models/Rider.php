@@ -23,7 +23,7 @@ class Rider extends Authenticatable
         'user_id',
         'license_number',
         'plate_number',
-        'is_deleted',
+        'is_active',
     ];
 
     /**
@@ -32,7 +32,7 @@ class Rider extends Authenticatable
      * @var array<string, string>
      */
     protected $casts = [
-        'is_deleted' => 'boolean',
+        'is_active' => 'boolean',
     ];
 
     public function rating(): Attribute

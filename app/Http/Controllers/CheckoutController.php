@@ -37,6 +37,7 @@ class CheckoutController extends Controller
             $customer = $request->user();
 
             $cartItems = $this->getCartItemsFromStore($customer, $store->id);
+            $this->verifyProductsAreActive($cartItems);
 
             if ($request->voucher_code) {
                 $voucher = $this->verifyVoucher($customer, $cartItems, $request->voucher_code);
@@ -59,6 +60,15 @@ class CheckoutController extends Controller
             logger('checkout error', ['error' => $th]);
 
             return response()->json(['message' => 'Encountered an error while checking out.'], 400);
+        }
+    }
+
+    private function verifyProductsAreActive(Collection $cartItems): void
+    {
+        foreach ($cartItems as $item) {
+            if ($item->product->is_active === false) {
+                throw new \InvalidArgumentException('One or more product in your cart is no longer available, Please remove them to continue to checkout.');
+            }
         }
     }
 
@@ -244,6 +254,7 @@ class CheckoutController extends Controller
             $customer = $request->user();
 
             $cartItems = $this->getCartItemsFromStore($customer, $store->id);
+            $this->verifyProductsAreActive($cartItems);
 
             if ($request->voucher_code) {
                 $voucher = $this->verifyVoucher($customer, $cartItems, $request->voucher_code);

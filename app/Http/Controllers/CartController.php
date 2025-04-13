@@ -66,6 +66,10 @@ class CartController extends Controller
     {
         $rules = ['quantity' => 'nullable', 'integer', 'min:1', 'max:10000'];
 
+        if ($product->is_active === false) {
+            return response()->json(['message' => 'Product is no longer available.'], 400);
+        }
+
         if ($product->measurement === 'kilo') {
             $rules['kilo_measurement'] = ['required', 'in:0.25,0.50,1'];
         }

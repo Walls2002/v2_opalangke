@@ -16,7 +16,17 @@ class Product extends Model
         'price',
         'quantity',
         'measurement',
-        'image'
+        'image',
+        'is_active',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function getAverageRatings(): string
