@@ -151,16 +151,16 @@
                         { 
                             data: null, 
                             render: function (data, type, row) {
-                                return `${row.user.first_name} ${row.user.middle_name ? row.user.middle_name + ' ' : ''}${row.user.last_name}`;
+                                return `${row.rider.user.first_name} ${row.rider.user.middle_name ? row.rider.user.middle_name + ' ' : ''}${row.rider.user.last_name}`;
                             } 
                         },
-                        { data: 'user.email' },
-                        { data: 'user.contact' },
-                        { data: 'license_number' },
-                        { data: 'plate_number' },
-                        { data: 'rating' },
+                        { data: 'rider.user.email' },
+                        { data: 'rider.user.contact' },
+                        { data: 'rider.license_number' },
+                        { data: 'rider.plate_number' },
+                        { data: 'rider.rating' },
                         {
-                            data: 'user.email_verified_at',
+                            data: 'rider.user.email_verified_at',
                             render: function (data, type, row) {
                                 return data ? 'Approved' : 'Pending';
                             }
@@ -191,25 +191,20 @@
             async function deleteUser(userId) {
                 if (confirm("Are you sure you want to delete this rider?")) {
                     try {
-                        // Send DELETE request to the API
-                        await axios.delete(`/api/riders/${userId}`, {
+                        const response = await axios.delete(`/api/store-riders/${userId}`, {
                             headers: {
-                                Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
+                                Authorization: `Bearer ${localStorage.getItem('token')}`,
                             },
                         });
 
-                        // Show success message
-                        alert("Rider deleted successfully!");
+                        // Show success message from API
+                        alert(response.data.message || "Rider deleted successfully!");
 
                         // Reload the DataTable to reflect changes
                         $('#usersTable').DataTable().ajax.reload();
                     } catch (error) {
-                        // Handle error response
-                        if (error.response) {
-                            alert(error.response.data.message || "Failed to delete user. Please try again.");
-                        } else {
-                            alert("An error occurred. Please check your connection and try again.");
-                        }
+                        const message = error.response?.data?.message || "An error occurred. Please try again.";
+                        alert(message);
                     }
                 }
             }

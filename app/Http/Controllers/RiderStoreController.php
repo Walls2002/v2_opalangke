@@ -51,9 +51,11 @@ class RiderStoreController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        $storeRiders = Rider::with(['user'])
-            ->whereRelation('riderStores', 'store_id', '=', $store->id)
-            ->where('is_active', true)
+        $storeRiders = RiderStore::with(['rider.user'])
+            ->whereHas('rider', function ($query) {
+                $query->where('is_active', true);
+            })
+            ->where('store_id', $store->id)
             ->get();
 
         return response()->json([
@@ -133,28 +135,29 @@ class RiderStoreController extends Controller
         ]);
 
         $futureRider = User::with(['rider'])->where('email', $request->user_email)->first();
+
         if (!$futureRider || $futureRider->role !== 'rider' || $futureRider->rider === null) {
             return response()->json([
                 'message' => 'Invalid user, the user must be a registered rider.'
-            ]);
+            ], 422);
         }
 
         if (!$futureRider->rider->is_active) {
             return response()->json([
-                'message' => 'Invalid user, the user must be a an active rider.'
-            ]);
+                'message' => 'Invalid user, the user must be an active rider.'
+            ], 422);
         }
 
         if ($futureRider->location_id !== $store->location_id) {
             return response()->json([
-                'message' => 'Invalid rider, the rider and store must be on the same location.'
-            ]);
+                'message' => 'Invalid rider, the rider and store must be in the same location.'
+            ], 422);
         }
 
         if (RiderStore::where('rider_id', $futureRider->rider->id)->where('store_id', $store->id)->exists()) {
             return response()->json([
                 'message' => 'Rider is already part of the team of this store.'
-            ]);
+            ], 422);
         }
 
         $riderStore = RiderStore::create([
