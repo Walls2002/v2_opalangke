@@ -7,7 +7,7 @@
 <!-- <script src="../js/datatables/datatables-simple-demo.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/bundle.js" crossorigin="anonymous"></script>
 <script src="../js/litepicker.js"></script>
-<script type="text/javascript" src="phil.min.js"></script>
+<script type="text/javascript" src="../phil.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 
