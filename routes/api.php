@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminRiderController;
 use App\Http\Controllers\AdminStoreController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OtpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -99,6 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['guest'])->group(function () {
     Route::post('/customers', [CustomerController::class, 'store']);
+    Route::post('/customer/verify-email', [CustomerController::class, 'verifyEmailExists']);
 });
 
 Route::get('/public-catalog', [ProductCatalogController::class, 'publicIndex']);
@@ -168,3 +170,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/store-riders/{store}', [RiderStoreController::class, 'store']);
     Route::delete('/store-riders/{riderStore}', [RiderStoreController::class, 'destroy']);
 });
+
+Route::post('/send-otp', [OtpController::class, 'sendOtp']);
+Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
+Route::post('/reset-password', [ChangePasswordController::class, 'changePassword']);
