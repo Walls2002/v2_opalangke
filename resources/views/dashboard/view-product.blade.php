@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-    @include('layout.head')
+@include('layout.head')
+
 <body class="nav-fixed">
     @include('layout.topnav')
 
     <div id="layoutSidenav">
         @include('layout.sidenav')
-        
+
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-xl px-4 mt-5">
@@ -41,7 +42,7 @@
                                             <label for="inputQuantity" class="form-label d-block">Quantity:</label>
                                             <input class="form-control text-center" id="inputQuantity" type="number" value="1" min="1" max="10000" style="max-width: 7rem; height: 43px;" />
                                         </div>
-                                    
+
                                         <!-- Kilo Measurement Dropdown (Hidden by Default) -->
                                         <div id="kiloContainer" style="display: none;">
                                             <label for="kiloMeasurement" class="form-label d-block">Weight:</label>
@@ -51,7 +52,7 @@
                                                 <option value="1">1 kilo</option>
                                             </select>
                                         </div>
-                                    
+
                                         <div class="d-flex align-items-end">
                                             <button class="btn btn-outline-primary flex-shrink-0" type="button" id="addToCartBtn" style="height: 43px;">
                                                 <i class="bi-cart-fill me-1"></i>
@@ -59,7 +60,7 @@
                                             </button>
                                         </div>
                                     </div>
-                                    
+
                                     <p id="cart-message" class="mt-3 text-success" style="display: none;">Item added to cart!</p>
                                 </div>
                             </div>
@@ -69,18 +70,18 @@
             @include('layout.footer')
         </div>
     </div>
-    
+
     @include('layout.scripts')
 
     <script>
-        document.addEventListener("DOMContentLoaded", async function () {
+        document.addEventListener("DOMContentLoaded", async function() {
             const product_id = JSON.parse(localStorage.getItem('product_id'));
-        
+
             if (!product_id) {
                 console.error("No product_id found in localStorage.");
                 return;
             }
-        
+
             $.ajax({
                 url: `/api/catalog/products/${product_id}`,
                 method: 'GET',
@@ -89,12 +90,12 @@
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${localStorage.getItem("token")}`
                 },
-                success: function (response) {
+                success: function(response) {
                     if (response.product) {
                         $("#product-name").text(response.product.name);
                         $("#product-price").text(`₱${parseFloat(response.product.price).toFixed(2)}`);
                         $("#product-description").text(`Available: ${response.product.quantity} ${response.product.measurement}`);
-                        
+
                         if (response.product.image) {
                             $("#product-image").attr("src", "/storage/" + response.product.image);
                         }
@@ -106,26 +107,50 @@
                             $("#kiloContainer").hide();
                         }
 
+                        if (response.product.quantity <= 0) {
+                            $("#addToCartBtn").prop("disabled", true).text("Out of Stock");
+                            $("#addToCartBtn").addClass("btn-outline-danger").removeClass("btn-outline-primary");
+                            $("#inputQuantity").prop("disabled", true);
+                        } else {
+                            $("#addToCartBtn").prop("disabled", false).text("Add to Cart");
+                            $("#addToCartBtn").removeClass("btn-outline-danger").addClass("btn-outline-primary");
+                            $("#inputQuantity").prop("disabled", false);
+                        }
+
+
                         // Attach event listener to Add to Cart button
-                        $("#addToCartBtn").on("click", function () {
+                        $("#addToCartBtn").on("click", function() {
                             addToCart(response.product);
                         });
                     }
                 },
-                error: function (error) {
+                error: function(error) {
                     console.error('Error fetching product:', error);
                 }
             });
 
             function addToCart(product) {
                 const quantity = parseInt($("#inputQuantity").val()) || 1;
-                let data = { quantity: quantity };
+                let data = {
+                    quantity: quantity
+                };
 
                 // If product is measured in kilos, include kilo_measurement
                 if (product.measurement.toLowerCase() === "kilo") {
                     const kilo_measurement = $("#kiloMeasurement").val();
                     data.kilo_measurement = parseFloat(kilo_measurement);
                 }
+                if (product.quantity <= 0) {
+                    alert("Product is out of stock.");
+                    return;
+                }
+
+                if (quantity > product.quantity) {
+                    alert(`Only ${product.quantity} items available in stock.`);
+                    $("#inputQuantity").val(1);
+                    return;
+                }
+
 
                 $.ajax({
                     url: `/api/cart/${product.id}`,
@@ -136,17 +161,18 @@
                         Authorization: `Bearer ${localStorage.getItem("token")}`
                     },
                     data: JSON.stringify(data),
-                    success: function (response) {
+                    success: function(response) {
                         $("#cart-message").text("Item added to cart!").fadeIn().delay(2000).fadeOut();
                     },
-                    error: function (error) {
+                    error: function(error) {
                         console.error("Error adding to cart:", error);
                         alert("Failed to add item to cart.");
                     }
                 });
             }
         });
-        </script>
+    </script>
 
 </body>
+
 </html>
