@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
 
 class ChangePasswordController extends Controller
 {
@@ -22,5 +24,38 @@ class ChangePasswordController extends Controller
         }
 
         return response()->json(['message' => 'Password updated.'], 200);
+    }
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'newPassword' => 'nullable|string|min:8',
+            'email' => 'required|email',
+        ]);
+
+
+        try {
+            $user = DB::table('users')->where('email', $request->email)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'code' => 404,
+                    'message' => 'User not found.'
+                ], 404);
+            }
+
+            DB::table('users')
+                ->where('email', $request->email)
+                ->update(['password' => bcrypt($request->newPassword)]);
+
+            return response()->json([
+                'code' => 200,
+                'message' => 'Password changed successfully.'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'message' => 'Failed to change password.'
+            ], 500);
+        }
     }
 }
