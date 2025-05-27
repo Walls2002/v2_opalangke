@@ -11,7 +11,7 @@
                                 <!-- Basic registration form-->
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                                     <div class="card-header justify-content-center">
-                                        <h3 class="fw-light my-4">Create Vendor Account</h3>
+                                        <h3 class="fw-light my-4">Create Rider Account</h3>
                                     </div>
                                     <div class="card-body">
                                         <!-- Registration form-->
@@ -41,14 +41,19 @@
                                                 </div>
                                             </div>
                                             <!-- Form Group (email address) -->
-                                            <div class="mb-3">
-                                                <label class="small mb-1" for="inputEmail">Email</label>
-                                                <input class="form-control" id="inputEmail" type="email" placeholder="Enter email address" required />
-                                            </div>
-                                            <!-- Form Group (contact number) -->
-                                            <div class="mb-3">
-                                                <label class="small mb-1" for="inputContact">Contact Number</label>
-                                                <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required />
+                                            <div class="row gx-3">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="small mb-1" for="inputEmail">Email</label>
+                                                        <input class="form-control" id="inputEmail" type="email" placeholder="Enter email address" required />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label class="small mb-1" for="inputContact">Contact Number</label>
+                                                        <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required />
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="mb-3">
@@ -58,6 +63,22 @@
                                                 </select>
                                             </div>
 
+                                            <div class="row gx-3">
+                                                <div class="col-md-6">
+                                                    <!-- Form Group (plate number)-->
+                                                    <div class="mb-3">
+                                                        <label class="small mb-1" for="inputPlateNumber">Plate Number</label>
+                                                        <input class="form-control" id="inputPlateNumber" type="text" placeholder="Enter plate number" required />
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <!-- Form Group (license number)-->
+                                                    <div class="mb-3">
+                                                        <label class="small mb-1" for="inputLicenseNumber">License Number</label>
+                                                        <input class="form-control" id="inputLicenseNumber" type="text" placeholder="Enter license number" required />
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <!-- Form Row -->
                                             <div class="row gx-3">
                                                 <div class="col-md-6">
@@ -118,26 +139,7 @@
         </script>
 
         <script>
-            // Enforce '09' prefix in contact number field
-            const contactInput = document.getElementById('inputContact');
-            contactInput.addEventListener('input', function (e) {
-                // Remove all non-digit characters
-                let digits = this.value.replace(/\D/g, '');
-                if (!digits.startsWith('09')) {
-                    digits = '09' + digits.replace(/^0+/, '').replace(/^9+/, '');
-                }
-                // Limit to 11 digits
-                if (digits.length > 11) {
-                    digits = digits.slice(0, 11);
-                }
-                this.value = digits;
-            });
-            contactInput.addEventListener('keydown', function (e) {
-                if ((this.selectionStart <= 2) && (e.key === 'Backspace' || e.key === 'Delete')) {
-                    e.preventDefault();
-                }
-            });
-            document.getElementById('registrationForm').addEventListener('submit', function (event) {
+            document.getElementById('registrationForm').addEventListener('submit', async function (event) {
                 event.preventDefault(); // Prevent default form submission
 
                 // Get form data
@@ -149,6 +151,9 @@
                 const password = document.getElementById('inputPassword').value;
                 const confirmPassword = document.getElementById('inputConfirmPassword').value;
                 const location_id = document.getElementById("locationDropdown").value.trim();
+                const plate_number = document.getElementById('inputPlateNumber').value;
+                const license_number = document.getElementById('inputLicenseNumber').value;
+                const store_id = JSON.parse(localStorage.getItem('store_id'));
 
                 // Simple password match validation
                 if (password !== confirmPassword) {
@@ -170,44 +175,57 @@
                     return;
                 }
 
-                // Prepare payload
-                const payload = {
-                    first_name: first_name,
-                    last_name: last_name,
-                    middle_name: middle_name,
-                    email: email,
-                    password: password,
-                    contact: contact,
-                    location_id: location_id,
-                };
-
-                // Make AJAX request
-                fetch('/api/users/vendor-register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                })
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error(response);
+                // API call to register rider
+                try {
+                    const response = await axios.post(
+                        `/api/store-riders/${store_id}/register`,
+                        {
+                            first_name: first_name,
+                            middle_name: middle_name,
+                            last_name: last_name,
+                            email: email,
+                            contact: contact,
+                            password: password,
+                            license_number: license_number,
+                            plate_number: plate_number,
+                            location_id: location_id
+                        },
+                        {
+                            headers: {
+                                'Content-Type': 'application/json',
+                                // Add Authorization if needed: 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
                         }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        // Success handling
-                        alert('Account created successfully!');
-                        console.log(data);
-                        location.reload();
-                    })
-                    .catch((error) => {
-                        // Error handling
-                        console.error('Error:', error);
-                        alert('The email has already been taken.');
-                    });
+                    );
+                    alert('Rider registered successfully!');
+                    event.target.reset();
+                } catch (error) {
+                    if (error.response) {
+                        alert(error.response.data.message || 'Failed to register rider. Please try again.');
+                    } else {
+                        alert('An error occurred. Please check your connection and try again.');
+                    }
+                }
             });
-
+            // Enforce '09' prefix in contact number field
+            const contactInput = document.getElementById('inputContact');
+            contactInput.addEventListener('input', function (e) {
+                // Remove all non-digit characters
+                let digits = this.value.replace(/\D/g, '');
+                if (!digits.startsWith('09')) {
+                    digits = '09' + digits.replace(/^0+/, '').replace(/^9+/, '');
+                }
+                // Limit to 11 digits
+                if (digits.length > 11) {
+                    digits = digits.slice(0, 11);
+                }
+                this.value = digits;
+            });
+            contactInput.addEventListener('keydown', function (e) {
+                if ((this.selectionStart <= 2) && (e.key === 'Backspace' || e.key === 'Delete')) {
+                    e.preventDefault();
+                }
+            });
         </script>
     </body>
 </html>

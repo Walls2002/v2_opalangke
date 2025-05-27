@@ -31,6 +31,9 @@ Route::get('/register', function () {
 Route::get('/vendor-register', function () {
     return view('vendor-register');
 });
+Route::get('/rider-register', function () {
+    return view('rider-register');
+});
 
 //dashboard
 
@@ -45,35 +48,35 @@ Route::get('/update-profile', function () {
 //admin
 
 Route::get('/admin/vendors', function () {
-    return view('dashboard/admin/admin-vendors');
+    return view('dashboard/admin-vendors');
 });
 
 Route::get('/admin/vouchers', function () {
-    return view('dashboard/admin/admin-vouchers');
+    return view('dashboard/admin-vouchers');
 });
 
 Route::get('/admin/locations', function () {
-    return view('dashboard/admin/admin-locations');
+    return view('dashboard/admin-locations');
 });
 
 Route::get('/admin/stores', function () {
-    return view('dashboard/admin/admin-stores');
+    return view('dashboard/admin-stores');
 });
 
 Route::get('/admin/riders', function () {
-    return view('dashboard/admin/admin-riders');
+    return view('dashboard/admin-riders');
 });
 
 Route::get('/admin/products', function () {
-    return view('dashboard/admin/admin-view-products');
+    return view('dashboard/admin-view-products');
 });
 
 Route::get('/admin/orders', function () {
-    return view('dashboard/admin/admin-view-orders');
+    return view('dashboard/admin-view-orders');
 });
 
 Route::get('/admin/riderorders', function () {
-    return view('dashboard/admin/admin-view-rider-orders');
+    return view('dashboard/admin-view-rider-orders');
 });
 //
 
