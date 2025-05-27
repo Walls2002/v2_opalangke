@@ -66,7 +66,7 @@ class OtpController extends Controller
         $exists = DB::table('otp')
             ->where('email', $email)
             ->where('otp', $otp)
-            ->where('created_at', '>=', now()->subMinutes(10)) // Check if OTP is within 10 minutes
+            ->where('created_at', '>=', now()->subMinutes(50)) // Check if OTP is within 50 minutes
             ->exists();
 
 

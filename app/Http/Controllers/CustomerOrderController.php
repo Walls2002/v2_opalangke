@@ -74,4 +74,25 @@ class CustomerOrderController extends Controller
 
         return response()->json(['message' => 'Order fetched.', 'order' => new CustomerOrderResource($order)], 200);
     }
+
+    /**
+     * Cancel/Decline the order.
+     *
+     * @param Request $request
+     * @param Order $order
+     * @return JsonResponse
+     */
+    public function cancel(Request $request, Order $order): JsonResponse
+    {
+        if ($request->user()->id !== $order->user_id) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+
+        $order->status = OrderStatus::CANCELED;
+        if (!$order->save()) {
+            return response()->json(['message' => 'Encountered an error updating the order status.'], 400);
+        }
+
+        return response()->json(['message' => 'Order canceled.'], 200);
+    }
 }
