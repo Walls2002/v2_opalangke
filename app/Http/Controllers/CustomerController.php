@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -38,5 +39,22 @@ class CustomerController extends Controller
         ]);
 
         return response()->json($user, 201);
+    }
+
+    public function verifyEmailExists(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $exists = DB::table('users')
+            ->where('email', $request->email)
+            ->exists();
+
+        return response()->json(['exists' => $exists]);
     }
 }

@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -41,35 +45,35 @@ Route::get('/update-profile', function () {
 //admin
 
 Route::get('/admin/vendors', function () {
-    return view('dashboard/admin-vendors');
+    return view('dashboard/admin/admin-vendors');
 });
 
 Route::get('/admin/vouchers', function () {
-    return view('dashboard/admin-vouchers');
+    return view('dashboard/admin/admin-vouchers');
 });
 
 Route::get('/admin/locations', function () {
-    return view('dashboard/admin-locations');
+    return view('dashboard/admin/admin-locations');
 });
 
 Route::get('/admin/stores', function () {
-    return view('dashboard/admin-stores');
+    return view('dashboard/admin/admin-stores');
 });
 
 Route::get('/admin/riders', function () {
-    return view('dashboard/admin-riders');
+    return view('dashboard/admin/admin-riders');
 });
 
 Route::get('/admin/products', function () {
-    return view('dashboard/admin-view-products');
+    return view('dashboard/admin/admin-view-products');
 });
 
 Route::get('/admin/orders', function () {
-    return view('dashboard/admin-view-orders');
+    return view('dashboard/admin/admin-view-orders');
 });
 
 Route::get('/admin/riderorders', function () {
-    return view('dashboard/admin-view-rider-orders');
+    return view('dashboard/admin/admin-view-rider-orders');
 });
 //
 
@@ -119,6 +123,7 @@ Route::get('/vendor-order-pending', function () {
     return view('dashboard/vendor-order-pending');
 });
 
+
 Route::get('/vendor-order-confirmed', function () {
     return view('dashboard/vendor-order-confirmed');
 });
@@ -143,4 +148,17 @@ Route::get('/team-orders', function () {
 
 Route::get('/delivery', function () {
     return view('dashboard/delivery');
+});
+
+Route::get('/forgot-password', function () {
+    return view('forgot-password');
+});
+Route::get('/verify-otp', function (Request $request) {
+    $email = $request->query('email');
+    return view('verify-otp', ['email' => $email]);
+});
+
+Route::get('/reset-password', function (Request $request) {
+    $email = $request->query('email');
+    return view('reset-password', ['email' => $email]);
 });
