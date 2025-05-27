@@ -51,80 +51,138 @@
                                                 <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required value="09" />
                                             </div>
 
-                                            <div class="mb-3">
-                                                <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
-                                                <select id="locationDropdown" class="form-select" required>
-                                                    <option value="">Select Location</option>
-                                                </select>
-                                            </div>
+                                        <div class="mb-3">
+                                            <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
+                                            <select id="locationDropdown" class="form-select" required>
+                                                <option value="">Select Location</option>
+                                            </select>
+                                        </div>
 
-                                            <!-- Form Row -->
-                                            <div class="row gx-3">
-                                                <div class="col-md-6">
-                                                    <!-- Form Group (password)-->
-                                                    <div class="mb-3">
-                                                        <label class="small mb-1" for="inputPassword">Password</label>
-                                                        <input class="form-control" id="inputPassword" type="password" placeholder="Enter password" required />
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <!-- Form Group (confirm password)-->
-                                                    <div class="mb-3">
-                                                        <label class="small mb-1" for="inputConfirmPassword">Confirm Password</label>
-                                                        <input class="form-control" id="inputConfirmPassword" type="password" placeholder="Confirm password" required />
-                                                    </div>
+                                        <!-- Form Row -->
+                                        <div class="row gx-3">
+                                            <div class="col-md-6">
+                                                <!-- Form Group (password)-->
+                                                <div class="mb-3">
+                                                    <label class="small mb-1" for="inputPassword">Password</label>
+                                                    <input class="form-control" id="inputPassword" type="password" placeholder="Enter password" required />
                                                 </div>
                                             </div>
-                                            <!-- Form Group (create account submit) -->
-                                            <button type="submit" class="btn btn-primary btn-block">Create Account</button>
-                                        </form>
-                                    </div>
-                                    <div class="card-footer text-center">
-                                        <div class="small"><a href="/login">Have an account? Go to login</a></div>
-                                    </div>
+                                            <div class="col-md-6">
+                                                <!-- Form Group (confirm password)-->
+                                                <div class="mb-3">
+                                                    <label class="small mb-1" for="inputConfirmPassword">Confirm Password</label>
+                                                    <input class="form-control" id="inputConfirmPassword" type="password" placeholder="Confirm password" required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Form Group (create account submit) -->
+                                        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                                    </form>
+                                </div>
+                                <div class="card-footer text-center">
+                                    <div class="small"><a href="/login">Have an account? Go to login</a></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </main>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="otpVerifyModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Verify Email</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Enter the 6-digit OTP sent to your email:</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <input type="text" class="form-control text-center otp-input" maxlength="1" style="width: 50px;" />
+                        <input type="text" class="form-control text-center otp-input" maxlength="1" style="width: 50px;" />
+                        <input type="text" class="form-control text-center otp-input" maxlength="1" style="width: 50px;" />
+                        <input type="text" class="form-control text-center otp-input" maxlength="1" style="width: 50px;" />
+                        <input type="text" class="form-control text-center otp-input" maxlength="1" style="width: 50px;" />
+                        <input type="text" class="form-control text-center otp-input" maxlength="1" style="width: 50px;" />
+                    </div>
+                    <p class="text-center mt-3">
+                        <a href="#" onclick="resendOtp()" id="resendOtpLink">Resend OTP</a>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button onclick="verifyEmail()" type="button" class="btn btn-primary">Verify Email</button>
+                </div>
             </div>
         </div>
-        @include('layout.scripts')
+    </div>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", async function () {
-                const locationDropdown = $('#locationDropdown');
-                $.ajax({
-                        url: '/api/locations',
-                        method: 'GET',
-                        dataType: 'json',
-                        success: function (locations) {
-                            // Populate the dropdown with locations
-                            locations.forEach(location => {
-                                const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
-                                locationDropdown.append(option);
-                            });
-                        },
-                        error: function (error) {
-                            console.error('Error fetching locations:', error);
-                        }
+
+
+    @include('layout.scripts')
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+            const locationDropdown = $('#locationDropdown');
+            $.ajax({
+                url: '/api/locations',
+                method: 'GET',
+                dataType: 'json',
+                success: function(locations) {
+                    // Populate the dropdown with locations
+                    locations.forEach(location => {
+                        const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
+                        locationDropdown.append(option);
                     });
+                },
+                error: function(error) {
+                    console.error('Error fetching locations:', error);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const otpInputs = document.querySelectorAll(".otp-input");
+
+            otpInputs.forEach((input, index) => {
+                input.addEventListener("input", function() {
+                    if (input.value.length === 1 && index < otpInputs.length - 1) {
+                        otpInputs[index + 1].focus(); // Focus on the next input
+                    }
                 });
-        </script>
 
-        <script>
-            document.getElementById('registrationForm').addEventListener('submit', function (event) {
-                event.preventDefault(); // Prevent default form submission
+                input.addEventListener("keydown", function(event) {
+                    if (event.key === "Backspace" && input.value === "" && index > 0) {
+                        otpInputs[index - 1].focus(); // Focus on the previous input
+                    }
+                });
+            });
+        });
 
-                // Get form data
-                const first_name = document.getElementById('inputFirstName').value;
-                const middle_name = document.getElementById('inputMiddleName').value;
-                const last_name = document.getElementById('inputLastName').value;
-                const email = document.getElementById('inputEmail').value;
-                const contact = document.getElementById('inputContact').value;
-                const password = document.getElementById('inputPassword').value;
-                const confirmPassword = document.getElementById('inputConfirmPassword').value;
-                const location_id = document.getElementById("locationDropdown").value.trim();
+
+
+
+
+
+        document.getElementById('registrationForm').addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Get form data
+            const first_name = document.getElementById('inputFirstName').value;
+            const middle_name = document.getElementById('inputMiddleName').value;
+            const last_name = document.getElementById('inputLastName').value;
+            const email = document.getElementById('inputEmail').value;
+            const contact = document.getElementById('inputContact').value;
+            const password = document.getElementById('inputPassword').value;
+            const confirmPassword = document.getElementById('inputConfirmPassword').value;
+            const location_id = document.getElementById("locationDropdown").value.trim();
+            const myModal = new bootstrap.Modal(document.getElementById('otpVerifyModal'));
+
 
                 // Simple password match validation
                 if (password !== confirmPassword) {
@@ -146,16 +204,108 @@
                     return;
                 }
 
-                // Prepare payload
-                const payload = {
-                    first_name: first_name,
-                    last_name: last_name,
-                    middle_name: middle_name,
-                    email: email,
-                    password: password,
-                    contact: contact,
-                    location_id: location_id,
-                };
+
+            try {
+                const response = await fetch('/api/customer/verify-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to verify email.');
+                }
+
+                const data = await response.json();
+                const isEmailExists = data.exists;
+
+                if (isEmailExists) {
+                    alert('The email has already been taken. Please use a different email address.');
+                    return;
+                } else {
+                    const sendingOtp = await sendOtp();
+                    if (sendingOtp === 200) {
+                        myModal.show();
+                    } else {
+                        alert('Failed to send OTP. Please try again later.');
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error verifying email:', error);
+                alert('An error occurred while verifying the email. Please try again later.');
+                return;
+            }
+        });
+
+        async function resendOtp() {
+            const email = document.getElementById('inputEmail').value;
+            const sendingOtp = await sendOtp();
+            if (sendingOtp !== 200) {
+                alert('Failed to resend OTP. Please try again later.');
+                return;
+            } else {
+                alert('OTP has been resent to your email address. Please check your inbox.');
+                return 200;
+            }
+        }
+
+
+        async function sendOtp() {
+            const email = document.getElementById('inputEmail').value;
+            try {
+                const otpResponse = await fetch('/api/send-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    }),
+                });
+                if (!otpResponse.ok) {
+                    throw new Error('Failed to send OTP.');
+                }
+                const otpData = await otpResponse.json();
+                if (otpData.code === 200) {
+                    return 200;
+                } else {
+                    return 500;
+                }
+            } catch (error) {
+                return 500;
+            }
+        }
+
+
+
+        async function verifyEmail() {
+
+
+            // Get form data
+            const first_name = document.getElementById('inputFirstName').value;
+            const middle_name = document.getElementById('inputMiddleName').value;
+            const last_name = document.getElementById('inputLastName').value;
+            const email = document.getElementById('inputEmail').value;
+            const contact = document.getElementById('inputContact').value;
+            const password = document.getElementById('inputPassword').value;
+            const confirmPassword = document.getElementById('inputConfirmPassword').value;
+            const location_id = document.getElementById("locationDropdown").value.trim();
+
+            // Prepare payload
+            const payload = {
+                first_name: first_name,
+                last_name: last_name,
+                middle_name: middle_name,
+                email: email,
+                password: password,
+                contact: contact,
+                location_id: location_id,
+            };
 
                 // Make AJAX request
                 fetch('/api/customers', {

@@ -152,6 +152,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/customer-orders/{order}', [CustomerOrderController::class, 'show']);
     Route::post('/customer-orders/product-review/{orderItem}', [ReviewController::class, 'store']);
     Route::post('/customer-orders/rider-review/{order}', [RiderReviewController::class, 'store']);
+    Route::delete('/customer-orders/{order}/cancel', [CustomerOrderController::class, 'cancel']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {

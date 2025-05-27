@@ -17,13 +17,17 @@ class CustomerController extends Controller
             'last_name' => 'required|string|max:50',
             'first_name' => 'required|string|max:50',
             'middle_name' => 'required|string|max:50',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255',
             'password' => 'required|string|min:8',
             'contact' => 'nullable|string|max:15',
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'code' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $user = User::create([
@@ -38,7 +42,11 @@ class CustomerController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        return response()->json($user, 201);
+        return response()->json([
+            'code' => 201,
+            'message' => 'Customer created successfully',
+            'data' => $user
+        ], 201);
     }
 
     public function verifyEmailExists(Request $request)
