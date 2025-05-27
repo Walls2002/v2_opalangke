@@ -132,6 +132,20 @@
                     return;
                 }
 
+                 // Password strength validation
+                const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+                if (!passwordRegex.test(password)) {
+                    alert('Password must be at least 8 characters long, contain at least one uppercase letter, and one number.');
+                    return;
+                }
+
+                // Contact number validation
+                const contactRegex = /^09\d{9}$/;
+                if (!contactRegex.test(contact)) {
+                    alert('Invalid contact number format');
+                    return;
+                }
+
                 // Prepare payload
                 const payload = {
                     first_name: first_name,
