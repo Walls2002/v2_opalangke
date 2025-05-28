@@ -26,6 +26,12 @@
                                         <div class="mb-3 text-end">
                                             <a href="/forgot-password" class="text-decoration-none small text-primary fw-semibold">Forgot Password?</a>
                                         </div>
+                                        <div class="mb-3 form-check">
+                                            <input class="form-check-input" type="checkbox" id="termsCheck" required />
+                                            <label class="form-check-label small" for="termsCheck">
+                                                I agree to the <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+                                            </label>
+                                        </div>
                                         <div class="d-grid gap-2 mt-4 mb-0">
                                             <button type="button" class="btn btn-primary btn-lg shadow-sm" onclick="login()">Login</button>
                                         </div>
@@ -34,8 +40,9 @@
                                 <div class="card-footer text-center bg-light border-0">
                                     <div class="small">
                                         <p class="mb-0">Need an account? Sign up as
-                                            <span><a href="/register" class="fw-semibold text-primary">Customer</a></span> or
-                                            <span><a href="/vendor-register" class="fw-semibold text-primary">Vendor</a></span>
+                                            <span><a href="/register" class="fw-semibold text-primary">Customer</a></span>,
+                                            <span><a href="/vendor-register" class="fw-semibold text-primary">Vendor</a></span> or
+                                            <span><a href="/rider-register" class="fw-semibold text-primary">Rider</a></span>
                                         </p>
                                     </div>
                                 </div>
@@ -52,10 +59,15 @@
         async function login() {
             const email = document.getElementById("inputEmailAddress").value.trim();
             const password = document.getElementById("inputPassword").value.trim();
+            const termsChecked = document.getElementById("termsCheck").checked;
 
             // Basic validation
             if (!email || !password) {
                 alert('Please fill in both email and password.');
+                return;
+            }
+            if (!termsChecked) {
+                alert('You must agree to the Terms and Conditions to continue.');
                 return;
             }
 
@@ -103,6 +115,44 @@
             }
         });
     </script>
+
+    <!-- Terms and Conditions Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header justify-content-center">
+            <h5 class="modal-title text-center w-100" id="termsModalLabel">Terms and Conditions</h5>
+            <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+          </div>
+          <div class="modal-body">
+            <p>Welcome to our platform. Please read these Terms and Conditions carefully before using our services.</p>
+            <h6>1. Acceptance of Terms</h6>
+            <p>By accessing or using our website, you agree to be bound by these Terms and Conditions and our Privacy Policy.</p>
+            <h6>2. User Responsibilities</h6>
+            <ul>
+                <li>Provide accurate and up-to-date information during registration and use of the platform.</li>
+                <li>Maintain the confidentiality of your account credentials.</li>
+                <li>Comply with all applicable laws and regulations.</li>
+            </ul>
+            <h6>3. Prohibited Activities</h6>
+            <ul>
+                <li>Do not use the platform for unlawful or fraudulent purposes.</li>
+                <li>Do not attempt to gain unauthorized access to other accounts or systems.</li>
+                <li>Do not post or transmit harmful, offensive, or inappropriate content.</li>
+            </ul>
+            <h6>4. Limitation of Liability</h6>
+            <p>We are not liable for any damages arising from your use of the platform. Use the services at your own risk.</p>
+            <h6>5. Changes to Terms</h6>
+            <p>We reserve the right to update or modify these Terms and Conditions at any time. Continued use of the platform constitutes acceptance of the new terms.</p>
+            <h6>6. Contact Us</h6>
+            <p>If you have any questions about these Terms and Conditions, please contact us through our support page.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 </body>
 
 </html>

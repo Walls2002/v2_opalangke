@@ -49,7 +49,7 @@
                                         <!-- Form Group (contact number) -->
                                         <div class="mb-3">
                                             <label class="small mb-1" for="inputContact">Contact Number</label>
-                                            <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required />
+                                            <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required value="09"/>
                                         </div>
 
                                         <div class="mb-3">
@@ -379,14 +379,26 @@
                 console.error('Error:', error);
                 alert('An error occurred while verifying the OTP. Please try again later.' + error + ' ' + email);
             }
-
-
-
-
-
-
-
         }
+        // Enforce '09' prefix in contact number field
+            const contactInput = document.getElementById('inputContact');
+            contactInput.addEventListener('input', function (e) {
+                // Remove all non-digit characters
+                let digits = this.value.replace(/\D/g, '');
+                if (!digits.startsWith('09')) {
+                    digits = '09' + digits.replace(/^0+/, '').replace(/^9+/, '');
+                }
+                // Limit to 11 digits
+                if (digits.length > 11) {
+                    digits = digits.slice(0, 11);
+                }
+                this.value = digits;
+            });
+            contactInput.addEventListener('keydown', function (e) {
+                if ((this.selectionStart <= 2) && (e.key === 'Backspace' || e.key === 'Delete')) {
+                    e.preventDefault();
+                }
+            });
     </script>
 </body>
 
