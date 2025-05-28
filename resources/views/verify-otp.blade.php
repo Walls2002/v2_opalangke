@@ -27,7 +27,9 @@
                                             </div>
                                         </div>
                                         <div class="d-grid gap-2 mt-4 mb-0">
-                                            <button type="button" class="btn btn-primary btn-lg shadow-sm" onclick="verifyOtp()">Verify OTP</button>
+
+                                            <button type="button" id="verifyOtpBtn" class="btn btn-primary btn-lg shadow-sm" onclick="verifyOtp()"> <span id="sendOtpBtnSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                                                Verify OTP</button>
                                         </div>
                                     </form>
                                 </div>
@@ -53,6 +55,9 @@
         }
 
         async function verifyOtp() {
+            const spinner = document.getElementById("sendOtpBtnSpinner");
+            const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+
             const otp = Array.from({
                 length: 6
             }, (_, i) => document.getElementById(`otp${i + 1}`).value).join('');
@@ -63,7 +68,12 @@
                 return;
             }
 
+
+
             try {
+                spinner.classList.remove("d-none");
+                verifyOtpBtn.disabled = true;
+
                 const response = await fetch('/api/verify-otp', {
                     method: 'POST',
                     headers: {
@@ -96,6 +106,9 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred while verifying the OTP. Please try again later.' + error + ' ' + email);
+            } finally {
+                spinner.classList.add("d-none");
+                verifyOtpBtn.disabled = false;
             }
         }
     </script>

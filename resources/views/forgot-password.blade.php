@@ -20,7 +20,10 @@
                                             <input class="form-control form-control-lg" id="inputEmailAddress" type="email" placeholder="Enter your email address" required />
                                         </div>
                                         <div class="d-grid gap-2 mt-4 mb-0">
-                                            <button type="button" class="btn btn-primary btn-lg shadow-sm" onclick="resetPassword()">Send OTP</button>
+                                            <button type="button" id="sendOtpBtn" class="btn btn-primary btn-lg shadow-sm" onclick="resetPassword()">
+                                                <span id="sendOtpBtnSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                                                Send OTP
+                                            </button>
                                         </div>
                                     </form>
                                 </div>
@@ -36,12 +39,17 @@
             </main>
         </div>
     </div>
+
     @include('layout.scripts')
 
     <script>
         async function resetPassword() {
             const email = document.getElementById("inputEmailAddress").value.trim();
+            const spinner = document.getElementById("sendOtpBtnSpinner");
+            const sendOtpBtn = document.getElementById("sendOtpBtn");
             let isEmailExists = false;
+
+
 
             if (!email) {
                 alert('Please enter your email address.');
@@ -49,6 +57,12 @@
             }
 
             try {
+
+                // Show spinner
+                spinner.classList.remove("d-none");
+                sendOtpBtn.disabled = true;
+
+
                 const response = await fetch('/api/customer/verify-email', {
                     method: 'POST',
                     headers: {
@@ -105,6 +119,11 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred while sending the OTP. Please try again later.');
+            } finally {
+
+                spinner.classList.add("d-none");
+                sendOtpBtn.disabled = false;
+
             }
 
 

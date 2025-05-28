@@ -58,7 +58,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/admin/riders/{rider}/orders', [AdminRiderController::class, 'showOrders']);
 });
 
-Route::post('users/vendor-register', [UserController::class, 'storeVendor']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('users/all', [UserController::class, 'indexAll']);
@@ -68,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::apiResource('users', UserController::class);
 
 Route::post('login', [AuthController::class, 'login']);
+Route::get('all-stores', [StoreController::class, 'showAll']);
 
 Route::apiResource('locations', LocationController::class);
 
@@ -166,12 +167,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/store-riders/{store}/local', [RiderStoreController::class, 'indexLocal']);
-    Route::post('/store-riders/{store}/register', [RiderStoreController::class, 'storeRegister']);
+
     Route::get('/store-riders/{store}/team', [RiderStoreController::class, 'index']);
     Route::post('/store-riders/{store}', [RiderStoreController::class, 'store']);
     Route::delete('/store-riders/{riderStore}', [RiderStoreController::class, 'destroy']);
 });
-
+Route::post('users/vendor-register', [UserController::class, 'storeVendor']);
+Route::post('/riders/register', [RiderStoreController::class, 'storeRegister']);
 Route::post('/send-otp', [OtpController::class, 'sendOtp']);
 Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
 Route::post('/reset-password', [ChangePasswordController::class, 'changePassword']);

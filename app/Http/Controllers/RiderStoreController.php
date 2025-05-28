@@ -11,6 +11,8 @@ use App\Models\Store;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 
 class RiderStoreController extends Controller
 {
@@ -65,56 +67,74 @@ class RiderStoreController extends Controller
     }
 
     /**
-     * Register a rider to this store and add them as a part of their team.
+     * Register a rider to this store, waiting for admin verification.
      *
      * @param Request $request
-     * @param Store $store
      * @return JsonResponse
      */
-    public function storeRegister(Request $request, Store $store): JsonResponse
+    public function storeRegister(Request $request): JsonResponse
     {
-        if ($request->user()->id !== $store->vendor_id) {
-            return response()->json(['message' => 'Unauthorized.'], 403);
+        try {
+            $validator = Validator::make($request->all(), [
+                'last_name' => 'required|string|max:50',
+                'first_name' => 'required|string|max:50',
+                'middle_name' => 'required|string|max:50',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8',
+                'contact' => 'nullable|string|max:15',
+                'location_id' => 'required|integer|exists:locations,id',
+                'store_id' => 'required|integer|exists:stores,id',
+                'license_number' => 'required|string|max:15|unique:riders,license_number',
+                'plate_number' => 'required|string|max:15|unique:riders,plate_number',
+            ]);
+
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'code' => 422,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                    'all_errors' => $validator->getMessageBag()->toArray()
+                ], 422);
+            }
+
+
+            $futureRider = User::create([
+                'location_id' => $request->location_id,
+                'last_name' => $request->last_name,
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'contact' => $request->contact,
+                'role' => 'rider',
+                'email_verified_at' => null,
+            ]);
+
+            $futureRider->rider = Rider::create([
+                'user_id' => $futureRider->id,
+                'license_number' => $request->license_number,
+                'plate_number' => $request->plate_number,
+            ]);
+
+            $riderStore = RiderStore::create([
+                'rider_id' => $futureRider->rider->id,
+                'store_id' => $request->store_id,
+            ]);
+
+
+            return response()->json([
+                'code' => 201,
+                'message' => 'Rider created, waiting for admin verification.',
+                'store_rider' => $riderStore,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'code' => 500,
+                'message' => 'An error occurred while registering the rider.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        $request->validate([
-            'last_name' => 'required|string|max:50',
-            'first_name' => 'required|string|max:50',
-            'middle_name' => 'required|string|max:50',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'contact' => 'nullable|string|max:15',
-            'license_number' => 'required|string|max:15|unique:riders,license_number',
-            'plate_number' => 'required|string|max:15|unique:riders,plate_number',
-        ]);
-
-        $futureRider = User::create([
-            'location_id' => $store->location_id,
-            'last_name' => $request->last_name,
-            'first_name' => $request->first_name,
-            'middle_name' => $request->middle_name,
-            'email' => $request->email,
-            'password' => $request->password,
-            'contact' => $request->contact,
-            'role' => 'rider',
-            'email_verified_at' => null,
-        ]);
-
-        $futureRider->rider = Rider::create([
-            'user_id' => $futureRider->id,
-            'license_number' => $request->license_number,
-            'plate_number' => $request->plate_number,
-        ]);
-
-        $riderStore = RiderStore::create([
-            'rider_id' => $futureRider->rider->id,
-            'store_id' => $store->id,
-        ]);
-
-        return response()->json([
-            'message' => 'Rider created, waiting for admin verification.',
-            'store_rider' => $riderStore,
-        ]);
     }
 
     /**

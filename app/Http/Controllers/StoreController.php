@@ -32,6 +32,11 @@ class StoreController extends Controller
         $locations = Location::all();
         return response()->json(['vendors' => $vendors, 'locations' => $locations]);
     }
+    public function showAll()
+    {
+        return response()->json(Store::all()->where('is_verified', true));
+    }
+
 
     public function storeUnverified(Request $request): JsonResponse
     {

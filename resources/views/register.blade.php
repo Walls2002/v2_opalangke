@@ -49,7 +49,7 @@
                                         <!-- Form Group (contact number) -->
                                         <div class="mb-3">
                                             <label class="small mb-1" for="inputContact">Contact Number</label>
-                                            <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required value="09"/>
+                                            <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required value="09" />
                                         </div>
 
                                         <div class="mb-3">
@@ -77,7 +77,8 @@
                                             </div>
                                         </div>
                                         <!-- Form Group (create account submit) -->
-                                        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                                        <button type="submit" id="createAccBtn" class="btn btn-primary btn-block"><span id="createAccSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                                            Create Account</button>
                                     </form>
                                 </div>
                                 <div class="card-footer text-center">
@@ -115,7 +116,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button onclick="verifyEmail()" type="button" class="btn btn-primary">Verify Email</button>
+                    <button onclick="verifyEmail()" id="verifyOtpBtn" type="button" class="btn btn-primary"><span id="modalSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                        Verify Email</button>
                 </div>
             </div>
         </div>
@@ -172,7 +174,8 @@
 
         document.getElementById('registrationForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent default form submission
-
+            const createAccSpinner = document.getElementById("createAccSpinner");
+            const createAccBtn = document.getElementById("createAccBtn");
             // Get form data
             const first_name = document.getElementById('inputFirstName').value;
             const middle_name = document.getElementById('inputMiddleName').value;
@@ -190,7 +193,8 @@
                 alert('Passwords do not match!');
                 return;
             }
-
+            createAccBtn.disabled = true;
+            createAccSpinner.classList.remove("d-none");
 
             try {
                 const response = await fetch('/api/customer/verify-email', {
@@ -226,7 +230,11 @@
                 console.error('Error verifying email:', error);
                 alert('An error occurred while verifying the email. Please try again later.');
                 return;
+            } finally {
+                createAccSpinner.classList.add("d-none");
+                createAccBtn.disabled = false;
             }
+
         });
 
         async function resendOtp() {
@@ -271,7 +279,8 @@
 
 
         async function verifyEmail() {
-
+            const modalSpinner = document.getElementById("modalSpinner");
+            const verifyOtpBtn = document.getElementById("verifyOtpBtn");
 
             // Get form data
             const first_name = document.getElementById('inputFirstName').value;
@@ -307,6 +316,9 @@
                 alert('Please enter a valid 6-digit OTP.');
                 return;
             }
+            modalSpinner.classList.remove("d-none");
+            verifyOtpBtn.disabled = true;
+
 
             try {
                 const response = await fetch('/api/verify-otp', {
@@ -342,63 +354,28 @@
 
                         const createAcctData = await createAcctResponse.json();
                         if (createAcctData.code === 200 || createAcctData.code === 201) {
-                            alert('OTP verified and account created successfully!');
+                            alert('OTP verified and Customer account created successfully!');
                             window.location.href = '/login';
                         } else {
                             console.error('Failed to create account:', createAcctData.code, +' ' + payload);
                             alert('Failed to create account. Please try again later.');
                         }
                     } catch (error) {
-                        console.error('Error creating account:', error);
+                        console.error('Error creating account:' + error);
                         alert('An error occurred while creating the account. Please try again later.' + JSON.stringify(error) + ' ' + JSON.stringify(payload));
                     }
 
-
-
-
-                    // .then((response) => {
-                    //     if (!response.ok) {
-                    //         throw new Error(response);
-                    //     }
-                    //     return response.json();
-                    // })
-                    // .then((data) => {
-                    //     // Success handling
-                    //     alert('OTP verified and account created successfully!');
-
-                    //     window.location.href = '/login';
-                    // })
-                    // .catch((error) => {
-                    //     console.error('Error creating account:', error.message);
-                    //     alert('An error occurred while creating the account. Please try again later.' + error + ' ' + email);
-                    // });
                 } else {
                     alert('Invalid OTP. Please try again.');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred while verifying the OTP. Please try again later.' + error + ' ' + email);
+            } finally {
+                modalSpinner.classList.add("d-none");
+                verifyOtpBtn.disabled = false;
             }
         }
-        // Enforce '09' prefix in contact number field
-            const contactInput = document.getElementById('inputContact');
-            contactInput.addEventListener('input', function (e) {
-                // Remove all non-digit characters
-                let digits = this.value.replace(/\D/g, '');
-                if (!digits.startsWith('09')) {
-                    digits = '09' + digits.replace(/^0+/, '').replace(/^9+/, '');
-                }
-                // Limit to 11 digits
-                if (digits.length > 11) {
-                    digits = digits.slice(0, 11);
-                }
-                this.value = digits;
-            });
-            contactInput.addEventListener('keydown', function (e) {
-                if ((this.selectionStart <= 2) && (e.key === 'Backspace' || e.key === 'Delete')) {
-                    e.preventDefault();
-                }
-            });
     </script>
 </body>
 
