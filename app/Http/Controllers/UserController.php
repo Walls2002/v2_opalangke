@@ -30,7 +30,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'location_id' => 'required|exists:locations,id',
             'last_name' => 'required|string|max:50',
             'first_name' => 'required|string|max:50',
@@ -42,6 +42,18 @@ class UserController extends Controller
             'license_number' => ['required_if:role,rider', 'string', 'max:15'],
             'plate_number' => ['required_if:role,rider', 'string', 'max:15'],
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'code' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+
+
+
 
         $user = User::create([
             'location_id' => $request->location_id,
@@ -63,7 +75,11 @@ class UserController extends Controller
             ]);
         }
 
-        return response()->json($user, 201);
+        return response()->json([
+            'code' => 201,
+            'message' => 'Rider created successfully',
+            'data' => $user
+        ], 201);
     }
 
     public function storeVendor(Request $request)
@@ -79,8 +95,13 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return response()->json([
+                'code' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
+
 
         $user = User::create([
             'location_id' => $request->location_id,
@@ -94,7 +115,11 @@ class UserController extends Controller
             'email_verified_at' => null,
         ]);
 
-        return response()->json($user, 201);
+        return response()->json([
+            'code' => 201,
+            'message' => 'Vendor created successfully',
+            'data' => $user
+        ], 201);
     }
 
     public function show($id)

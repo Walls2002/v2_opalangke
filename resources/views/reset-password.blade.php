@@ -24,7 +24,9 @@
                                             <input class="form-control form-control-lg" id="inputConfirmPassword" type="password" placeholder="Confirm your new password" required />
                                         </div>
                                         <div class="d-grid gap-2 mt-4 mb-0">
-                                            <button type="button" class="btn btn-primary btn-lg shadow-sm" onclick="setNewPassword()">Reset Password</button>
+
+                                            <button type="button" id="setNewPassBtn" class="btn btn-primary btn-lg shadow-sm" onclick="setNewPassword()"> <span id="sendOtpBtnSpinner" class="spinner-border spinner-border-sm me-2 d-none" role="status" aria-hidden="true"></span>
+                                                Reset Password</button>
                                         </div>
                                     </form>
                                 </div>
@@ -44,6 +46,9 @@
 
     <script>
         async function setNewPassword() {
+            const spinner = document.getElementById("sendOtpBtnSpinner");
+            const setNewPassBtn = document.getElementById("setNewPassBtn");
+
             const newPassword = document.getElementById("inputNewPassword").value.trim();
             const confirmPassword = document.getElementById("inputConfirmPassword").value.trim();
             const email = new URLSearchParams(window.location.search).get('email');
@@ -56,6 +61,8 @@
                 alert('Passwords do not match. Please try again.');
                 return;
             }
+            spinner.classList.remove("d-none");
+            setNewPassBtn.disabled = true;
 
             try {
                 const response = await fetch('/api/reset-password', {
@@ -84,6 +91,9 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred while resetting the password. Please try again later.');
+            } finally {
+                spinner.classList.add("d-none");
+                setNewPassBtn.disabled = false;
             }
         }
     </script>
