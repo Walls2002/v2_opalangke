@@ -1,55 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-    @include('layout.head')
-    <body class="bg-primary">
-        <div id="layoutAuthentication">
-            <div id="layoutAuthentication_content">
-                <main>
-                    <div class="container-xl px-4">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-7">
-                                <!-- Basic registration form-->
-                                <div class="card shadow-lg border-0 rounded-lg mt-5">
-                                    <div class="card-header justify-content-center">
-                                        <h3 class="fw-light my-4">Create Customer Account</h3>
-                                    </div>
-                                    <div class="card-body">
-                                        <!-- Registration form-->
-                                        <form id="registrationForm">
-                                            <!-- Form Row-->
-                                            <div class="row gx-3">
-                                                <div class="col-4">
-                                                    <!-- Form Group (name)-->
-                                                    <div class="mb-3">
-                                                        <label class="small mb-1" for="inputName">First Name</label>
-                                                        <input class="form-control" id="inputFirstName" type="text" placeholder="Enter first name" required />
-                                                    </div>
-                                                </div>
-                                                <div class="col-4">
-                                                    <!-- Form Group (name)-->
-                                                    <div class="mb-3">
-                                                        <label class="small mb-1" for="inputName">Middle Name</label>
-                                                        <input class="form-control" id="inputMiddleName" type="text" placeholder="Enter middle name" required />
-                                                    </div>
-                                                </div>
-                                                <div class="col-4">
-                                                    <!-- Form Group (name)-->
-                                                    <div class="mb-3">
-                                                        <label class="small mb-1" for="inputName">Last Name</label>
-                                                        <input class="form-control" id="inputLastName" type="text" placeholder="Enter last name" required />
-                                                    </div>
+@include('layout.head')
+
+<body class="bg-primary">
+    <div id="layoutAuthentication">
+        <div id="layoutAuthentication_content">
+            <main>
+                <div class="container-xl px-4">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-7">
+                            <!-- Basic registration form-->
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header justify-content-center">
+                                    <h3 class="fw-light my-4">Create Customer Account</h3>
+                                </div>
+                                <div class="card-body">
+                                    <!-- Registration form-->
+                                    <form id="registrationForm">
+                                        <!-- Form Row-->
+                                        <div class="row gx-3">
+                                            <div class="col-4">
+                                                <!-- Form Group (name)-->
+                                                <div class="mb-3">
+                                                    <label class="small mb-1" for="inputName">First Name</label>
+                                                    <input class="form-control" id="inputFirstName" type="text" placeholder="Enter first name" required />
                                                 </div>
                                             </div>
-                                            <!-- Form Group (email address) -->
-                                            <div class="mb-3">
-                                                <label class="small mb-1" for="inputEmail">Email</label>
-                                                <input class="form-control" id="inputEmail" type="email" placeholder="Enter email address" required />
+                                            <div class="col-4">
+                                                <!-- Form Group (name)-->
+                                                <div class="mb-3">
+                                                    <label class="small mb-1" for="inputName">Middle Name</label>
+                                                    <input class="form-control" id="inputMiddleName" type="text" placeholder="Enter middle name" required />
+                                                </div>
                                             </div>
-                                            <!-- Form Group (contact number) -->
-                                            <div class="mb-3">
-                                                <label class="small mb-1" for="inputContact">Contact Number</label>
-                                                <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required value="09" />
+                                            <div class="col-4">
+                                                <!-- Form Group (name)-->
+                                                <div class="mb-3">
+                                                    <label class="small mb-1" for="inputName">Last Name</label>
+                                                    <input class="form-control" id="inputLastName" type="text" placeholder="Enter last name" required />
+                                                </div>
                                             </div>
+                                        </div>
+                                        <!-- Form Group (email address) -->
+                                        <div class="mb-3">
+                                            <label class="small mb-1" for="inputEmail">Email</label>
+                                            <input class="form-control" id="inputEmail" type="email" placeholder="Enter email address" required />
+                                        </div>
+                                        <!-- Form Group (contact number) -->
+                                        <div class="mb-3">
+                                            <label class="small mb-1" for="inputContact">Contact Number</label>
+                                            <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required value="09"/>
+                                        </div>
 
                                         <div class="mb-3">
                                             <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
@@ -184,25 +185,11 @@
             const myModal = new bootstrap.Modal(document.getElementById('otpVerifyModal'));
 
 
-                // Simple password match validation
-                if (password !== confirmPassword) {
-                    alert('Passwords do not match!');
-                    return;
-                }
-
-                 // Password strength validation
-                const passwordRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
-                if (!passwordRegex.test(password)) {
-                    alert('Password must be at least 8 characters long, contain at least one uppercase letter, and one number.');
-                    return;
-                }
-
-                // Contact number validation
-                const contactRegex = /^09\d{9}$/;
-                if (!contactRegex.test(contact)) {
-                    alert('Invalid contact number format');
-                    return;
-                }
+            // Simple password match validation
+            if (password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
 
 
             try {
@@ -307,34 +294,93 @@
                 location_id: location_id,
             };
 
-                // Make AJAX request
-                fetch('/api/customers', {
+
+
+            const otpInputs = document.querySelectorAll(".otp-input");
+
+            let otp = '';
+            otpInputs.forEach(input => {
+                otp += input.value;
+            });
+
+            if (otp.length < 6) {
+                alert('Please enter a valid 6-digit OTP.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/verify-otp', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(payload),
-                })
-                    .then((response) => {
-                        if (!response.ok) {
-                            throw new Error(response);
-                        }
-                        return response.json();
-                    })
-                    .then((data) => {
-                        // Success handling
-                        alert('Account created successfully!');
-                        console.log(data);
-                        location.reload();
-                    })
-                    .catch((error) => {
-                        // Error handling
-                        console.error('Error:', error);
-                        alert('The email has already been taken.');
-                    });
-            });
+                    body: JSON.stringify({
+                        email: email,
+                        otp: otp
+                    }),
+                });
 
-            // Enforce '09' prefix in contact number field
+
+
+
+                const data = await response.json();
+
+                if (data.code === 200) {
+
+
+                    // Make AJAX request
+                    try {
+                        const createAcctResponse = await fetch('/api/customers', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(payload),
+                        });
+
+
+
+                        const createAcctData = await createAcctResponse.json();
+                        if (createAcctData.code === 200 || createAcctData.code === 201) {
+                            alert('OTP verified and account created successfully!');
+                            window.location.href = '/login';
+                        } else {
+                            console.error('Failed to create account:', createAcctData.code, +' ' + payload);
+                            alert('Failed to create account. Please try again later.');
+                        }
+                    } catch (error) {
+                        console.error('Error creating account:', error);
+                        alert('An error occurred while creating the account. Please try again later.' + JSON.stringify(error) + ' ' + JSON.stringify(payload));
+                    }
+
+
+
+
+                    // .then((response) => {
+                    //     if (!response.ok) {
+                    //         throw new Error(response);
+                    //     }
+                    //     return response.json();
+                    // })
+                    // .then((data) => {
+                    //     // Success handling
+                    //     alert('OTP verified and account created successfully!');
+
+                    //     window.location.href = '/login';
+                    // })
+                    // .catch((error) => {
+                    //     console.error('Error creating account:', error.message);
+                    //     alert('An error occurred while creating the account. Please try again later.' + error + ' ' + email);
+                    // });
+                } else {
+                    alert('Invalid OTP. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while verifying the OTP. Please try again later.' + error + ' ' + email);
+            }
+        }
+        // Enforce '09' prefix in contact number field
             const contactInput = document.getElementById('inputContact');
             contactInput.addEventListener('input', function (e) {
                 // Remove all non-digit characters
@@ -353,6 +399,7 @@
                     e.preventDefault();
                 }
             });
-        </script>
-    </body>
+    </script>
+</body>
+
 </html>
