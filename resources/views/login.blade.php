@@ -19,9 +19,12 @@
                                             <label class="small mb-2 fw-semibold" for="inputEmailAddress">Email</label>
                                             <input class="form-control form-control-lg" id="inputEmailAddress" type="email" placeholder="Enter email address" required />
                                         </div>
-                                        <div class="mb-2">
+                                        <div class="mb-2 position-relative">
                                             <label class="small mb-2 fw-semibold" for="inputPassword">Password</label>
-                                            <input class="form-control form-control-lg" id="inputPassword" type="password" placeholder="Enter password" required />
+                                            <input class="form-control form-control-lg pr-5" id="inputPassword" type="password" placeholder="Enter password" required />
+                                            <span class="position-absolute end-0 pe-3" style="padding-top: 2rem; top:0; bottom:0; height:100%; display:flex; align-items:center; cursor:pointer;" onclick="togglePasswordVisibility('inputPassword', 'togglePasswordIcon')">
+                                                <i id="togglePasswordIcon" class="bi bi-eye-slash fs-5"></i>
+                                            </span>
                                         </div>
                                         <div class="mb-3 text-end">
                                             <a href="/forgot-password" class="text-decoration-none small text-primary fw-semibold">Forgot Password?</a>
@@ -100,11 +103,21 @@
                 }
             }
         }
-    </script>
 
+        function togglePasswordVisibility(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        }
 
-
-    <script>
         $(document).ready(function() {
             // Check the value of "status" in local storage
             var token = localStorage.getItem('token');
@@ -118,40 +131,40 @@
 
     <!-- Terms and Conditions Modal -->
     <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-md modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header justify-content-center">
-            <h5 class="modal-title text-center w-100" id="termsModalLabel">Terms and Conditions</h5>
-            <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
-          </div>
-          <div class="modal-body">
-            <p>Welcome to our platform. Please read these Terms and Conditions carefully before using our services.</p>
-            <h6>1. Acceptance of Terms</h6>
-            <p>By accessing or using our website, you agree to be bound by these Terms and Conditions and our Privacy Policy.</p>
-            <h6>2. User Responsibilities</h6>
-            <ul>
-                <li>Provide accurate and up-to-date information during registration and use of the platform.</li>
-                <li>Maintain the confidentiality of your account credentials.</li>
-                <li>Comply with all applicable laws and regulations.</li>
-            </ul>
-            <h6>3. Prohibited Activities</h6>
-            <ul>
-                <li>Do not use the platform for unlawful or fraudulent purposes.</li>
-                <li>Do not attempt to gain unauthorized access to other accounts or systems.</li>
-                <li>Do not post or transmit harmful, offensive, or inappropriate content.</li>
-            </ul>
-            <h6>4. Limitation of Liability</h6>
-            <p>We are not liable for any damages arising from your use of the platform. Use the services at your own risk.</p>
-            <h6>5. Changes to Terms</h6>
-            <p>We reserve the right to update or modify these Terms and Conditions at any time. Continued use of the platform constitutes acceptance of the new terms.</p>
-            <h6>6. Contact Us</h6>
-            <p>If you have any questions about these Terms and Conditions, please contact us through our support page.</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
-          </div>
+        <div class="modal-dialog modal-md modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center">
+                    <h5 class="modal-title text-center w-100" id="termsModalLabel">Terms and Conditions</h5>
+                    <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                </div>
+                <div class="modal-body">
+                    <p>Welcome to our platform. Please read these Terms and Conditions carefully before using our services.</p>
+                    <h6>1. Acceptance of Terms</h6>
+                    <p>By accessing or using our website, you agree to be bound by these Terms and Conditions and our Privacy Policy.</p>
+                    <h6>2. User Responsibilities</h6>
+                    <ul>
+                        <li>Provide accurate and up-to-date information during registration and use of the platform.</li>
+                        <li>Maintain the confidentiality of your account credentials.</li>
+                        <li>Comply with all applicable laws and regulations.</li>
+                    </ul>
+                    <h6>3. Prohibited Activities</h6>
+                    <ul>
+                        <li>Do not use the platform for unlawful or fraudulent purposes.</li>
+                        <li>Do not attempt to gain unauthorized access to other accounts or systems.</li>
+                        <li>Do not post or transmit harmful, offensive, or inappropriate content.</li>
+                    </ul>
+                    <h6>4. Limitation of Liability</h6>
+                    <p>We are not liable for any damages arising from your use of the platform. Use the services at your own risk.</p>
+                    <h6>5. Changes to Terms</h6>
+                    <p>We reserve the right to update or modify these Terms and Conditions at any time. Continued use of the platform constitutes acceptance of the new terms.</p>
+                    <h6>6. Contact Us</h6>
+                    <p>If you have any questions about these Terms and Conditions, please contact us through our support page.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
 </body>
 

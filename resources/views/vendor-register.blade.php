@@ -49,7 +49,7 @@
                                         <!-- Form Group (contact number) -->
                                         <div class="mb-3">
                                             <label class="small mb-1" for="inputContact">Contact Number</label>
-                                            <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required />
+                                            <input class="form-control" id="inputContact" type="text" placeholder="Enter contact number" required pattern="^09\d{9}$" title="Contact number must start with 09 and be exactly 11 digits." />
                                         </div>
 
                                         <div class="mb-3">
@@ -62,17 +62,23 @@
                                         <!-- Form Row -->
                                         <div class="row gx-3">
                                             <div class="col-md-6">
-                                                <!-- Form Group (password)-->
-                                                <div class="mb-3">
+                                                <!-- Form Group (password) with eye icon -->
+                                                <div class="mb-3 position-relative">
                                                     <label class="small mb-1" for="inputPassword">Password</label>
-                                                    <input class="form-control" id="inputPassword" type="password" placeholder="Enter password" required />
+                                                    <input class="form-control pr-5" id="inputPassword" type="password" placeholder="Enter password" required pattern="^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$" title="Password must be at least 8 characters, include 1 uppercase letter and 1 number." />
+                                                    <span class="position-absolute end-0 pe-3" style="padding-top: 2rem; top:0; bottom:0; height:100%; display:flex; align-items:center; cursor:pointer;" onclick="togglePasswordVisibility('inputPassword', 'togglePasswordIcon')">
+                                                        <i id="togglePasswordIcon" class="bi bi-eye-slash fs-5"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <!-- Form Group (confirm password)-->
-                                                <div class="mb-3">
+                                                <!-- Form Group (confirm password) with eye icon -->
+                                                <div class="mb-3 position-relative">
                                                     <label class="small mb-1" for="inputConfirmPassword">Confirm Password</label>
-                                                    <input class="form-control" id="inputConfirmPassword" type="password" placeholder="Confirm password" required />
+                                                    <input class="form-control pr-5" id="inputConfirmPassword" type="password" placeholder="Confirm password" required />
+                                                    <span class="position-absolute end-0 pe-3" style="padding-top: 2rem; top:0; bottom:0; height:100%; display:flex; align-items:center; cursor:pointer;" onclick="togglePasswordVisibility('inputConfirmPassword', 'toggleConfirmPasswordIcon')">
+                                                        <i id="toggleConfirmPasswordIcon" class="bi bi-eye-slash fs-5"></i>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -217,6 +223,11 @@
             // Simple password match validation
             if (password !== confirmPassword) {
                 alert('Passwords do not match!');
+                return;
+            }
+
+            if (contact.length !== 11) {
+                alert('Contact number must be exactly 11 digits and start with 09.');
                 return;
             }
             createAccBtn.disabled = true;
@@ -408,6 +419,7 @@
                     //     alert('An error occurred while creating the account. Please try again later.' + error + ' ' + email);
                     // });
                 } else {
+                    clearOtpInputs();
                     alert('Invalid OTP. Please try again.');
                 }
             } catch (error) {
@@ -417,6 +429,30 @@
                 modalSpinner.classList.add("d-none");
                 verifyOtpBtn.disabled = false;
             }
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        }
+
+        function clearOtpInputs() {
+            document.querySelectorAll('.otp-input').forEach(input => input.value = '');
+        }
+
+        // Add event listener to clear OTP inputs when modal is closed
+        const otpModal = document.getElementById('otpVerifyModal');
+        if (otpModal) {
+            otpModal.addEventListener('hidden.bs.modal', clearOtpInputs);
         }
     </script>
 

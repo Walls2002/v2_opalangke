@@ -49,8 +49,36 @@
 
     <script>
         function moveToNext(current, nextId) {
+            // Only allow numbers
+            current.value = current.value.replace(/\D/g, '');
             if (current.value.length === 1 && nextId) {
                 document.getElementById(nextId).focus();
+            }
+        }
+
+        // Add event listeners for backspace and input restrictions
+        for (let i = 1; i <= 6; i++) {
+            const input = document.getElementById(`otp${i}`);
+            if (input) {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace') {
+                        if (input.value === '' && i > 1) {
+                            const prev = document.getElementById(`otp${i-1}`);
+                            if (prev) {
+                                prev.value = '';
+                                prev.focus();
+                                e.preventDefault();
+                            }
+                        } else {
+                            input.value = '';
+                        }
+                    } else if (!e.key.match(/\d/) && e.key.length === 1) {
+                        e.preventDefault();
+                    }
+                });
+                input.addEventListener('input', function(e) {
+                    input.value = input.value.replace(/\D/g, '');
+                });
             }
         }
 
@@ -89,8 +117,19 @@
                 if (!response.ok) {
                     // Handle non-200 HTTP responses
                     const errorText = await response.text();
-                    console.error('Error response:', errorText);
-                    alert('An error occurred: ' + response.status + ' ' + response.statusText + ' ' + errorText + ' ' + email + ' ' + otp);
+                    let showInvalidOtp = false;
+                    try {
+                        const errorJson = JSON.parse(errorText);
+                        if (errorJson && errorJson.code === 400 && errorJson.message && errorJson.message.toLowerCase().includes('otp')) {
+                            showInvalidOtp = true;
+                        }
+                    } catch (e) {}
+                    if (showInvalidOtp) {
+                        clearOtpInputs();
+                        alert('Invalid OTP. Please try again.');
+                    } else {
+                        alert('An error occurred: ' + response.status + ' ' + response.statusText + ' ' + errorText + ' ' + email + ' ' + otp);
+                    }
                     return;
                 }
 
@@ -101,6 +140,7 @@
                     alert('OTP verified successfully. You can now reset your password.');
                     window.location.href = '/reset-password?email=' + encodeURIComponent(email);
                 } else {
+                    clearOtpInputs();
                     alert('Invalid OTP. Please try again.');
                 }
             } catch (error) {
@@ -110,6 +150,15 @@
                 spinner.classList.add("d-none");
                 verifyOtpBtn.disabled = false;
             }
+        }
+
+        function clearOtpInputs() {
+            for (let i = 1; i <= 6; i++) {
+                const el = document.getElementById(`otp${i}`);
+                if (el) el.value = '';
+            }
+            const first = document.getElementById('otp1');
+            if (first) first.focus();
         }
     </script>
 </body>

@@ -17,7 +17,7 @@
                                     <form id="setNewPasswordForm">
                                         <div class="mb-4">
                                             <label class="small mb-2 fw-semibold" for="inputNewPassword">New Password</label>
-                                            <input class="form-control form-control-lg" id="inputNewPassword" type="password" placeholder="Enter your new password" required />
+                                            <input class="form-control form-control-lg" id="inputNewPassword" type="password" placeholder="Enter your new password" required pattern="^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$" title="Password must be at least 8 characters, include 1 uppercase letter and 1 number." />
                                         </div>
                                         <div class="mb-4">
                                             <label class="small mb-2 fw-semibold" for="inputConfirmPassword">Confirm Password</label>
@@ -54,6 +54,12 @@
             const email = new URLSearchParams(window.location.search).get('email');
             if (!newPassword || !confirmPassword) {
                 alert('Please fill out all fields.');
+                return;
+            }
+
+            // Password pattern validation
+            if (!/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/.test(newPassword)) {
+                alert('Password must be at least 8 characters, include at least 1 uppercase letter and 1 number.');
                 return;
             }
 
