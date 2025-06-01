@@ -177,3 +177,4 @@ Route::post('/riders/register', [RiderStoreController::class, 'storeRegister']);
 Route::post('/send-otp', [OtpController::class, 'sendOtp']);
 Route::post('/verify-otp', [OtpController::class, 'verifyOtp']);
 Route::post('/reset-password', [ChangePasswordController::class, 'changePassword']);
+Route::post('/riders/check-unique', [RiderController::class, 'checkUnique']);

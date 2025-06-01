@@ -112,4 +112,25 @@ class RiderController extends Controller
 
         return response()->json(['message' => 'Rider deactivated successfully.']);
     }
+
+    /**
+     * Check if plate number or license number is already taken.
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function checkUnique(Request $request): JsonResponse
+    {
+        $request->validate([
+            'plate_number' => 'required|string',
+            'license_number' => 'required|string',
+        ]);
+
+        $plateExists = \App\Models\Rider::where('plate_number', $request->plate_number)->exists();
+        $licenseExists = \App\Models\Rider::where('license_number', $request->license_number)->exists();
+
+        return response()->json([
+            'plate_number_exists' => $plateExists,
+            'license_number_exists' => $licenseExists,
+        ]);
+    }
 }

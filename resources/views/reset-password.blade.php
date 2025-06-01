@@ -15,13 +15,19 @@
                                 </div>
                                 <div class="card-body p-4">
                                     <form id="setNewPasswordForm">
-                                        <div class="mb-4">
+                                        <div class="mb-4 position-relative">
                                             <label class="small mb-2 fw-semibold" for="inputNewPassword">New Password</label>
-                                            <input class="form-control form-control-lg" id="inputNewPassword" type="password" placeholder="Enter your new password" required pattern="^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$" title="Password must be at least 8 characters, include 1 uppercase letter and 1 number." />
+                                            <input class="form-control form-control-lg pr-5" id="inputNewPassword" type="password" placeholder="Enter your new password" required pattern="^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$" title="Password must be at least 8 characters, include 1 uppercase letter and 1 number." />
+                                            <span class="position-absolute end-0 pe-3" style="padding-top: 1.5rem; top:0; bottom:0; height:100%; display:flex; align-items:center; cursor:pointer;" onclick="togglePasswordVisibility('inputNewPassword', 'toggleNewPasswordIcon')">
+                                                <i id="toggleNewPasswordIcon" class="bi bi-eye-slash fs-5"></i>
+                                            </span>
                                         </div>
-                                        <div class="mb-4">
+                                        <div class="mb-4 position-relative">
                                             <label class="small mb-2 fw-semibold" for="inputConfirmPassword">Confirm Password</label>
-                                            <input class="form-control form-control-lg" id="inputConfirmPassword" type="password" placeholder="Confirm your new password" required />
+                                            <input class="form-control form-control-lg pr-5" id="inputConfirmPassword" type="password" placeholder="Confirm your new password" required />
+                                            <span class="position-absolute end-0 pe-3" style="padding-top: 1.5rem; top:0; bottom:0; height:100%; display:flex; align-items:center; cursor:pointer;" onclick="togglePasswordVisibility('inputConfirmPassword', 'toggleConfirmPasswordIcon')">
+                                                <i id="toggleConfirmPasswordIcon" class="bi bi-eye-slash fs-5"></i>
+                                            </span>
                                         </div>
                                         <div class="d-grid gap-2 mt-4 mb-0">
 
@@ -45,6 +51,20 @@
     @include('layout.scripts')
 
     <script>
+        function togglePasswordVisibility(inputId, iconId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            }
+        }
+
         async function setNewPassword() {
             const spinner = document.getElementById("sendOtpBtnSpinner");
             const setNewPassBtn = document.getElementById("setNewPassBtn");

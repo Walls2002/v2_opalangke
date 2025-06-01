@@ -280,6 +280,37 @@
                 return;
             }
 
+            // Check plate and license number uniqueness before sending OTP
+            const plate_number = document.getElementById('inputPlateNumber').value;
+            const license_number = document.getElementById('inputLicenseNumber').value;
+            let uniqueError = '';
+            try {
+                const uniqueRes = await fetch('/api/riders/check-unique', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        plate_number: plate_number,
+                        license_number: license_number
+                    }),
+                });
+                const uniqueData = await uniqueRes.json();
+                if (uniqueData.plate_number_exists) {
+                    uniqueError += 'The plate number has already been taken.\n';
+                }
+                if (uniqueData.license_number_exists) {
+                    uniqueError += 'The license number has already been taken.\n';
+                }
+                if (uniqueError) {
+                    alert(uniqueError.trim());
+                    return;
+                }
+            } catch (e) {
+                alert('Error checking plate/license number uniqueness. Please try again.');
+                return;
+            }
+
             createAccBtn.disabled = true;
             createAccSpinner.classList.remove("d-none");
             try {

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-    @include('layout.head')
+@include('layout.head')
+
 <body class="nav-fixed">
     @include('layout.topnav')
     <div id="layoutSidenav">
@@ -15,7 +16,7 @@
                         </div>
                         <!-- Date range picker example-->
                         <div class="">
-                            <button class="btn btn-primary shadow" data-bs-toggle="modal" data-bs-target="#createUserModal">Create New Rider</button>
+                            <!-- <button class="btn btn-primary shadow" data-bs-toggle="modal" data-bs-target="#createUserModal">Create New Rider</button> -->
                         </div>
                     </div>
                     <!-- Illustration dashboard card example-->
@@ -33,7 +34,7 @@
                                             <th>Rating</th>
                                             <th>Status</th>
                                             <th>Actions</th>
-                                        
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -42,7 +43,7 @@
                                 </table>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
             </main>
             @include('layout.footer')
@@ -59,51 +60,51 @@
                     <h5 class="modal-title" id="createUserModalLabel">Create New Rider</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
+
                 <!-- Form for creating a new user -->
-                    <div class="modal-body">
-                        <form id="createUserForm">
-                            <div class="mb-3">
-                                <label for="createUserName" class="form-label">First Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="createUserFirstName" placeholder="Enter first name" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="createUserName" class="form-label">Middle Name</label>
-                                <input type="text" class="form-control" id="createUserMiddleName" placeholder="Enter middle name" />
-                            </div>
-                            <div class="mb-3">
-                                <label for="createUserName" class="form-label">Last Name<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="createUserLastName" placeholder="Enter last name" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="createUserEmail" class="form-label">Email<span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" id="createUserEmail" placeholder="Enter email address" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="createUserContact" class="form-label">Contact<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="createUserContact" placeholder="Enter contact number" required />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">License Number<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="license_number" placeholder="Enter license number" required />
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Plate Number<span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="plate_number" placeholder="Enter plate number" required />
-                            </div>
-                            <div class="mb-3">
-                                <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
-                                <select id="locationDropdown" class="form-select" required>
-                                    <option value="">Select Location</option>
-                                </select>
-                            </div>
-                        
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </div>
-                        </form>
-                    </div>
+                <div class="modal-body">
+                    <form id="createUserForm">
+                        <div class="mb-3">
+                            <label for="createUserName" class="form-label">First Name<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="createUserFirstName" placeholder="Enter first name" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="createUserName" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control" id="createUserMiddleName" placeholder="Enter middle name" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="createUserName" class="form-label">Last Name<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="createUserLastName" placeholder="Enter last name" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="createUserEmail" class="form-label">Email<span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="createUserEmail" placeholder="Enter email address" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="createUserContact" class="form-label">Contact<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="createUserContact" placeholder="Enter contact number" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">License Number<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="license_number" placeholder="Enter license number" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Plate Number<span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="plate_number" placeholder="Enter plate number" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="locationDropdown" class="form-label">Choose a Location<span class="text-danger">*</span></label>
+                            <select id="locationDropdown" class="form-select" required>
+                                <option value="">Select Location</option>
+                            </select>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -152,7 +153,7 @@
                                 <option value="">Select Location</option>
                             </select>
                         </div>
-                    
+
                         <div class="modal-footer">
                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -167,172 +168,183 @@
     @include('layout.scripts')
 
     <script>
-        $(document).ready(function () {
-                // Initialize DataTable
-                $('#usersTable').DataTable({
-                    ajax: {
-                        url: '/api/admin/riders', // Your API endpoint for fetching users
-                        type: 'GET',
-                        headers: {
-                                Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
-                            },
-                        dataSrc: 'riders' // Adjust based on the response structure ('' if data is a direct array)
+        $(document).ready(function() {
+            // Initialize DataTable
+            $('#usersTable').DataTable({
+                ajax: {
+                    url: '/api/admin/riders', // Your API endpoint for fetching users
+                    type: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
                     },
-                    columns: [
-                        { 
-                            data: null, 
-                            render: function (data, type, row) {
-                                return `${row.first_name} ${row.middle_name ? row.middle_name + ' ' : ''}${row.last_name}`;
-                            } 
-                        },
-                        { data: 'email' },
-                        { data: 'contact' },
-                        { data: 'rider.license_number' },
-                        { data: 'rider.plate_number' },
-                        { data: 'rider.rating' },
-                        {
-                            data: 'email_verified_at',
-                            render: function (data, type, row) {
-                                return data ? 'Approved' : 'Pending';
-                            }
-                        },
-                        {
-                            data: null,
-                            render: function (data, type, row) {
-                                let buttons = '';
-                                
-                                // Display "Approve" button only if email_verified_at is null
-                                if (!row.email_verified_at) {
-                                    buttons += `<button class="btn btn-secondary btn-sm m-1" onclick="approveUser(${row.rider.id})">Approve</button> `;
-                                }
+                    dataSrc: 'riders' // Adjust based on the response structure ('' if data is a direct array)
+                },
+                columns: [{
+                        data: null,
+                        render: function(data, type, row) {
+                            return `${row.first_name} ${row.middle_name ? row.middle_name + ' ' : ''}${row.last_name}`;
+                        }
+                    },
+                    {
+                        data: 'email'
+                    },
+                    {
+                        data: 'contact'
+                    },
+                    {
+                        data: 'rider.license_number'
+                    },
+                    {
+                        data: 'rider.plate_number'
+                    },
+                    {
+                        data: 'rider.rating'
+                    },
+                    {
+                        data: 'email_verified_at',
+                        render: function(data, type, row) {
+                            return data ? 'Approved' : 'Pending';
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row) {
+                            let buttons = '';
 
-                                // Always display "Edit" and "Delete" buttons
-                                buttons += `
+                            // Display "Approve" button only if email_verified_at is null
+                            if (!row.email_verified_at) {
+                                buttons += `<button class="btn btn-secondary btn-sm m-1" onclick="approveUser(${row.rider.id})">Approve</button> `;
+                            }
+
+                            // Always display "Edit" and "Delete" buttons
+                            buttons += `
                                     <button class="btn btn-primary btn-sm m-1" onclick="viewOrders(${row.rider.id})">View Orders</button>
                                     <button class="btn btn-warning btn-sm m-1" data-bs-toggle="modal" data-bs-target="#editUserModal" onclick="editUser(${row.rider.id})">Edit</button>
                                     <button class="btn btn-danger btn-sm m-1" onclick="deleteUser(${row.rider.id})">Delete</button>
                                 `;
 
-                                return buttons;
-                            },
-                        }
-                    ],
-                    dom: 'lBfrtip', // Enable buttons for export functionality
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ],
-                    order: [[0, 'desc']]
-                });
+                            return buttons;
+                        },
+                    }
+                ],
+                dom: 'lBfrtip', // Enable buttons for export functionality
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ],
+                order: [
+                    [0, 'desc']
+                ]
             });
+        });
 
-            function viewOrders(id){
-                localStorage.setItem('rider_id', id);
+        function viewOrders(id) {
+            localStorage.setItem('rider_id', id);
 
-                window.location.href = '/admin/riderorders';
+            window.location.href = '/admin/riderorders';
+        }
+
+        // Function to populate the edit form with existing user data
+        async function editUser(userId) {
+            try {
+                // Fetch user details using the user ID
+                const response = await axios.get(`/api/admin/riders/${userId}`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
+                    },
+                });
+
+                const user = response.data.rider;
+
+                // Populate form fields with user data
+                document.getElementById('editFirstName').value = user.user.first_name;
+                document.getElementById('editMiddleName').value = user.user.middle_name;
+                document.getElementById('editLastName').value = user.user.last_name;
+                document.getElementById('editEmail').value = user.user.email;
+                document.getElementById('editContact').value = user.user.contact || '';
+                document.getElementById('locationDropdown2').value = user.user.location_id || '';
+                document.getElementById('editlicense_number').value = user.license_number;
+                document.getElementById('editplate_number').value = user.plate_number;
+
+                // Attach user ID to the form for submission
+                document.getElementById('editUserForm').dataset.userId = userId;
+            } catch (error) {
+                alert('Failed to fetch user details. Please try again.');
             }
+        }
 
-            // Function to populate the edit form with existing user data
-            async function editUser(userId) {
+        // Function to delete a user
+        async function deleteUser(userId) {
+            if (confirm("Are you sure you want to delete this rider?")) {
                 try {
-                    // Fetch user details using the user ID
-                    const response = await axios.get(`/api/admin/riders/${userId}`, {
+                    // Send DELETE request to the API
+                    await axios.delete(`/api/riders/${userId}`, {
                         headers: {
                             Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
                         },
                     });
 
-                    const user = response.data.rider;
+                    // Show success message
+                    alert("Rider deleted successfully!");
 
-                    // Populate form fields with user data
-                    document.getElementById('editFirstName').value = user.user.first_name;
-                    document.getElementById('editMiddleName').value = user.user.middle_name;
-                    document.getElementById('editLastName').value = user.user.last_name;
-                    document.getElementById('editEmail').value = user.user.email;
-                    document.getElementById('editContact').value = user.user.contact || '';
-                    document.getElementById('locationDropdown2').value = user.user.location_id || '';
-                    document.getElementById('editlicense_number').value = user.license_number;
-                    document.getElementById('editplate_number').value = user.plate_number;
-
-                    // Attach user ID to the form for submission
-                    document.getElementById('editUserForm').dataset.userId = userId;
+                    // Reload the DataTable to reflect changes
+                    $('#usersTable').DataTable().ajax.reload();
                 } catch (error) {
-                    alert('Failed to fetch user details. Please try again.');
-                }
-            }
-
-            // Function to delete a user
-            async function deleteUser(userId) {
-                if (confirm("Are you sure you want to delete this rider?")) {
-                    try {
-                        // Send DELETE request to the API
-                        await axios.delete(`/api/riders/${userId}`, {
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem('token')}`, // Include token if required
-                            },
-                        });
-
-                        // Show success message
-                        alert("Rider deleted successfully!");
-
-                        // Reload the DataTable to reflect changes
-                        $('#usersTable').DataTable().ajax.reload();
-                    } catch (error) {
-                        // Handle error response
-                        if (error.response) {
-                            alert(error.response.data.message || "Failed to delete user. Please try again.");
-                        } else {
-                            alert("An error occurred. Please check your connection and try again.");
-                        }
+                    // Handle error response
+                    if (error.response) {
+                        alert(error.response.data.message || "Failed to delete user. Please try again.");
+                    } else {
+                        alert("An error occurred. Please check your connection and try again.");
                     }
                 }
             }
+        }
 
-            async function approveUser(userId) {
-                if (confirm("Are you sure you want to approve this rider?")) {
-                    $.ajax({
-                        url: `/api/riders/${userId}/verify`,
-                        type: 'PUT',
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        },
-                        success: function(response) {
-                            alert('Rider has been approved successfully.');
-                            $('#usersTable').DataTable().ajax.reload();
-                        },
-                        error: function() {
-                            alert('Failed to process approval.');
-                        }
-                    });
-                }
+        async function approveUser(userId) {
+            if (confirm("Are you sure you want to approve this rider?")) {
+                $.ajax({
+                    url: `/api/riders/${userId}/verify`,
+                    type: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    },
+                    success: function(response) {
+                        alert('Rider has been approved successfully.');
+                        $('#usersTable').DataTable().ajax.reload();
+                    },
+                    error: function() {
+                        alert('Failed to process approval.');
+                    }
+                });
             }
+        }
     </script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", async function () {
+        document.addEventListener("DOMContentLoaded", async function() {
             const locationDropdown = $('#locationDropdown');
             const locationDropdown2 = $('#locationDropdown2');
 
             $.ajax({
-                    url: '/api/locations',
-                    method: 'GET',
-                    dataType: 'json',
-                    success: function (locations) {
-                        // Populate the dropdown with locations
-                        locations.forEach(location => {
-                            const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
-                            locationDropdown.append(option);
-                            locationDropdown2.append(option);
-                        });
-                    },
-                    error: function (error) {
-                        console.error('Error fetching locations:', error);
-                    }
-                });
+                url: '/api/locations',
+                method: 'GET',
+                dataType: 'json',
+                success: function(locations) {
+                    // Populate the dropdown with locations
+                    locations.forEach(location => {
+                        const option = `<option value="${location.id}">${location.barangay}, ${location.city}, ${location.province}</option>`;
+                        locationDropdown.append(option);
+                        locationDropdown2.append(option);
+                    });
+                },
+                error: function(error) {
+                    console.error('Error fetching locations:', error);
+                }
             });
+        });
     </script>
 
     <script>
-        document.getElementById("createUserForm").addEventListener("submit", async function (event) {
+        document.getElementById("createUserForm").addEventListener("submit", async function(event) {
             event.preventDefault(); // Prevent default form submission behavior
 
             // Get form input values
@@ -348,8 +360,7 @@
             try {
                 // Send POST request to create user
                 const response = await axios.post(
-                    "/api/riders", 
-                    {
+                    "/api/riders", {
                         first_name: first_name,
                         middle_name: middle_name,
                         last_name: last_name,
@@ -359,8 +370,7 @@
                         location_id: location_id,
                         license_number: license_number,
                         plate_number: plate_number
-                    }, 
-                    {
+                    }, {
                         headers: {
                             "Content-Type": "application/json",
                             Authorization: `Bearer ${localStorage.getItem("token")}`
@@ -389,12 +399,11 @@
                 }
             }
         });
-
     </script>
-    
+
     <script>
         // Submit handler for updating the user
-        document.getElementById('editUserForm').addEventListener('submit', async function (event) {
+        document.getElementById('editUserForm').addEventListener('submit', async function(event) {
             event.preventDefault(); // Prevent default form submission behavior
 
             const userId = this.dataset.userId; // Retrieve user ID from the form's dataset
@@ -445,6 +454,7 @@
             }
         });
     </script>
-    
+
 </body>
+
 </html>
