@@ -23,7 +23,7 @@
                         <div id="cart-container" class="mb-4 mt-5">
                             <!-- Cart items will be injected here dynamically -->
                         </div>
-                                         
+
                     </div>
                 </main>
                 @include('layout.footer')
@@ -55,7 +55,7 @@
         </div>
 
 
-    
+
         @include('layout.scripts')
 
         <script>
@@ -63,7 +63,7 @@
                 // Fetch cart data
                 function fetchCart() {
                     const apiUrl = `/api/rider-orders`;
-        
+
                     $.ajax({
                         url: apiUrl,
                         type: 'GET',
@@ -72,7 +72,7 @@
                         },
                         success: function (response) {
                             let cartContent = '';
-        
+
                             if (response.orders.length === 0) {
                                 cartContent = `
                                     <div class="text-center mt-5">
@@ -93,7 +93,7 @@
                                                 <p class="pt-3">Store: ${order?.store?.store_name} - ${order?.store?.contact_number}</p>
                                                 <div class="p-3" style="border: 1px solid rgb(184, 184, 184)">
                                     `;
-        
+
                                     order.items.forEach(product => {
                                         cartContent += `
                                             <div class="d-flex justify-content-between align-items-sm-center flex-column flex-sm-row text-dark mb-3">
@@ -105,7 +105,7 @@
                                             <hr>
                                         `;
                                     });
-        
+
                                     cartContent += `
                                             <h5>Order Summary</h5>
                                             <p class="fw-bold">Subtotal: ₱${order.total_item_price}</p>
@@ -113,13 +113,14 @@
                                             <p class="fw-bold">Discount: ₱${order.discount}</p>
                                             <p class="fw-bold">Total: ₱${order.final_price}</p>
                                             <button class="btn btn-primary btn-sm btn-confirm" data-order-id="${order.id}">Mark as Delivered</button>
+                                            <button class="btn btn-danger btn-sm btn-cancel ms-2" data-order-id="${order.id}">Cancel</button>
                                             </div>
                                         </div>
                                     </div>
                                     `;
                                 });
                             }
-        
+
                             $('#cart-container').html(cartContent);
                         },
                         error: function () {
@@ -127,28 +128,28 @@
                         }
                     });
                 }
-        
+
                 // Handle "Marked Delivered" button click
                 $(document).on('click', '.btn-confirm', function () {
                     const orderId = $(this).data('order-id');
                     $('#deliveryImageModal').data('order-id', orderId).modal('show');
                 });
-        
+
                 // Submit delivery image
                 $('#deliveryForm').on('submit', function (e) {
                     e.preventDefault();
-        
+
                     const orderId = $('#deliveryImageModal').data('order-id');
                     const formData = new FormData();
                     const imageFile = $('#deliveryImageInput')[0].files[0];
-        
+
                     if (!imageFile) {
                         alert('Please select an image.');
                         return;
                     }
-        
+
                     formData.append('image', imageFile);
-        
+
                     $.ajax({
                         url: `/api/rider-orders/${orderId}/deliver`,
                         type: 'POST',
@@ -168,12 +169,30 @@
                         }
                     });
                 });
-        
+                $(document).on('click', '.btn-cancel', function () {
+                    const orderId = $(this).data('order-id');
+                    if (confirm('Are you sure you want to cancel this order?')) {
+                        $.ajax({
+                            url: `/api/rider-orders/${orderId}/cancel`,
+                            type: 'POST',
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                            },
+                            success: function () {
+                                alert('Order canceled successfully.');
+                                fetchCart(); // Refresh the cart after cancel
+                            },
+                            error: function () {
+                                alert('Failed to cancel order.');
+                            }
+                        });
+                    }
+                });
                 // Fetch cart on page load
                 fetchCart();
             });
         </script>
-        
-        
+
+
     </body>
 </html>

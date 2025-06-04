@@ -163,6 +163,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/rider-orders/{order}/show', [RiderOrderController::class, 'show']);
     Route::post('/rider-orders/{order}/take', [RiderOrderController::class, 'take']);
     Route::post('/rider-orders/{order}/deliver', [RiderOrderController::class, 'store']);
+    Route::post('/rider-orders/{order}/cancel', [RiderOrderController::class, 'cancel']);
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {

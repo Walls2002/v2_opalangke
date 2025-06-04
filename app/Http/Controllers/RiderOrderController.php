@@ -204,4 +204,31 @@ class RiderOrderController extends Controller
 
         return response()->json(['message' => 'Order delivered.', 'order' => $order], 200);
     }
+
+    /**
+     * Cancel the order by rider.
+     *
+     * @param Request $request
+     * @param Order $order
+     * @return JsonResponse
+     */
+    public function cancel(Request $request, Order $order): JsonResponse
+    {
+        $rider = $request->user();
+        if ($rider->role !== 'rider') {
+            return response()->json(['message' => 'You are not a rider.'], 403);
+        }
+        if ($rider->rider->id !== $order->rider_id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        if ($order->status != OrderStatus::ASSIGNED) {
+            return response()->json(['message' => 'You can only cancel assigned status orders.'], 422);
+        }
+        $order->status = OrderStatus::CANCELED;
+        // $order->canceled_at = now();
+        if (!$order->save()) {
+            return response()->json(['message' => 'Failed to cancel order.'], 400);
+        }
+        return response()->json(['message' => 'Order canceled successfully.'], 200);
+    }
 }
