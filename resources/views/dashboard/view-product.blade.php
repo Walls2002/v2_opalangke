@@ -145,8 +145,13 @@
                     return;
                 }
 
-                if (quantity > product.quantity) {
-                    alert(`Only ${product.quantity} items available in stock.`);
+                let totalRequested = quantity;
+                if (product.measurement.toLowerCase() === "kilo") {
+                    const kilo_measurement = parseFloat($("#kiloMeasurement").val());
+                    totalRequested = quantity * kilo_measurement;
+                }
+                if (totalRequested > product.quantity) {
+                    alert(`Only ${product.quantity} ${product.measurement} available in stock.`);
                     $("#inputQuantity").val(1);
                     return;
                 }
