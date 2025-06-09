@@ -63,6 +63,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('users/all', [UserController::class, 'indexAll']);
     Route::post('users/vendor-verify/{user}', [UserController::class, 'verifyVendorUser']);
+    Route::post('users/store-push-token', [UserController::class, 'storeExpoToken']);
 });
 
 Route::apiResource('users', UserController::class);
