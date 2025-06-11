@@ -14,14 +14,14 @@ class ProfileController extends Controller
         $request->validate([
             'last_name' => 'required|string|max:50',
             'first_name' => 'required|string|max:50',
-            'middle_name' => 'required|string|max:50',
+            'middle_name' => 'nullable|string|max:50',
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
             'contact' => 'nullable|string|max:15',
         ]);
 
         $user->last_name = $request->last_name;
         $user->first_name = $request->first_name;
-        $user->middle_name = $request->middle_name;
+        $user->middle_name = $request->filled('middle_name') ? $request->middle_name : "";
         $user->contact = $request->contact;
         $user->email = $request->email;
 

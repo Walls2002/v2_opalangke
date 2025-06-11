@@ -174,7 +174,7 @@ class RiderOrderController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        if ($order->status != OrderStatus::ASSIGNED) {
+        if ($order->status->value != 4) {
             return response()->json(['message' => 'You can only deliver assigned status orders.'], 422);
         }
 

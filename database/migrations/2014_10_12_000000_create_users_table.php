@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('contact')->nullable(); // Add contact column
             $table->enum('role', ['admin', 'vendor', 'customer', 'rider'])->default('customer'); // Add role column
             $table->dateTime('email_verified_at')->nullable();
+            $table->string('expo_push_token')->nullable(); // Add expo_push_token column
             $table->rememberToken();
             $table->timestamps();
         });

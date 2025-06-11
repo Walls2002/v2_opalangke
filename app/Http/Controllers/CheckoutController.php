@@ -252,6 +252,7 @@ class CheckoutController extends Controller
         DB::beginTransaction();
         try {
             $customer = $request->user();
+            $note = ($request->note ?? '') . ' PREVIEW';
 
             $cartItems = $this->getCartItemsFromStore($customer, $store->id);
             $this->verifyProductsAreActive($cartItems);
@@ -260,7 +261,7 @@ class CheckoutController extends Controller
                 $voucher = $this->verifyVoucher($customer, $cartItems, $request->voucher_code);
             }
 
-            $order = $this->createOrder($customer, $store, $cartItems, $request->address, $request->note, $voucher ?? null);
+            $order = $this->createOrder($customer, $store, $cartItems, $request->address, $note, $voucher ?? null);
             $this->createOrderItems($order, $cartItems);
             $this->clearCartItems($cartItems);
 
