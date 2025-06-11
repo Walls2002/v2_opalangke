@@ -197,7 +197,7 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
-            'expo_push_token' => 'required|string',
+            'expo_push_token' => 'nullable|string',
 
         ]);
 
@@ -206,7 +206,7 @@ class UserController extends Controller
         }
 
         $user = User::find($request->user_id);
-        $user->expo_push_token = $request->expo_push_token;
+        $user->expo_push_token = $request->expo_push_token ? $request->expo_push_token : null;
         $user->save();
 
         return response()->json([
